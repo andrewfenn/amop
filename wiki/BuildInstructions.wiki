@@ -2,10 +2,14 @@
 
 = Introduction =
 
-AMOP is very light-weight library. Although currently it only supported in VC, it is not so hard to port to any complier which is using V-table for virtual function mechanism.
+AMOP is very light-weight library. Although currently it only supported in VC, 
+it is not so hard to port to any complier which is using V-table for 
+virtual function mechanism.
 
 = Details =
 
 1. Open _AMOP.sln_ in source directory.
+
 2. Build the whole solution.
+
 3. Run the deploy.bat to copy all header and libs.

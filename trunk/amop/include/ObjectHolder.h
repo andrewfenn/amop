@@ -1,9 +1,9 @@
-#ifndef __MOCKPP_OBJECTHOLDER_HH
-#define __MOCKPP_OBJECTHOLDER_HH
+#ifndef __AMOP_OBJECTHOLDER_HH
+#define __AMOP_OBJECTHOLDER_HH
 
 #include "Any.h"
 
-namespace MockPP
+namespace amop
 {
 namespace Detail
 {
@@ -49,4 +49,4 @@ public:
 
 }
 
-#endif //__MOCKPP_OBJECTHOLDER_HH
+#endif //__AMOP_OBJECTHOLDER_HH

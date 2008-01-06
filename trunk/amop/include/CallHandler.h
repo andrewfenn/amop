@@ -1,11 +1,11 @@
-#ifndef __MOCKPP_CALLHANDLER_HH
-#define __MOCKPP_CALLHANDLER_HH
+#ifndef __AMOP_CALLHANDLER_HH
+#define __AMOP_CALLHANDLER_HH
 
 #include "Config.h"
 #include "VirtualTable.h"
 #include "FunctionHolder.h"
 
-namespace MockPP
+namespace amop
 {
 
 namespace Detail
@@ -63,4 +63,4 @@ struct CallHandler
 
 }
 
-#endif //__MOCKPP_CALLHANDLER_HH
+#endif //__AMOP_CALLHANDLER_HH

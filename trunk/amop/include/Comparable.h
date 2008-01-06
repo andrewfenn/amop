@@ -1,9 +1,9 @@
-#ifndef __MOCKPP_COMPARABLE_HH
-#define __MOCKPP_COMPARABLE_HH
+#ifndef __AMOP_COMPARABLE_HH
+#define __AMOP_COMPARABLE_HH
 
 #include "Any.h"
 
-namespace MockPP
+namespace amop
 {
 namespace Detail
 {
@@ -100,4 +100,4 @@ public:
 }
 }
 
-#endif //__MOCKPP_COMPARABLE_HH
+#endif //__AMOP_COMPARABLE_HH

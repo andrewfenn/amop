@@ -1,10 +1,10 @@
-#ifndef _MOCKPP_ANY__HH
-#define _MOCKPP_ANY__HH
+#ifndef _AMOP_ANY__HH
+#define _AMOP_ANY__HH
 
 #include <algorithm>
 #include <typeinfo>
 
-namespace MockPP
+namespace amop
 {
 
 class any
@@ -202,4 +202,4 @@ const ValueType * unsafe_any_cast(const any * operand)
 
 }
 
-#endif //_MOCKPP_ANY__HH
+#endif //_AMOP_ANY__HH

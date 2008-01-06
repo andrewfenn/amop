@@ -1,11 +1,11 @@
-#ifndef __MOCKPP_RETURNMATCHBUILDER_HH
-#define __MOCKPP_RETURNMATCHBUILDER_HH
+#ifndef __AMOP_RETURNMATCHBUILDER_HH
+#define __AMOP_RETURNMATCHBUILDER_HH
 
 #include "ObjectHolder.h"
 #include "Functor.h"
 #include "Comparable.h"
 
-namespace MockPP
+namespace amop
 {
 
 //------------------------------------------------------------------
@@ -101,4 +101,4 @@ private:
 }
 
 
-#endif //__MOCKPP_RETURNMATCHBUILDER_HH
+#endif //__AMOP_RETURNMATCHBUILDER_HH

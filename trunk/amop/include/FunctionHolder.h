@@ -1,10 +1,10 @@
-#ifndef __MOCKPP_FUNCTIONHOLDER_HH
-#define __MOCKPP_FUNCTIONHOLDER_HH
+#ifndef __AMOP_FUNCTIONHOLDER_HH
+#define __AMOP_FUNCTIONHOLDER_HH
 
 #include "Config.h"
 #include "Functor.h"
 
-namespace MockPP
+namespace amop
 {
 namespace Detail
 {

@@ -1,9 +1,9 @@
-#ifndef __MOCKPP_MOCKOBJECTEXECEPTION__HH
-#define __MOCKPP_MOCKOBJECTEXECEPTION__HH
+#ifndef __AMOP_MOCKOBJECTEXECEPTION__HH
+#define __AMOP_MOCKOBJECTEXECEPTION__HH
 
 #include "Any.h"
 
-namespace MockPP
+namespace amop
 {
 
 //------------------------------------------------------------------
@@ -37,4 +37,4 @@ protected:
 
 }
 
-#endif //__MOCKPP_MOCKOBJECTEXECEPTION__HH
+#endif //__AMOP_MOCKOBJECTEXECEPTION__HH

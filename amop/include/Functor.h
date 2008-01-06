@@ -1,11 +1,11 @@
-#ifndef __MOCKPP_FUNCTOR__HH
-#define __MOCKPP_FUNCTOR__HH
+#ifndef __AMOP_FUNCTOR__HH
+#define __AMOP_FUNCTOR__HH
 
 #include "Config.h"
 #include "Tuple.h"
 #include "MacroRepeat.h"
 
-namespace MockPP
+namespace amop
 {
 namespace Detail
 {

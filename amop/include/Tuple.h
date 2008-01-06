@@ -1,10 +1,10 @@
-#ifndef __MOCKPP_TUPLE__HH
-#define __MOCKPP_TUPLE__HH
+#ifndef __AMOP_TUPLE__HH
+#define __AMOP_TUPLE__HH
 
 #include "Config.h"
 #include "MacroParams.h"
 
-namespace MockPP
+namespace amop
 {
 
 namespace Detail
@@ -81,4 +81,4 @@ namespace Detail
 
 }
 
-#endif //__MOCKPP_TUPLE__HH
+#endif //__AMOP_TUPLE__HH

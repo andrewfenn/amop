@@ -1,5 +1,5 @@
-#ifndef __MOCKPP_MOCKOBJECTBASE_HH
-#define __MOCKPP_MOCKOBJECTBASE_HH
+#ifndef __AMOP_MOCKOBJECTBASE_HH
+#define __AMOP_MOCKOBJECTBASE_HH
 
 #include "any.h"
 #include "ObjectHolder.h"
@@ -9,7 +9,7 @@
 #include <map>
 #include <vector>
 
-namespace MockPP
+namespace amop
 {
 
 namespace Detail
@@ -76,4 +76,4 @@ namespace Detail
 
 }
 
-#endif //__MOCKPP_MOCKOBJECTBASE_HH
+#endif //__AMOP_MOCKOBJECTBASE_HH

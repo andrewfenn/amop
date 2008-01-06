@@ -1,7 +1,7 @@
-#ifndef __MOCKPP_CONFIG__HH
-#define __MOCKPP_CONFIG__HH
+#ifndef __AMOP_CONFIG__HH
+#define __AMOP_CONFIG__HH
 
-namespace MockPP
+namespace amop
 {
 
 #define MAX_NUM_VIRTUAL_FUNCTIONS 25
@@ -85,4 +85,4 @@ inline OutputClass HorribleCast(const InputClass input){
 
 }
 
-#endif //__MOCKPP_CONFIG__HH
+#endif //__AMOP_CONFIG__HH

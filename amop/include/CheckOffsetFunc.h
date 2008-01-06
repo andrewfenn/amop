@@ -1,10 +1,10 @@
-#ifndef __MOCKPP_CHECKOFFSETFUNC_HH
-#define __MOCKPP_CHECKOFFSETFUNC_HH
+#ifndef __AMOP_CHECKOFFSETFUNC_HH
+#define __AMOP_CHECKOFFSETFUNC_HH
 
 #include "MockObjectException.h"
 #include "Config.h"
 
-namespace MockPP
+namespace amop
 {
 
 namespace Detail
@@ -92,4 +92,4 @@ size_t GetOffset(T memFuncPtr)
 
 }
 
-#endif //__MOCKPP_CHECKOFFSETFUNC_HH
+#endif //__AMOP_CHECKOFFSETFUNC_HH

@@ -1,12 +1,12 @@
-#ifndef __MOCKPP_MOCKOBJECT_HH
-#define __MOCKPP_MOCKOBJECT_HH
+#ifndef __AMOP_MOCKOBJECT_HH
+#define __AMOP_MOCKOBJECT_HH
 
 #include "Config.h"
 #include "MockObjectBase.h"
 #include "MockObjectException.h"
 #include "ReturnMatchBuilder.h"
 
-namespace MockPP
+namespace amop
 {
 
 //------------------------------------------------------------------
@@ -36,4 +36,4 @@ private:
 }
 
 
-#endif //__MOCKPP_MOCKOBJECT_HH
+#endif //__AMOP_MOCKOBJECT_HH

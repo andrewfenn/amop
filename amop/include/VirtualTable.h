@@ -1,12 +1,12 @@
-#ifndef __MOCKPP_VIRTUALTABLE_HH
-#define __MOCKPP_VIRTUALTABLE_HH
+#ifndef __AMOP_VIRTUALTABLE_HH
+#define __AMOP_VIRTUALTABLE_HH
 
 #include "Config.h"
 #include "MockObjectException.h"
 #include "ObjectHolder.h"
 #include <assert.h>
 
-namespace MockPP
+namespace amop
 {
 namespace Detail
 {
@@ -74,4 +74,4 @@ static TVirtualTable* CreateVirtualTable(TObjectHolder* object)
 
 }
 
-#endif //__MOCKPP_VIRTUALTABLE_HH
+#endif //__AMOP_VIRTUALTABLE_HH

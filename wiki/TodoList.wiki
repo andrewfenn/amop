@@ -1,0 +1,12 @@
+#summary Todo List
+
+= Introduction =
+
+Version 0.2
+
+
+= Details =
+
+The following feature will be added in Version 0.2
+  * Call count constraint
+  * Redirect a method to a given functor.

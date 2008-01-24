@@ -1,12 +1,12 @@
 #summary Todo List
 
-= Introduction =
-
-Version 0.2
-
-
-= Details =
+= Version 0.2 =
 
 The following feature will be added in Version 0.2
   * Call count constraint
   * Redirect a method to a given functor.
+
+= Version 0.3 =
+
+The following feature will be added in Version 0.3
+  * GCC support

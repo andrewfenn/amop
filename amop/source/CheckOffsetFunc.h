@@ -17,6 +17,9 @@ public:
 	static bool mIsCheckCall;
 };
 
+namespace Inner
+{
+
 //------------------------------------------------------------------
 typedef int (TCheck::*TCheckFuncPtr) ();
 
@@ -56,6 +59,8 @@ static void* GetIndexFunc(size_t i)
 	return GetIndexFuncRecur<0>(i);
 }
 
+}
+
 //------------------------------------------------------------------
 static TCheck* CreateCheckObject()
 {
@@ -63,7 +68,7 @@ static TCheck* CreateCheckObject()
 	static void* vtbl = &vtable[0];
 		
 	for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
-		vtable[i] = GetIndexFunc(i);
+		vtable[i] = Inner::GetIndexFunc(i);
 			
 	return (TCheck*)&vtbl;
 }
@@ -72,8 +77,8 @@ static TCheck* CreateCheckObject()
 template <class T>
 size_t GetOffset(T memFuncPtr)
 {
-	TCheckFuncPtr check = 
-		 reinterpret_cast<TCheckFuncPtr>(memFuncPtr);
+	Inner::TCheckFuncPtr check = 
+		 reinterpret_cast<Inner::TCheckFuncPtr>(memFuncPtr);
 
 	TCheck::mIsCheckCall = false; 
 	TCheck* checkObject = CreateCheckObject();

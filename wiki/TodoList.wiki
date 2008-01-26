@@ -4,7 +4,7 @@
 
 The following feature will be added in Version 0.2
   * Call count constraint
-  * Redirect a method to a given functor.
+  * Redirect a method to a given functor. (Finish in SVN)
 
 = Version 0.3 =
 

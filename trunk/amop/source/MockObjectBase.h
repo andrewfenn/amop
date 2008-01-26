@@ -27,8 +27,9 @@ namespace Detail
 	protected:
 		std::map<size_t, any> mReturnDefaults;
 		std::map<size_t, std::vector<any> > mReturns;
-
 		std::map<size_t, size_t> mCallCounter;
+		
+		std::map<size_t, any> mRedirects;
 
 		Detail::TVirtualTable* mVirtualTable;
 
@@ -40,6 +41,9 @@ namespace Detail
 		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
 
 		void AddCallCounter(size_t idx);
+
+		any& GetRedirect(size_t idx);
+		void SetRedirect(size_t idx, const any& redirect);
 
 		void SetReturnDefault(size_t idx, const any& result);
 		void SetReturn(size_t idx, const any& result);

@@ -187,3 +187,87 @@ TEST(MockObjectMethodMultipleExpect)
 	((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
 	((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
 }
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodRedirectFreeFunc)
+{
+	static std::string firstRecv;
+	static std::string secondRecv;
+	static std::string thirdRecv;
+	
+	struct Local
+	{
+		static std::string HandleRedirect(const std::string& crs,
+			std::string& rs, std::string s)
+		{
+			firstRecv = crs;
+			secondRecv = rs;
+			thirdRecv = s;
+
+			rs = "CHANGED";
+
+			return "RESULT";
+		}
+	};
+	
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::ComplexFunction)
+		.Redirect(&Local::HandleRedirect);
+
+	std::string second = "Second";
+
+	std::string result = 
+		((IInterface*)mock)->ComplexFunction("First", second, "Third");
+
+	CHECK_EQUAL("RESULT", result.c_str());
+
+	CHECK_EQUAL("First", firstRecv.c_str());
+	CHECK_EQUAL("Second", secondRecv.c_str());		
+	CHECK_EQUAL("Third",  thirdRecv.c_str());
+
+	CHECK_EQUAL("CHANGED", second.c_str());	
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodRedirectMethod)
+{	
+	struct Local
+	{
+		std::string HandleRedirect(const std::string& crs,
+			std::string& rs, std::string s)
+		{
+			firstRecv = crs;
+			secondRecv = rs;
+			thirdRecv = s;
+
+			rs = "CHANGED";
+
+			return "RESULT";
+		}
+
+		std::string firstRecv;
+		std::string secondRecv;
+		std::string thirdRecv;
+	};
+
+	Local local;
+	
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::ComplexFunction)
+		.Redirect(&local, &Local::HandleRedirect);
+
+	std::string second = "Second";
+
+	std::string result = 
+		((IInterface*)mock)->ComplexFunction("First", second, "Third");
+
+	CHECK_EQUAL("RESULT", result.c_str());
+
+	CHECK_EQUAL("First", local.firstRecv.c_str());
+	CHECK_EQUAL("Second", local.secondRecv.c_str());		
+	CHECK_EQUAL("Third",  local.thirdRecv.c_str());
+
+	CHECK_EQUAL("CHANGED", second.c_str());	
+}

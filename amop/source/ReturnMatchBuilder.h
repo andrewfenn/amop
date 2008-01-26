@@ -93,6 +93,26 @@ public:
 		return *this;
 	}
 
+	template <class T>
+	TReturnMatchBuilder Redirect(T freeFunc)
+	{
+		Detail::Functor<F>::FunctorType functor(freeFunc);
+
+		mObjectHolder->SetRedirect(mOffset, functor);
+
+		return *this;
+	}
+
+	template <class C, class T>
+	TReturnMatchBuilder Redirect(C pointer, T func)
+	{
+		Detail::Functor<F>::FunctorType functor(pointer, func);
+
+		mObjectHolder->SetRedirect(mOffset, functor);
+
+		return *this;
+	}
+
 private:
 	size_t mOffset;
 	Detail::TObjectHolder* mObjectHolder;

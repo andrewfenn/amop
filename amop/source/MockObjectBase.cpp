@@ -48,6 +48,12 @@ void TMockObjectBase::SetReturn(size_t idx, const any& result)
 }
 
 //------------------------------------------------------------------
+void TMockObjectBase::SetRedirect(size_t idx, const any& result)
+{
+	mRedirects[idx] = result;
+}
+
+//------------------------------------------------------------------
 any& TMockObjectBase::GetReturn(size_t idx)
 {
 	size_t callCounter = mCallCounter[idx] - 1;
@@ -60,6 +66,13 @@ any& TMockObjectBase::GetReturn(size_t idx)
 	
 	return mReturnDefaults[idx];
 }
+
+//------------------------------------------------------------------
+any& TMockObjectBase::GetRedirect(size_t idx)
+{
+	return mRedirects[idx];
+}
+
 
 //------------------------------------------------------------------
 void TMockObjectBase::SetActual(size_t idx, size_t paramId, const any& param)

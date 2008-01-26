@@ -2,6 +2,7 @@
 #define __AMOP_OBJECTHOLDER_HH
 
 #include "Any.h"
+#include "Functor.h"
 
 namespace amop
 {
@@ -31,6 +32,22 @@ public:
 	{
 		SetActual(funcIdx, idx, t);
 	}
+
+	template <class F>
+	typename Detail::Functor<F>::FunctorType Redirector(size_t i)
+	{
+		any& redirector = GetRedirect(i);
+		
+		if(!redirector.empty())
+		{
+			return any_cast<Detail::Functor<F>::FunctorType>(redirector);
+		}
+
+		return Detail::Functor<F>::FunctorType();
+	}
+	
+	virtual any& GetRedirect(size_t idx) = 0;
+	virtual void SetRedirect(size_t idx, const any& redirector) = 0;
 
 	virtual void SetReturn(size_t idx, const any& result) = 0;
 	virtual void SetReturnDefault(size_t idx, const any& result) = 0;

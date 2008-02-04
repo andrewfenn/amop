@@ -42,17 +42,7 @@ TEST(MockObjectNotImplementedThrowSimpleFunction)
 
 	CHECK((IInterface*)mock);
 
-	bool isThrow = false;
-	try
-	{
-		((IInterface*)mock)->SimpleFunction();
-	}
-	catch(const TNotImplementedException&)
-	{
-		isThrow = true;
-	}
-
-	CHECK(isThrow);
+	CHECK_THROW(((IInterface*)mock)->SimpleFunction(), TNotImplementedException);
 }
 
 //------------------------------------------------------------------
@@ -62,21 +52,11 @@ TEST(MockObjectNotImplementedThrowComplexFunction)
 
 	CHECK((IInterface*)mock);
 
-	bool isThrow = false;
-	
-	try
-	{
-		std::string crs, rs, s;
+	std::string crs, rs, s;
 
-		std::string result = 
-			((IInterface*)mock)->ComplexFunction(crs, rs, s);
-	}
-	catch(const TNotImplementedException&)
-	{
-		isThrow = true;
-	}
-
-	CHECK(isThrow);
+	CHECK_THROW(
+		((IInterface*)mock)->ComplexFunction(crs, rs, s), 
+		TNotImplementedException);
 }
 
 //mockSubscriber.method("receive").expects(once()).with( eq(message) );
@@ -270,4 +250,20 @@ TEST(MockObjectMethodRedirectMethod)
 	CHECK_EQUAL("Third",  local.thirdRecv.c_str());
 
 	CHECK_EQUAL("CHANGED", second.c_str());	
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodAddCallCount)
+{		
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::ComplexFunction).Will(std::string());
+
+	std::string second = "Second";
+
+	((IInterface*)mock)->ComplexFunction("First", second, "Third");
+	((IInterface*)mock)->ComplexFunction("First", second, "Third");
+	((IInterface*)mock)->ComplexFunction("First", second, "Third");
+
+	CHECK_EQUAL(3, mock.Method(&IInterface::ComplexFunction).Count());
 }

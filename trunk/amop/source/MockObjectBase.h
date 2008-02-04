@@ -41,6 +41,7 @@ namespace Detail
 		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
 
 		void AddCallCounter(size_t idx);
+		size_t GetCallCounter(size_t idx);
 
 		any& GetRedirect(size_t idx);
 		void SetRedirect(size_t idx, const any& redirect);

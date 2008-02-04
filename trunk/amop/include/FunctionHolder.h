@@ -22,29 +22,66 @@ namespace Detail
 #ifndef VT_THIS 
 #define VT_THIS TVirtualTable::GetThis(this)
 #endif
+
+
+#ifndef HANDLE_REDIRECT_R
+#define HANDLE_REDIRECT_R			\
+	do { \
+	if(VT_THIS->Redirector<FunctorType>(I)){ \
+		return VT_THIS->Redirector<FunctorType>(I)(DETAIL_FUNC_PARAMS(n, t));	\
+		}	\
+	}while(false)
+#endif
+
+#ifndef HANDLE_REDIRECT
+#define HANDLE_REDIRECT			\
+	do { \
+	if(VT_THIS->Redirector(I)){ \
+		VT_THIS->Redirector<FunctorType>(I)(DETAIL_FUNC_PARAMS(n, t));	\
+		}	\
+	}while(false)
+#endif
 	
 	template <int I, class C>
 	struct FunctionHolderBase<I, void (C::*)(), false>
 	{			
-		typedef typename void (FunctionHolderBase::*TFuncPtrType)();
-		void Func() { VT_THIS->AddCallCounter(I); }
+		typedef typename void (C::*FunctorType)();
+		void Func() { 
+			VT_THIS->AddCallCounter(I); 
+			if(VT_THIS->Redirector<FunctorType>(I))
+				VT_THIS->Redirector<FunctorType>(I)();
+		}
 	};
 
 	template <int I, class C>
 	struct FunctionHolderBase<I, void (C::*)() const, false>
 	{			
-		typedef typename void (FunctionHolderBase::*TFuncPtrType)();
-		void Func() { VT_THIS->AddCallCounter(I); }
+		typedef typename void (C::*FunctorType)();
+		void Func() 
+		{ 
+			VT_THIS->AddCallCounter(I); 
+			
+			if(VT_THIS->Redirector<FunctorType>(I))
+			{
+				VT_THIS->Redirector<FunctorType>(I)();
+			}
+		}
 	};
 
 	//------------------------------------------------------------------
 	template <int I, class R, class C>
 	struct FunctionHolderBase<I, R (C::*)(), true>
 	{			
-		typedef typename R (FunctionHolderBase::*TFuncPtrType)();
+		typedef typename R (C::*FunctorType)();
 		R Func() 
 		{ 
 			VT_THIS->AddCallCounter(I);
+
+			if(VT_THIS->Redirector<FunctorType>(I))
+			{
+				return VT_THIS->Redirector<FunctorType>(I)();
+			}
+
 			return VT_THIS->Return<R>(I);
 		}
 	};
@@ -53,10 +90,16 @@ namespace Detail
 	template <int I, class R, class C>
 	struct FunctionHolderBase<I, R (C::*)() const, true>
 	{			
-		typedef typename R (FunctionHolderBase::*TFuncPtrType)();
+		typedef typename R (C::*FunctorType)();
 		R Func() 
 		{ 
 			VT_THIS->AddCallCounter(I);
+
+			if(VT_THIS->Redirector<FunctorType>(I))
+			{
+				return VT_THIS->Redirector<FunctorType>(I)();
+			}
+
 			return VT_THIS->Return<R>(I);
 		}
 	};
@@ -70,21 +113,25 @@ namespace Detail
 	template <int I, class C, DETAIL_TPARAMS(n)>	\
 	struct FunctionHolderBase<I, void (C::*)(DETAIL_TPARAMS(n)), false>   \
 	{																  \
-		typedef typename void (FunctionHolderBase::*TFuncPtrType)();     \
+		typedef typename void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		void Func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->AddCallCounter(I);								  \
+			if(VT_THIS->Redirector<FunctorType>(I))					\
+				VT_THIS->Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
 		}															  \
 	};																\
 	template <int I, class C, DETAIL_TPARAMS(n)>						\
 	struct FunctionHolderBase<I, void (C::*)(DETAIL_TPARAMS(n)) const, false>   \
 	{																  \
-		typedef typename void (FunctionHolderBase::*TFuncPtrType)();     \
+		typedef typename void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		void Func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->AddCallCounter(I);								  \
+			if(VT_THIS->Redirector<FunctorType>(I))					\
+				VT_THIS->Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
 		}															  \
 	};																	
 
@@ -92,22 +139,26 @@ namespace Detail
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
 	struct FunctionHolderBase<I, R (C::*)(DETAIL_TPARAMS(n)), true>		\
 	{																	\
-		typedef typename R (FunctionHolderBase::*TFuncPtrType)();		\
+		typedef typename R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		R Func(DETAIL_FUNC_PARAMS(n,t))									\
 		{																\
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->AddCallCounter(I);									\
+			if(VT_THIS->Redirector<FunctorType>(I))					\
+				return VT_THIS->Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
 			return VT_THIS->Return<R>(I);								\
 		}																\
 	};			\
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
 	struct FunctionHolderBase<I, R (C::*)(DETAIL_TPARAMS(n)) const, true>		\
 	{																	\
-		typedef typename R (FunctionHolderBase::*TFuncPtrType)();		\
+		typedef typename R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		R Func(DETAIL_FUNC_PARAMS(n,t))									\
 		{																\
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->AddCallCounter(I);									\
+			if(VT_THIS->Redirector<FunctorType>(I))					\
+				return VT_THIS->Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
 			return VT_THIS->Return<R>(I);								\
 		}																\
 	};
@@ -123,6 +174,7 @@ DETAIL_FUNCTIONHOLDER_BUILD(5);
 DETAIL_FUNCTIONHOLDER_BUILD(6);
 DETAIL_FUNCTIONHOLDER_BUILD(7);
 DETAIL_FUNCTIONHOLDER_BUILD(8);
+/*
 DETAIL_FUNCTIONHOLDER_BUILD(9);
 DETAIL_FUNCTIONHOLDER_BUILD(10);
 DETAIL_FUNCTIONHOLDER_BUILD(11);
@@ -130,9 +182,11 @@ DETAIL_FUNCTIONHOLDER_BUILD(12);
 DETAIL_FUNCTIONHOLDER_BUILD(13);
 DETAIL_FUNCTIONHOLDER_BUILD(14);
 DETAIL_FUNCTIONHOLDER_BUILD(15);
+*/
 
 #undef VT_THIS
-
+#undef HANDLE_REDIRECT
+#undef HANDLE_REDIRECT_R
 }
 
 }

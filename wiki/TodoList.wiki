@@ -3,7 +3,7 @@
 = Version 0.2 =
 
 The following feature will be added in Version 0.2
-  * Call count constraint
+  * Call counting (Finish in SVN)
   * Redirect a method to a given functor. (Finish in SVN)
 
 = Version 0.3 =

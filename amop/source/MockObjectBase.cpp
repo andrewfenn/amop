@@ -37,6 +37,12 @@ void TMockObjectBase::AddCallCounter(size_t idx)
 }
 
 //------------------------------------------------------------------
+size_t TMockObjectBase::GetCallCounter(size_t idx)
+{
+	return mCallCounter[idx];
+}
+
+//------------------------------------------------------------------
 void TMockObjectBase::SetReturnDefault(size_t idx, const any& result)
 {
 	mReturnDefaults[idx] = result;

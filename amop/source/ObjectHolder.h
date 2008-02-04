@@ -60,6 +60,7 @@ public:
 
 
 	virtual void AddCallCounter(size_t idx) = 0;
+	virtual size_t GetCallCounter(size_t idx) = 0;
 };
 
 }

@@ -113,6 +113,11 @@ public:
 		return *this;
 	}
 
+	size_t Count()
+	{
+		return mObjectHolder->GetCallCounter(mOffset);
+	}
+
 private:
 	size_t mOffset;
 	Detail::TObjectHolder* mObjectHolder;

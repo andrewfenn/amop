@@ -1,0 +1,7 @@
+#summary History
+
+= Version 0.2 =
+
+The following feature will be added in Version 0.2
+  * Call counting 
+  * Redirect a method to a given functor. 

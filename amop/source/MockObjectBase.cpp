@@ -27,6 +27,7 @@ TMockObjectBase::TMockObjectBase()
 //------------------------------------------------------------------
 TMockObjectBase::~TMockObjectBase()
 {
+	delete mVirtualTable;
 }		
 
 //------------------------------------------------------------------

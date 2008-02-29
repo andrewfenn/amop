@@ -24,21 +24,22 @@ namespace Detail
 		TMockObjectBase();
 		~TMockObjectBase();
 
+		void Clear();
+
 	protected:
+		typedef std::vector<TComparable> TComparableList;
+		typedef std::map<size_t, TComparableList> TParamMap;
+		typedef std::map<size_t, TComparable> TParamDefaultMap;
+		
 		std::map<size_t, any> mReturnDefaults;
 		std::map<size_t, std::vector<any> > mReturns;
 		std::map<size_t, size_t> mCallCounter;
 		
 		std::map<size_t, any> mRedirects;
-
-		Detail::TVirtualTable* mVirtualTable;
-
-		typedef std::vector<TComparable> TComparableList;
-		typedef std::map<size_t, TComparableList> TParamMap;
-		typedef std::map<size_t, TComparable> TParamDefaultMap;
-
 		std::map<size_t,  TParamMap> mExpects;
 		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
+
+		Detail::TVirtualTable* mVirtualTable;	
 
 		void AddCallCounter(size_t idx);
 		size_t GetCallCounter(size_t idx);

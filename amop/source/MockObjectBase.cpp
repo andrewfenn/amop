@@ -31,6 +31,17 @@ TMockObjectBase::~TMockObjectBase()
 }		
 
 //------------------------------------------------------------------
+void TMockObjectBase::Clear()
+{
+	mReturnDefaults.clear();
+	mReturns.clear();
+	mCallCounter.clear();
+	mRedirects.clear();
+	mExpects.clear();
+	mExpectDefaults.clear();
+}
+
+//------------------------------------------------------------------
 void TMockObjectBase::AddCallCounter(size_t idx)
 {
 	mCallCounter[idx]++;

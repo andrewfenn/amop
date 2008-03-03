@@ -28,8 +28,6 @@ public:
 		return CreateMatchBuilder(method);
 	}
 
-	void Clear();
-
 private:
 	
 

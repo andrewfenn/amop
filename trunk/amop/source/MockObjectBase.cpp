@@ -93,14 +93,59 @@ any& TMockObjectBase::GetRedirect(size_t idx)
 
 
 //------------------------------------------------------------------
+bool TMockObjectBase::HaveExpectDefault(size_t idx, size_t paramId)
+{
+    if(!mExpectDefaults.count(idx))
+    {
+        return false;
+    }
+
+    if(!mExpectDefaults[idx].count(paramId))
+    {
+        return false;
+    }
+
+    return true;    
+}
+
+//------------------------------------------------------------------
+bool TMockObjectBase::HaveExpect(size_t idx, size_t paramId)
+{
+    if(!mExpects.count(idx))
+    {
+        return false;
+    }
+
+    if(!mExpects[idx].count(paramId))
+    {
+        return false;
+    }
+
+    return true;    
+}
+
+//------------------------------------------------------------------
 void TMockObjectBase::SetActual(size_t idx, size_t paramId, const any& param)
 {
-	if(!mExpects.count(idx)) return ;
-	TParamMap& paramMap = mExpects[idx];	
+	if(!HaveExpect(idx, paramId))
+    {
+        if(!HaveExpectDefault(idx, paramId))
+        {
+            return ;
+        }
+        else
+        {
+            if( (mExpectDefaults[idx])[paramId] == param )
+            {
+                return ;
+            }
+         
+            throw TNotEqualException(paramId, (mExpectDefaults[idx])[paramId], param);
+        }
+    }
 
-	if(!paramMap.count(paramId)) return ;
-	
-	TComparableList& clist = paramMap[paramId];
+    // Must have expect
+	TComparableList& clist = (mExpects[idx])[paramId] ;
 	size_t callCounter = mCallCounter[idx];
 
 	if( clist.size() <= callCounter )

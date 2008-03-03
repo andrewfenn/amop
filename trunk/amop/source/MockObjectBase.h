@@ -55,6 +55,9 @@ namespace Detail
 		void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param);
 		void SetExpect(size_t idx, size_t paramId, const TComparable& param);
 
+        bool HaveExpectDefault(size_t idx, size_t paramId);
+        bool HaveExpect(size_t idx, size_t paramId);
+
 		void* GetVptr();
 
 		template <class T>

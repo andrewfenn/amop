@@ -22,6 +22,8 @@ public:
 
 	virtual void SimpleFunction() = 0;
 	virtual void SimpleFunctionWithParams(float, std::string, const char*) = 0;
+
+    virtual int SimpleFunctionWithParamsAndReturn(float, std::string, const char*) = 0;
 	
 	virtual void SimpleFunctionWithAlotParams(float, int, float, int, std::string) = 0;
 
@@ -164,6 +166,21 @@ TEST(MockObjectMethodSimpleExpect)
 }
 
 //------------------------------------------------------------------
+TEST(MockObjectMethodSimpleExpectThrow)
+{
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunctionWithParams)
+		.Expect<0>(21.0f)
+		.Expect<1>("Hello World")
+		.Expect<2>("SomeText");
+
+	CHECK_THROW( ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hllo World", "SomeTet")
+        , TNotEqualException );
+}
+
+
+//------------------------------------------------------------------
 TEST(MockObjectMethodMultipleExpect)
 {
 	TMockObject<IInterface> mock;
@@ -177,6 +194,41 @@ TEST(MockObjectMethodMultipleExpect)
 	((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
 	((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
 }
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodMultipleExpectThrow)
+{
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunctionWithParams)
+		.Expects<0>(1.0f)		.Expects<0>(2.0f)			.Expects<0>(3.0f)
+		.Expects<1>("Hello 1")	.Expects<1>("Hello 2")		.Expects<1>("Hello 3")
+		.Expects<2>("SomeText1").Expects<2>("SomeText2")	.Expects<2>("SomeText3");
+
+	CHECK_THROW( ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hllo 1", "SmeText1")
+        , TNotEqualException );
+}
+
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleExpectAndReturn)
+{
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunctionWithParamsAndReturn)
+		.Expect<0>(21.0f)
+		.Expect<1>("Hello World")
+		.Expect<2>("SomeText")
+        .Will(2);
+
+    CHECK_EQUAL(2, 
+        ((IInterface*)mock)->SimpleFunctionWithParamsAndReturn(21.0f, "Hello World", "SomeText") );
+
+	CHECK_THROW(
+        ((IInterface*)mock)->SimpleFunctionWithParamsAndReturn(1.0f, "Heo World", "SoText")
+        , TNotEqualException );
+}
+
 
 //------------------------------------------------------------------
 TEST(MockObjectMethodRedirectFreeFunc)
@@ -276,5 +328,17 @@ TEST(MockObjectMethodAddCallCount)
 	((IInterface*)mock)->ComplexFunction("First", second, "Third");
 
 	CHECK_EQUAL(3, mock.Method(&IInterface::ComplexFunction).Count());
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodReset)
+{		
+	TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunction);
+	
+    mock.Clear();
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunction(), TNotImplementedException);
 }
 }}}

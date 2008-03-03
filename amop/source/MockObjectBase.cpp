@@ -33,7 +33,11 @@ TMockObjectBase::~TMockObjectBase()
 //------------------------------------------------------------------
 void TMockObjectBase::Clear()
 {
-	mReturnDefaults.clear();
+	delete mVirtualTable;
+    mVirtualTable = Detail::CreateVirtualTable(
+		this);
+    
+    mReturnDefaults.clear();
 	mReturns.clear();
 	mCallCounter.clear();
 	mRedirects.clear();

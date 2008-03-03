@@ -319,3 +319,16 @@ TEST(MockObjectMethodAddCallCount)
 
 	CHECK_EQUAL(3, mock.Method(&IInterface::ComplexFunction).Count());
 }
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodReset)
+{		
+	TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunction);
+	
+    mock.Clear();
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunction(), TNotImplementedException);
+}
+

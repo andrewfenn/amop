@@ -7,7 +7,7 @@ namespace Detail
 {
 
 //------------------------------------------------------------------
-bool TCheck::mIsCheckCall = false;
+    bool Inner::TCheck::mIsCheckCall = false;
 
 
 }

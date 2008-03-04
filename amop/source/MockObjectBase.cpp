@@ -20,7 +20,7 @@ namespace Detail
 //------------------------------------------------------------------
 TMockObjectBase::TMockObjectBase()
 {
-	mVirtualTable = Detail::CreateVirtualTable(
+    mVirtualTable = Detail::TVirtualTable::CreateVirtualTable(
 		this);
 }
 

@@ -72,7 +72,7 @@ namespace Detail
 		template <class T>
 		TReturnMatchBuilder<T> CreateMatchBuilder(T method)
 		{
-			size_t offset = Detail::GetOffset(method);
+            size_t offset = Detail::Inner::TCheckOffset::GetOffset(method);
 
 			return CreateMatchBuilder<T>(offset, 
 				Detail::CallHandler::Create(method, offset) );

@@ -57,18 +57,17 @@ public:
 
 		return _this->mThis;        
 	}
+
+    static TVirtualTable* CreateVirtualTable(TObjectHolder* object)
+    {
+        TVirtualTable* vtable = new TVirtualTable(object);
+
+        for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
+            vtable->mVtable[i] = GetNotImplementedFunc();
+
+        return vtable;
+    }
 };
-
-//------------------------------------------------------------------
-static TVirtualTable* CreateVirtualTable(TObjectHolder* object)
-{
-	TVirtualTable* vtable = new TVirtualTable(object);
-
-	for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
-		vtable->mVtable[i] = GetNotImplementedFunc();
-
-	return vtable;
-}
 
 }
 

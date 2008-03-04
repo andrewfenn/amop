@@ -2,4 +2,5 @@
 
 = Introduction =
 
-Please leave message for any question or feature request in comments.
+Please leave message for any question or feature request in comments
+or visit [http://groups.google.com/group/amop-group amop google group]

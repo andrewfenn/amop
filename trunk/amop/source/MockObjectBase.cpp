@@ -34,7 +34,7 @@ TMockObjectBase::~TMockObjectBase()
 void TMockObjectBase::Clear()
 {
 	delete mVirtualTable;
-    mVirtualTable = Detail::CreateVirtualTable(
+    mVirtualTable = Detail::TVirtualTable::CreateVirtualTable(
 		this);
     
     mReturnDefaults.clear();

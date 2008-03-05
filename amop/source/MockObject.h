@@ -5,6 +5,7 @@
 #include "MockObjectBase.h"
 #include "MockObjectException.h"
 #include "ReturnMatchBuilder.h"
+#include "Destructor.h"
 
 namespace amop
 {
@@ -19,14 +20,21 @@ public:
 		return (T*)GetVptr();
 	}	
 
-	template <class T>
-	TReturnMatchBuilder<T> Method(T method)
+	template <class F>
+	TReturnMatchBuilder<F> Method(F method)
 	{
 		typedef int ItIsNotPointerToMemberMethod[
-			Detail::IsPointerToMethod<T>::Result ? 1 : -1];
+			Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 		
-		return CreateMatchBuilder(method);
+		return CreateMatchBuilder<F, T>(method);
 	}
+
+    TReturnMatchBuilder<void (T::*)(void*)> Method(const Destructor& d)
+	{
+		return CreateMatchBuilder<void (T::*)(void*), T>(d);
+	}
+
+
 
 private:
 	

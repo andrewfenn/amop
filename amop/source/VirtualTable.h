@@ -22,12 +22,12 @@ public:
 };
 
 //------------------------------------------------------------------
-static void* GetNotImplementedFunc()
+static TFunctionAddress GetNotImplementedFunc()
 {
 	typedef void (TNotImplemented::*TNotImplementedFuncPtr)();
 	
 	TNotImplementedFuncPtr _ptr = &TNotImplemented::Func;
-	void* p = HorribleCast<void*>(_ptr);
+	TFunctionAddress p = HorribleCast<void*>(_ptr);
 	
 	return p; 
 }

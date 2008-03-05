@@ -17,8 +17,9 @@ namespace Inner
     {
     public:
         static bool mIsCheckCall;
+        static size_t mDestructorOffset;
 
-        typedef bool* TCheckType;
+        typedef bool* TCheckType;        
     };
 
     class TCheckOffset
@@ -37,16 +38,21 @@ namespace Inner
                 checkCode = &TCheck::mIsCheckCall; 
                 return I; 
             }
+
+            void Destructor( void* )
+            {
+                TCheck::mDestructorOffset = I;
+            }
         };
 
         //------------------------------------------------------------------
         template<int I>
-        static void* GetIndexFuncRecur(size_t i)
+        static TFunctionAddress GetIndexFuncRecur(size_t i)
         {
             typedef int (TCheckIdx<I>::*TCheckFuncPtr)(TCheck::TCheckType&);
 
             TCheckFuncPtr _ptr = &TCheckIdx<I>::Func;
-            void* p = HorribleCast<void*>(_ptr);
+            TFunctionAddress p = HorribleCast<void*>(_ptr);
 
             if(i == I)
                 return p;
@@ -55,26 +61,66 @@ namespace Inner
         }
 
         //------------------------------------------------------------------
+        template<int I>
+        static TFunctionAddress GetIndexDestructorRecur(size_t i)
+        {
+            typedef void (TCheckIdx<I>::*TCheckFuncPtr)(void*);
+
+            TCheckFuncPtr _ptr = &TCheckIdx<I>::Destructor;
+            TFunctionAddress p = HorribleCast<void*>(_ptr);
+
+            if(i == I)
+                return p;
+            else
+                return GetIndexDestructorRecur<I+1>(i);
+        }
+
+        //------------------------------------------------------------------
         template<>
-        static void* GetIndexFuncRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
+        static TFunctionAddress GetIndexFuncRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
         {
             return 0;
         }
 
         //------------------------------------------------------------------
-        static void* GetIndexFunc(size_t i)
+        template<>
+        static TFunctionAddress GetIndexDestructorRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
+        {
+            return 0;
+        }        
+
+        //------------------------------------------------------------------
+        static TFunctionAddress GetIndexFunc(size_t i)
         {
             return GetIndexFuncRecur<0>(i);
         }
 
         //------------------------------------------------------------------
+        static TFunctionAddress GetIndexDestructor(size_t i)
+        {
+            return GetIndexDestructorRecur<0>(i);
+        }
+
+        //------------------------------------------------------------------
         static TCheck* CreateCheckObject()
         {
-            static void* vtable[MAX_NUM_VIRTUAL_FUNCTIONS];
-            static void* vtbl = &vtable[0];
+            static TFunctionAddress vtable[MAX_NUM_VIRTUAL_FUNCTIONS];
+            static TFunctionAddress vtbl = &vtable[0];
 
             for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
                 vtable[i] = Inner::TCheckOffset::GetIndexFunc(i);
+
+            return (TCheck*)&vtbl;
+        }
+
+        //------------------------------------------------------------------
+        static TCheck* CreateCheckDestroyObject()
+        {
+            static TFunctionAddress vtable[MAX_NUM_VIRTUAL_FUNCTIONS];
+            static TFunctionAddress vtbl = &vtable[0];
+
+            for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
+                vtable[i] = Inner::TCheckOffset::GetIndexDestructor(i);
 
             return (TCheck*)&vtbl;
         }
@@ -99,6 +145,26 @@ namespace Inner
 
             return offset;
         }
+
+        //------------------------------------------------------------------
+        template <class T>
+        static size_t GetOffsetDestructor()
+        {
+            TCheck::mDestructorOffset = 0xFFFFFFFF;
+            
+            TCheck* checkObject = CreateCheckDestroyObject();
+
+            // Force delete it..
+            delete (T*)checkObject;
+
+            if(0xFFFFFFFF == TCheck::mDestructorOffset)
+            {
+                throw TNotPureVirtualException();
+            }
+
+            return TCheck::mDestructorOffset;
+        }
+            
     };
 }
 

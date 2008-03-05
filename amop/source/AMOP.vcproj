@@ -190,6 +190,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Destructor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FunctionHolder.h"
 				>
 			</File>

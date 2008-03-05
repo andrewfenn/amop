@@ -8,8 +8,6 @@ using namespace amop;
 class IInterface
 {
 public:
-	virtual ~IInterface(){}
-
 	virtual void SimpleFunction() = 0;
 	virtual void SimpleFunctionWithParams(float, std::string, const char*) = 0;
 
@@ -27,6 +25,8 @@ public:
 
 	virtual std::string ComplexConstFunction(const std::string& crs,
 		std::string& rs, std::string s) const = 0;
+
+	virtual ~IInterface(){}
 };
 
 //------------------------------------------------------------------
@@ -332,3 +332,84 @@ TEST(MockObjectMethodReset)
     CHECK_THROW(((IInterface*)mock)->SimpleFunction(), TNotImplementedException);
 }
 
+//------------------------------------------------------------------
+TEST(MockObjectMethodDestructor)
+{		
+	TMockObject<IInterface> mock;
+
+    mock.Method(Destructor());
+	    
+    delete ((IInterface*)mock);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodVerifyCallCount)
+{		
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunction)
+        .Count(3);
+
+	((IInterface*)mock)->SimpleFunction();
+	((IInterface*)mock)->SimpleFunction();
+	((IInterface*)mock)->SimpleFunction();
+
+    // It will not throw
+	mock.Verify();
+
+    ((IInterface*)mock)->SimpleFunction();
+    CHECK_THROW(mock.Verify(), TCallCountException);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodVerifyExpects)
+{		
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunctionWithParams)
+        .Expects<0>(1.0f).Expects<0>(2.0f).Expects<0>(3.0f)
+        .Expect<1>("")
+        .Expect<2>("");
+        
+
+	((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "", "");
+	((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "", "");
+	((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "", "");
+
+    // It will not throw
+	mock.Verify();
+
+    ((IInterface*)mock)->SimpleFunctionWithParams(4.0f, "", "");
+    CHECK_THROW(mock.Verify(), TCallCountException);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodWillsCallCountException)
+{		
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunctionWithReturn)
+        .Wills(1)
+        .Wills(2)
+        .Wills(3);
+
+	((IInterface*)mock)->SimpleFunctionWithReturn();
+	((IInterface*)mock)->SimpleFunctionWithReturn();
+	((IInterface*)mock)->SimpleFunctionWithReturn();
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn()
+        , TCallCountException);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodWillsCallCountVerify)
+{		
+	TMockObject<IInterface> mock;
+
+	mock.Method(&IInterface::SimpleFunctionWithReturn)
+        .Wills(1)
+        .Wills(2)
+        .Wills(3);
+
+    CHECK_THROW(mock.Verify(), TCallCountException);
+}

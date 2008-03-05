@@ -81,6 +81,8 @@ inline OutputClass HorribleCast(const InputClass input){
 	return u.out;
 }
 
+typedef void* TFunctionAddress;
+
 }
 
 }

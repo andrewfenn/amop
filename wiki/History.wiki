@@ -6,7 +6,7 @@ The following feature was added in Version 0.2
   * Verify call counting.
   * Added Destructor to support for Method function.
 
-= Version 0.21
+= Version 0.21 =
 
 The following feature was added in Version 0.2
   * method Clear was added to clean up all settings

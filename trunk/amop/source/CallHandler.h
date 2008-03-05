@@ -19,12 +19,12 @@ struct CallHandler
 		template <class T>
 		struct Get
 		{	
-			static void* Select(T method, size_t offset)
+			static TFunctionAddress Select(size_t offset)
 			{			
 				if(I == offset)
-					return HorribleCast<void*>(&FunctionHolder<I,T>::Func);
+					return HorribleCast<TFunctionAddress>(&FunctionHolder<I,T>::Func);
 				else
-					return SelectID<I+1>::Get<T>::Select(method, offset);
+					return SelectID<I+1>::Get<T>::Select(offset);
 			}
 		};
 	};
@@ -35,7 +35,7 @@ struct CallHandler
 		template <class T>
 		struct Get
 		{		
-			static void* Select(T method, size_t offset)
+			static TFunctionAddress Select(size_t offset)
 			{
 				return 0;
 			}
@@ -43,16 +43,15 @@ struct CallHandler
 	};
 	
 	template <class T>
-	static void* Select(T method, 
-		size_t offset)
+	static TFunctionAddress Select(size_t offset)
 	{
-		return SelectID<0>::Get<T>::Select(method, offset);
+		return SelectID<0>::Get<T>::Select(offset);
 	}
 
 	template<class T>
-	static void* Create(T method, size_t offset)
+	static TFunctionAddress Create(size_t offset)
 	{
-		void* result = Select(method, offset);
+		TFunctionAddress result = Select<T>(offset);
 		assert(result);
 		
 		return result;

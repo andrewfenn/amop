@@ -118,6 +118,11 @@ public:
 		return mObjectHolder->GetCallCounter(mOffset);
 	}
 
+    void Count(size_t counter)
+    {
+        return mObjectHolder->SetExpectCallCounter(mOffset, counter);
+    }
+
 private:
 	size_t mOffset;
 	Detail::TObjectHolder* mObjectHolder;

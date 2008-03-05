@@ -43,6 +43,71 @@ void TMockObjectBase::Clear()
 	mRedirects.clear();
 	mExpects.clear();
 	mExpectDefaults.clear();
+    mExpectCallCounter.clear();
+}
+
+//------------------------------------------------------------------
+void TMockObjectBase::Verify()
+{
+    // Check the expect call counter first.
+    for( std::map<size_t, size_t>::iterator iter = mExpectCallCounter.begin()
+        ; iter != mExpectCallCounter.end()
+        ; ++iter )
+    {
+        size_t actualCount = GetCallCounter(iter->first);
+        
+        if( iter->second != actualCount )
+        {
+            throw TCallCountException(iter->second, actualCount);
+        }
+    }    
+
+    // Check wills
+    for( std::map<size_t, std::vector<any> >::iterator iter = mReturns.begin()
+        ; iter != mReturns.end()
+        ; ++iter )
+    {
+        size_t actualCount = GetCallCounter(iter->first);
+        
+        if( mReturnDefaults.count(iter->first) )
+        {
+            continue;
+        }
+
+        if( iter->second.size() != actualCount )
+        {
+            throw TCallCountException(iter->second.size() , actualCount);
+        }
+    }
+
+    // Check expects
+    for( std::map<size_t,  TParamMap>::iterator iter = mExpects.begin()
+        ; iter != mExpects.end()
+        ; ++iter )
+    {
+        size_t maxCount = 0;
+        
+        TParamMap& paramMap = iter->second;
+
+        for( TParamMap::iterator mapIter = paramMap.begin()
+            ; mapIter != paramMap.end()
+            ; ++mapIter )
+        {
+            if(HaveExpectDefault(iter->first, mapIter->first))
+            {
+                continue;
+            }
+
+            maxCount = std::max(maxCount, mapIter->second.size());
+        }
+
+        size_t actualCount = GetCallCounter(iter->first);
+
+        if(maxCount != 0 && maxCount != actualCount)
+        {
+            throw TCallCountException(maxCount, actualCount);
+        }
+    }    
 }
 
 //------------------------------------------------------------------
@@ -55,6 +120,12 @@ void TMockObjectBase::AddCallCounter(size_t idx)
 size_t TMockObjectBase::GetCallCounter(size_t idx)
 {
 	return mCallCounter[idx];
+}
+
+//------------------------------------------------------------------
+void TMockObjectBase::SetExpectCallCounter(size_t idx, size_t c)
+{
+    mExpectCallCounter[idx] = c;
 }
 
 //------------------------------------------------------------------
@@ -79,14 +150,21 @@ void TMockObjectBase::SetRedirect(size_t idx, const any& result)
 any& TMockObjectBase::GetReturn(size_t idx)
 {
 	size_t callCounter = mCallCounter[idx] - 1;
-	
+    
 	if( mReturns.count(idx) && 
 		callCounter < mReturns[idx].size())
 	{
 		return (mReturns[idx])[callCounter] ;
 	}	
 	
-	return mReturnDefaults[idx];
+    if(!mReturnDefaults.count(idx))
+    {
+        size_t expect = mReturns.count(idx) ? mReturns[idx].size() : 0;
+        
+        throw TCallCountException(expect, callCounter);
+    }
+
+    return mReturnDefaults[idx];
 }
 
 //------------------------------------------------------------------
@@ -157,7 +235,7 @@ void TMockObjectBase::SetActual(size_t idx, size_t paramId, const any& param)
 		if(!mExpectDefaults.count(idx)) return ;
 		TParamDefaultMap& paramDefaultMap = mExpectDefaults[idx];
 		
-		if( paramDefaultMap.count(paramId) ) return ;
+		if( !paramDefaultMap.count(paramId) ) return ;
 
 		if( paramDefaultMap[paramId] != param )
 			throw TNotEqualException(paramId, paramDefaultMap[paramId], param);

@@ -1,7 +1,21 @@
 #summary History
 
+= Version 0.22 =
+
+The following feature was added in Version 0.2
+  * Verify call counting.
+  * Added Destructor to support for Method function.
+
+= Version 0.21
+
+The following feature was added in Version 0.2
+  * method Clear was added to clean up all settings
+
+The following bugs was fixed
+  * A bug in Expects.
+
 = Version 0.2 =
 
-The following feature will be added in Version 0.2
+The following feature was added in Version 0.2
   * Call counting 
   * Redirect a method to a given functor. 

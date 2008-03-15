@@ -4,3 +4,4 @@ int main(int, char const *[])
 {
 	UnitTest::RunAllTests();
 }
+

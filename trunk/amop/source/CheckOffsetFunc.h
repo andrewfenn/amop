@@ -22,9 +22,8 @@ namespace Inner
         typedef bool* TCheckType;        
     };
 
-    class TCheckOffset
+    namespace TCheckOffset
     {
-    public:
         //------------------------------------------------------------------
         typedef int (TCheck::*TCheckFuncPtr) (TCheck::TCheckType&);
 
@@ -75,21 +74,7 @@ namespace Inner
                 return GetIndexDestructorRecur<I+1>(i);
         }
 
-        //------------------------------------------------------------------
-        template<>
-        static TFunctionAddress GetIndexFuncRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
-        {
-            return 0;
-        }
-
-        //------------------------------------------------------------------
-        template<>
-        static TFunctionAddress GetIndexDestructorRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
-        {
-            return 0;
-        }        
-
-        //------------------------------------------------------------------
+	//------------------------------------------------------------------
         static TFunctionAddress GetIndexFunc(size_t i)
         {
             return GetIndexFuncRecur<0>(i);
@@ -165,7 +150,22 @@ namespace Inner
             return TCheck::mDestructorOffset;
         }
             
+
+    	//------------------------------------------------------------------
+    	template<>
+    	inline TFunctionAddress GetIndexFuncRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
+    	{
+        	return 0;
+    	}
+	
+    	//------------------------------------------------------------------
+    	template<>
+    	inline TFunctionAddress GetIndexDestructorRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
+    	{
+        	return 0;
+    	}        
     };
+
 }
 
 }
@@ -175,3 +175,4 @@ namespace Inner
 
 
 #endif //__AMOP_CHECKOFFSETFUNC_HH
+

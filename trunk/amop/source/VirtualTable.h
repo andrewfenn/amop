@@ -27,7 +27,7 @@ static TFunctionAddress GetNotImplementedFunc()
 	typedef void (TNotImplemented::*TNotImplementedFuncPtr)();
 	
 	TNotImplementedFuncPtr _ptr = &TNotImplemented::Func;
-	TFunctionAddress p = HorribleCast<void*>(_ptr);
+	TFunctionAddress p = HorribleCast<TFunctionAddress>(_ptr);
 	
 	return p; 
 }
@@ -74,3 +74,4 @@ public:
 }
 
 #endif //__AMOP_VIRTUALTABLE_HH
+

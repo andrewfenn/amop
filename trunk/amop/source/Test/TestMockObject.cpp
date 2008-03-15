@@ -141,7 +141,6 @@ TEST(MockObjectMethodMultiWithReturn)
 	CHECK_EQUAL(11, ((IInterface*)mock)->SimpleFunctionWithReturn());
 }
 
-
 //------------------------------------------------------------------
 TEST(MockObjectMethodSimpleExpect)
 {
@@ -219,7 +218,6 @@ TEST(MockObjectMethodSimpleExpectAndReturn)
         , TNotEqualException );
 }
 
-
 //------------------------------------------------------------------
 TEST(MockObjectMethodRedirectFreeFunc)
 {
@@ -262,33 +260,35 @@ TEST(MockObjectMethodRedirectFreeFunc)
 }
 
 //------------------------------------------------------------------
+struct TestRedirectLocal
+{
+	std::string HandleRedirect(const std::string& crs,
+		std::string& rs, std::string s)
+	{
+		firstRecv = crs;
+		secondRecv = rs;
+		thirdRecv = s;
+
+		rs = "CHANGED";
+
+		return "RESULT";
+	}
+
+	std::string firstRecv;
+	std::string secondRecv;
+	std::string thirdRecv;
+};
+
+//------------------------------------------------------------------
 TEST(MockObjectMethodRedirectMethod)
 {	
-	struct Local
-	{
-		std::string HandleRedirect(const std::string& crs,
-			std::string& rs, std::string s)
-		{
-			firstRecv = crs;
-			secondRecv = rs;
-			thirdRecv = s;
-
-			rs = "CHANGED";
-
-			return "RESULT";
-		}
-
-		std::string firstRecv;
-		std::string secondRecv;
-		std::string thirdRecv;
-	};
-
-	Local local;
+	
+	TestRedirectLocal local;
 	
 	TMockObject<IInterface> mock;
 
 	mock.Method(&IInterface::ComplexFunction)
-		.Redirect(&local, &Local::HandleRedirect);
+		.Redirect(&local, &TestRedirectLocal::HandleRedirect);
 
 	std::string second = "Second";
 
@@ -413,3 +413,4 @@ TEST(MockObjectMethodWillsCallCountVerify)
 
     CHECK_THROW(mock.Verify(), TCallCountException);
 }
+

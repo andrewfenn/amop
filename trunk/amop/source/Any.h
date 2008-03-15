@@ -175,7 +175,7 @@ ValueType any_cast(const any & operand)
 template<typename ValueType>
 ValueType any_cast(any & operand)
 {
-	typedef remove_reference<ValueType>::type nonref;
+	typedef typename remove_reference<ValueType>::type nonref;
 
 	nonref * result = any_cast<nonref>(&operand);
 	if(!result)
@@ -203,3 +203,4 @@ const ValueType * unsafe_any_cast(const any * operand)
 }
 
 #endif //_AMOP_ANY__HH
+

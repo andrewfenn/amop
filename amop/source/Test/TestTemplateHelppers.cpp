@@ -23,7 +23,8 @@ TEST(TestTuple)
 	typedef Detail::Tuple<float , int , double > TestTuple;
 	typedef Detail::Tuple<> EmptyTuple;
 
-	CHECK_EQUAL(TestTuple::Length, 3);
+	int len = TestTuple::Length;
+	CHECK_EQUAL(len, 3);
 	
 	bool result = Equal< Detail::Get<TestTuple, 1>::Type, int >::Result;
 	CHECK( result );
@@ -35,22 +36,23 @@ static void MakeFunctor(T f)
 	Detail::Functor<T>();
 }
 
+struct TestFunctorClass
+{
+	void Foo1() {};
+	int Foo2(float, int, double) { return 0; }
+};
+
 //------------------------------------------------------------------
 TEST(TestFunctorParams)
 {
 	using namespace Detail;
 	
-	struct Temp
-	{
-		void Foo1() {};
-		int Foo2(float, int, double) { return 0; }
-	};
+	
+	typedef Detail::Functor<void (TestFunctorClass::*)()> F1; //(&TestFunctorClass::Foo1); 
+	typedef Detail::Functor<int (TestFunctorClass::*)(float, int, double) > F2; //(&TestFunctorClass::Foo2); 
 
-	typedef Detail::Functor<void (Temp::*)()> F1; //(&Temp::Foo1); 
-	typedef Detail::Functor<int (Temp::*)(float, int, double) > F2; //(&Temp::Foo2); 
-
-	MakeFunctor(&Temp::Foo1);
-	MakeFunctor(&Temp::Foo2);
+	MakeFunctor(&TestFunctorClass::Foo1);
+	MakeFunctor(&TestFunctorClass::Foo2);
 
 	bool result = Equal< Get<F2::ParameterTypes, 1>::Type, int >::Result;
 	CHECK(result);

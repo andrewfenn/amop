@@ -24,24 +24,12 @@ struct CallHandler
 				if(I == offset)
 					return HorribleCast<TFunctionAddress>(&FunctionHolder<I,T>::Func);
 				else
-					return SelectID<I+1>::Get<T>::Select(offset);
+					return SelectID<I+1>::template Get<T>::Select(offset);
 			}
 		};
 	};
 
-	template <>
-	struct SelectID<MAX_NUM_VIRTUAL_FUNCTIONS>
-	{
-		template <class T>
-		struct Get
-		{		
-			static TFunctionAddress Select(size_t offset)
-			{
-				return 0;
-			}
-		};
-	};
-	
+		
 	template <class T>
 	static TFunctionAddress Select(size_t offset)
 	{
@@ -58,8 +46,22 @@ struct CallHandler
 	}
 };
 
+template <>
+struct CallHandler::SelectID<MAX_NUM_VIRTUAL_FUNCTIONS>
+{
+	template <class T>
+	struct Get
+	{		
+		static TFunctionAddress Select(size_t offset)
+		{
+			return 0;
+		}
+	};
+};
+
 }
 
 }
 
 #endif //__AMOP_CALLHANDLER_HH
+

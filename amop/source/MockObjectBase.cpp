@@ -265,3 +265,4 @@ void* TMockObjectBase::GetVptr()
 
 }
 }
+

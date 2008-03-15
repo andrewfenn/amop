@@ -59,8 +59,6 @@ struct RemoveReference<const T&>
 	typedef T Type;
 };
 
-
-
 // This union is declared outside the horrible_cast because BCC 5.5.1
 // can't inline a function with a nested class, and gives a warning.
 template <class OutputClass, class InputClass>
@@ -68,6 +66,8 @@ union THorribleUnion{
 	OutputClass out;
 	InputClass in;
 };
+
+#ifdef WIN32
 
 template <class OutputClass, class InputClass>
 inline OutputClass HorribleCast(const InputClass input){
@@ -81,6 +81,36 @@ inline OutputClass HorribleCast(const InputClass input){
 	return u.out;
 }
 
+#endif
+
+#ifdef __GNUC__
+
+struct GnuMFP
+{
+	union
+	{
+		void* funcadr;
+		int vtable_index_2; // = vindex*2+1, always odd
+	};
+	int delta;
+};
+
+template <class OutputClass, class InputClass>
+inline OutputClass HorribleCast(const InputClass input){
+	THorribleUnion<GnuMFP, InputClass> u;
+	// Cause a compile-time error if in, out and u are not the same size.
+	// If the compile fails here, it means the compiler has peculiar
+	// unions which would prevent the cast from working.
+	typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u) 
+		&& sizeof(InputClass)==sizeof(GnuMFP) ? 1 : -1];
+	u.in = input;
+	return u.out.funcadr;
+}
+
+
+
+#endif
+
 typedef void* TFunctionAddress;
 
 }
@@ -88,3 +118,4 @@ typedef void* TFunctionAddress;
 }
 
 #endif //__AMOP_CONFIG__HH
+

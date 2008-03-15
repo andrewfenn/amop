@@ -9,7 +9,7 @@ namespace amop
 {
 
 //------------------------------------------------------------------
-template <class F>
+template <typename F>
 class TReturnMatchBuilder
 {
 public:
@@ -22,7 +22,8 @@ public:
 	template<class T>
 	TReturnMatchBuilder Will(T result)
 	{
-		typedef Detail::RemoveReference<Detail::Functor<F>::ReturnType>::Type ToType;
+		typedef typename Detail::Functor<F>::ReturnType R;
+		typedef typename Detail::RemoveReference<R>::Type ToType;
 
 		//****************************************/
 		//** If you see this, that's mean your  **/
@@ -39,7 +40,7 @@ public:
 	template<class T>
 	TReturnMatchBuilder Wills(T result)
 	{
-		typedef Detail::RemoveReference<Detail::Functor<F>::ReturnType>::Type ToType;
+		typedef typename Detail::RemoveReference<typename Detail::Functor<F>::ReturnType>::Type ToType;
 
 		//****************************************/
 		//** If you see this, that's mean your  **/
@@ -56,8 +57,8 @@ public:
 	template<int I, class T>
 	TReturnMatchBuilder Expect(T expect)
 	{
-		typedef Detail::Get< Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-		typedef Detail::RemoveReference<ToTypeRef>::Type ToType;
+		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
 
 		//****************************************/
 		//** If you see this, that's mean your  **/
@@ -76,8 +77,8 @@ public:
 	template<int I, class T>
 	TReturnMatchBuilder Expects(T expect)
 	{
-		typedef Detail::Get< Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-		typedef Detail::RemoveReference<ToTypeRef>::Type ToType;
+		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
 
 		//****************************************/
 		//** If you see this, that's mean your  **/
@@ -93,20 +94,20 @@ public:
 		return *this;
 	}
 
-	template <class T>
+	template <typename T>
 	TReturnMatchBuilder Redirect(T freeFunc)
 	{
-		Detail::Functor<F>::FunctorType functor(freeFunc);
+		typename Detail::Functor<F>::FunctorType functor(freeFunc);
 
 		mObjectHolder->SetRedirect(mOffset, functor);
 
 		return *this;
 	}
 
-	template <class C, class T>
-	TReturnMatchBuilder Redirect(C pointer, T func)
+	template <typename C, typename T>
+	TReturnMatchBuilder Redirect(C* pointer, T func)
 	{
-		Detail::Functor<F>::FunctorType functor(pointer, func);
+		typename Detail::Functor<F>::FunctorType functor(pointer, func);
 
 		mObjectHolder->SetRedirect(mOffset, functor);
 

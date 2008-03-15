@@ -45,3 +45,4 @@ private:
 
 
 #endif //__AMOP_MOCKOBJECT_HH
+

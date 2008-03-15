@@ -22,12 +22,12 @@ public:
 };
 
 //------------------------------------------------------------------
-static void* GetNotImplementedFunc()
+static TFunctionAddress GetNotImplementedFunc()
 {
 	typedef void (TNotImplemented::*TNotImplementedFuncPtr)();
 	
 	TNotImplementedFuncPtr _ptr = &TNotImplemented::Func;
-	void* p = HorribleCast<void*>(_ptr);
+	TFunctionAddress p = HorribleCast<TFunctionAddress>(_ptr);
 	
 	return p; 
 }
@@ -57,21 +57,21 @@ public:
 
 		return _this->mThis;        
 	}
+
+    static TVirtualTable* CreateVirtualTable(TObjectHolder* object)
+    {
+        TVirtualTable* vtable = new TVirtualTable(object);
+
+        for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
+            vtable->mVtable[i] = GetNotImplementedFunc();
+
+        return vtable;
+    }
 };
-
-//------------------------------------------------------------------
-static TVirtualTable* CreateVirtualTable(TObjectHolder* object)
-{
-	TVirtualTable* vtable = new TVirtualTable(object);
-
-	for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
-		vtable->mVtable[i] = GetNotImplementedFunc();
-
-	return vtable;
-}
 
 }
 
 }
 
 #endif //__AMOP_VIRTUALTABLE_HH
+

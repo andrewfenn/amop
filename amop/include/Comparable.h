@@ -101,3 +101,4 @@ public:
 }
 
 #endif //__AMOP_COMPARABLE_HH
+

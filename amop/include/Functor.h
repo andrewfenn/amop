@@ -17,35 +17,35 @@ struct Functor;
 template< typename R, typename C >
 struct Functor< R (C::*)()>
 {
-	typedef typename R ReturnType;
-	typename typename typedef Tuple<> ParameterTypes;
-	typename typename typedef fastdelegate::FastDelegate0<R> FunctorType;
+	typedef R ReturnType;
+	typedef Tuple<> ParameterTypes;
+	typedef fastdelegate::FastDelegate0<R> FunctorType;
 };
 
 template< typename R, typename C >
 struct Functor< R (C::*)() const>
 {
-	typedef typename R ReturnType;
-	typename typename typedef Tuple<> ParameterTypes;
-	typename typename typedef fastdelegate::FastDelegate0<R> FunctorType;
+	typedef R ReturnType;
+	typedef Tuple<> ParameterTypes;
+	typedef fastdelegate::FastDelegate0<R> FunctorType;
 };
 
 
 //now specialize
 #define DETAIL_FUNCTION_BUILD(n)					\
 template< typename R, typename C, DETAIL_TPARAMS(n) >		\
-struct Functor< R (C::*)(DETAIL_TPARAMS(n))>			\
+struct Functor< R (C::*)(DETAIL_ARGS(n))>			\
 {												\
-	typedef typename R ReturnType;								\
-	typedef typename Tuple<DETAIL_TPARAMS(n)> ParameterTypes;	\
-	typename typename typedef fastdelegate::FastDelegate##n<DETAIL_TPARAMS(n), R> FunctorType; \
+	typedef R ReturnType;								\
+	typedef Tuple<DETAIL_ARGS(n)> ParameterTypes;	\
+	typedef fastdelegate::FastDelegate##n<DETAIL_ARGS(n), R> FunctorType; \
 };			\
 template< typename R, typename C, DETAIL_TPARAMS(n) >		\
-struct Functor< R (C::*)(DETAIL_TPARAMS(n)) const>			\
+struct Functor< R (C::*)(DETAIL_ARGS(n)) const>			\
 {												\
-	typedef typename R ReturnType;								\
-	typedef typename Tuple<DETAIL_TPARAMS(n)> ParameterTypes;	\
-	typename typename typedef fastdelegate::FastDelegate##n<DETAIL_TPARAMS(n), R> FunctorType; \
+	typedef R ReturnType;								\
+	typedef Tuple<DETAIL_ARGS(n)> ParameterTypes;	\
+	typedef fastdelegate::FastDelegate##n<DETAIL_ARGS(n), R> FunctorType; \
 };
 
 

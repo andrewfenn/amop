@@ -37,13 +37,14 @@ public:
 	typename Detail::Functor<F>::FunctorType Redirector(size_t i)
 	{
 		any& redirector = GetRedirect(i);
+		typedef typename Detail::Functor<F>::FunctorType FunctorType;
 		
 		if(!redirector.empty())
 		{
-			return any_cast<Detail::Functor<F>::FunctorType>(redirector);
+			return any_cast<FunctorType>(redirector);
 		}
 
-		return Detail::Functor<F>::FunctorType();
+		return FunctorType();
 	}
 	
 	virtual any& GetRedirect(size_t idx) = 0;
@@ -61,6 +62,8 @@ public:
 
 	virtual void AddCallCounter(size_t idx) = 0;
 	virtual size_t GetCallCounter(size_t idx) = 0;
+
+    virtual void SetExpectCallCounter(size_t idx, size_t c) = 0;
 };
 
 }
@@ -68,3 +71,4 @@ public:
 }
 
 #endif //__AMOP_OBJECTHOLDER_HH
+

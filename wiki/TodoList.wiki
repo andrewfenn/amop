@@ -1,6 +1,1 @@
 #summary Todo List
-
-= Version 0.3 =
-
-The following feature will be added in Version 0.3
-  * GCC support

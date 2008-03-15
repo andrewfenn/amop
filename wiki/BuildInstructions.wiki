@@ -13,4 +13,4 @@ AMOP is very light-weight library.
 = GCC =
 
   # Unzip the source file, and run 'make'.
-  # To make the UnitTest for Amop, please unzip the [http://unittest-cpp.sourceforge.net/ UnitTest++] in the source directory, and run 'make test'
+  # To make the Unit-test for Amop, please unzip the [http://unittest-cpp.sourceforge.net/ UnitTest++] in the source directory, and run 'make test'

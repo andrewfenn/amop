@@ -4,6 +4,10 @@
 #include "MockObjectException.h"
 #include "Config.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable:4505)
+#endif
+
 namespace amop
 {
 
@@ -171,8 +175,6 @@ namespace Inner
 }
 
 }
-
-
 
 #endif //__AMOP_CHECKOFFSETFUNC_HH
 

@@ -1,6 +1,11 @@
 #summary History
 #labels Featured
 
+= Version 0.3 =
+
+The following feature was added in Version 0.3
+  * GCC support
+
 = Version 0.22 =
 
 The following feature was added in Version 0.2

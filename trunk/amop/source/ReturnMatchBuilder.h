@@ -94,6 +94,46 @@ public:
 		return *this;
 	}
 
+    template<int I, class T>
+	TReturnMatchBuilder Set(T result)
+	{
+		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+
+		//****************************************/
+		//** If you see this, that's mean your  **/
+		//** expect type is not convertiable to **/
+		//** actual type.						**/
+		//****************************************/
+		typedef int ItIsNotConvertible[
+			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
+		
+		Detail::TComparable compare = Detail::TComparable::MakeCompare<ToType>(result);
+				
+		mObjectHolder->SetSetterDefault(mOffset, I, compare);
+		return *this;
+	}
+
+    template<int I, class T>
+	TReturnMatchBuilder Sets(T result)
+	{
+		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+
+		//****************************************/
+		//** If you see this, that's mean your  **/
+		//** expect type is not convertiable to **/
+		//** actual type.						**/
+		//****************************************/
+		typedef int ItIsNotConvertible[
+			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
+		
+		Detail::TComparable compare = Detail::TComparable::MakeCompare<ToType>(result);
+
+		mObjectHolder->SetSetter(mOffset, I, compare);
+		return *this;
+	}
+
 	template <typename T>
 	TReturnMatchBuilder Redirect(T freeFunc)
 	{

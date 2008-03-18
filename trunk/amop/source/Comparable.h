@@ -30,6 +30,7 @@ public:
 	virtual ~TComparableBase(){}
 
 	virtual bool Compare(const any& other) const = 0;	
+    virtual void Assign(const any& other) = 0;
 	virtual TComparableBase* Clone() = 0;
 };
 
@@ -42,8 +43,13 @@ public:
 
 	virtual bool Compare(const any& other) const
 	{
-		return any_cast<To>(other) == (To)any_cast<From>(mData);
+		return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(mData));
 	}
+
+    virtual void Assign(const any& other) 
+    {
+        *const_cast<To*>(any_cast<const To*>(other)) = (To)any_cast<From>(mData);
+    }
 
 	virtual TComparableBase* Clone() { return new TComparableImp<From, To>(mData); }
 
@@ -93,6 +99,13 @@ public:
 	{
 		return !(*this == other);
 	}
+
+    TComparable& Assign (const any& other)
+    {
+        mHolder->Assign(other);
+
+        return *this;
+    }
 
 	TComparableBase* mHolder;
 };

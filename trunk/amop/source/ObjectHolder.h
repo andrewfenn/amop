@@ -28,9 +28,10 @@ public:
 	}
 
 	template <class T>
-	void Actual(size_t funcIdx, size_t idx, T t)
+	void Actual(size_t funcIdx, size_t idx
+        , typename const Detail::RemoveReference<T>::Type& t)
 	{
-		SetActual(funcIdx, idx, t);
+		SetActual(funcIdx, idx, &t);
 	}
 
 	template <class F>
@@ -59,7 +60,9 @@ public:
 	virtual void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param) = 0;
 	virtual void SetExpect(size_t idx, size_t paramId, const TComparable& param) = 0;
 
-
+    virtual void SetSetterDefault(size_t idx, size_t paramId, const TComparable& param) = 0;
+    virtual void SetSetter(size_t idx, size_t paramId, const TComparable& param) = 0;
+    
 	virtual void AddCallCounter(size_t idx) = 0;
 	virtual size_t GetCallCounter(size_t idx) = 0;
 

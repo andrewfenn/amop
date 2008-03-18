@@ -43,6 +43,8 @@ void TMockObjectBase::Clear()
 	mRedirects.clear();
 	mExpects.clear();
 	mExpectDefaults.clear();
+    mSetters.clear();
+    mSetterDefaults.clear();
     mExpectCallCounter.clear();
 }
 
@@ -135,6 +137,13 @@ void TMockObjectBase::SetReturnDefault(size_t idx, const any& result)
 }
 
 //------------------------------------------------------------------
+void TMockObjectBase::SetSetterDefault(size_t idx
+    , size_t paramId, const TComparable& result)
+{
+    (mSetterDefaults[idx])[paramId] = result;
+}
+
+//------------------------------------------------------------------
 void TMockObjectBase::SetReturn(size_t idx, const any& result)
 {
 	mReturns[idx].push_back(result);
@@ -207,9 +216,77 @@ bool TMockObjectBase::HaveExpect(size_t idx, size_t paramId)
 }
 
 //------------------------------------------------------------------
+bool TMockObjectBase::HaveSetterDefault(size_t idx, size_t paramId)
+{
+    if(!mSetterDefaults.count(idx))
+    {
+        return false;
+    }
+
+    if(!mSetterDefaults[idx].count(paramId))
+    {
+        return false;
+    }
+
+    return true;    
+}
+
+//------------------------------------------------------------------
+bool TMockObjectBase::HaveSetter(size_t idx, size_t paramId)
+{
+    if(!mSetters.count(idx))
+    {
+        return false;
+    }
+
+    if(!mSetters[idx].count(paramId))
+    {
+        return false;
+    }
+
+    return true;    
+}
+
+//------------------------------------------------------------------
+void TMockObjectBase::ApplySetter(size_t idx, size_t paramId, const any& param)
+{
+    if(!HaveSetter(idx, paramId))
+    { 
+        if(!HaveSetterDefault(idx, paramId))
+        {
+            return ;
+        }
+        else
+        {
+            (mSetterDefaults[idx])[paramId].Assign(param);
+            return ;
+        }
+    }
+
+    // Must have expect
+	TComparableList& clist = (mSetters[idx])[paramId] ;
+	size_t callCounter = mCallCounter[idx];
+
+	if( clist.size() <= callCounter )
+	{
+		if(!mSetterDefaults.count(idx)) return ;
+		TParamDefaultMap& paramDefaultMap = mSetterDefaults[idx];
+		
+		if( !paramDefaultMap.count(paramId) ) return ;
+
+        paramDefaultMap[paramId].Assign(param);
+        return ;
+	}	
+
+    clist[callCounter].Assign( param );
+}
+
+//------------------------------------------------------------------
 void TMockObjectBase::SetActual(size_t idx, size_t paramId, const any& param)
 {
-	if(!HaveExpect(idx, paramId))
+	ApplySetter(idx, paramId, param);
+    
+    if(!HaveExpect(idx, paramId))
     {
         if(!HaveExpectDefault(idx, paramId))
         {
@@ -255,6 +332,12 @@ void TMockObjectBase::SetExpectDefault(size_t idx, size_t paramId, const TCompar
 void TMockObjectBase::SetExpect(size_t idx, size_t paramId, const TComparable& param)
 {
 	(mExpects[idx])[paramId].push_back(param);
+}
+
+//------------------------------------------------------------------
+void TMockObjectBase::SetSetter(size_t idx, size_t paramId, const TComparable& param)
+{
+	(mSetters[idx])[paramId].push_back(param);
 }
 
 //------------------------------------------------------------------

@@ -32,7 +32,7 @@ namespace Detail
 		typedef std::vector<TComparable> TComparableList;
 		typedef std::map<size_t, TComparableList> TParamMap;
 		typedef std::map<size_t, TComparable> TParamDefaultMap;
-		
+
 		std::map<size_t, any> mReturnDefaults;
 		std::map<size_t, std::vector<any> > mReturns;
 		std::map<size_t, size_t> mCallCounter;
@@ -41,6 +41,9 @@ namespace Detail
 		std::map<size_t, any> mRedirects;
 		std::map<size_t,  TParamMap> mExpects;
 		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
+        
+        std::map<size_t,  TParamMap> mSetters;
+        std::map<size_t,  TParamDefaultMap > mSetterDefaults;
 
 		Detail::TVirtualTable* mVirtualTable;	
 
@@ -61,6 +64,13 @@ namespace Detail
 
         bool HaveExpectDefault(size_t idx, size_t paramId);
         bool HaveExpect(size_t idx, size_t paramId);
+
+        void SetSetterDefault(size_t idx, size_t paramId, const TComparable& result);
+        void SetSetter(size_t idx, size_t paramId, const TComparable& param);
+
+        bool HaveSetterDefault(size_t idx, size_t paramId);
+        bool HaveSetter(size_t idx, size_t paramId);
+        void ApplySetter(size_t idx, size_t paramId, const any& param);
 
 		void* GetVptr();
 

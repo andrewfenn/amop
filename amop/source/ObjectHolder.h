@@ -29,7 +29,7 @@ public:
 
 	template <class T>
 	void Actual(size_t funcIdx, size_t idx
-        , typename const Detail::RemoveReference<T>::Type& t)
+        , typename Detail::RemoveReference<T>::ConstType & t)
 	{
 		SetActual(funcIdx, idx, &t);
 	}

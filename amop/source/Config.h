@@ -45,18 +45,21 @@ template <class T>
 struct RemoveReference
 {
 	typedef T Type;
+	typedef const T ConstType;
 };
 
 template <class T>
 struct RemoveReference<T&>
 {
 	typedef T Type;
+	typedef const T ConstType;
 };
 
 template <class T>
 struct RemoveReference<const T&>
 {
 	typedef T Type;
+	typedef const T ConstType;
 };
 
 // This union is declared outside the horrible_cast because BCC 5.5.1

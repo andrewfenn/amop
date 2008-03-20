@@ -97,7 +97,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetExpectDefault(mOffset, I, Setter::Set<I, T>(expect));
+        mObjectHolder->SetExpectDefault(mOffset, I, Setter::template Set<I, T>(expect));
 		return *this;
 	}
 
@@ -110,7 +110,7 @@ public:
             , SetNormal
         >::Type Setter;
 
-		mObjectHolder->SetExpect(mOffset, I, Setter::Set<I, T>(expect));
+		mObjectHolder->SetExpect(mOffset, I, Setter::template Set<I, T>(expect));
 		return *this;
 	}
 
@@ -124,7 +124,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetSetterDefault(mOffset, I, Setter::Set<I, T>(result));
+        mObjectHolder->SetSetterDefault(mOffset, I, Setter::template Set<I, T>(result));
 		return *this;
 	}
 
@@ -137,7 +137,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetSetter(mOffset, I, Setter::Set<I, T>(result));
+        mObjectHolder->SetSetter(mOffset, I, Setter::template Set<I, T>(result));
 		return *this;
 	}
 

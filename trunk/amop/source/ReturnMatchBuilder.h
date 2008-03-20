@@ -4,6 +4,7 @@
 #include "ObjectHolder.h"
 #include "Functor.h"
 #include "Comparable.h"
+#include "Policy.h"
 
 namespace amop
 {
@@ -54,83 +55,89 @@ public:
 		return *this;
 	}
 
+    struct SetNormal
+    {
+        template<int I, class T>
+        static Detail::TComparable Set(T result)
+        {
+            typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+            typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+
+            //****************************************/
+            //** If you see this, that's mean your  **/
+            //** expect type is not convertiable to **/
+            //** actual type.						**/
+            //****************************************/
+            typedef int ItIsNotConvertible[
+                Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
+
+                return Detail::TComparable::MakeCompare<ToType>(result);
+        }
+    };
+
+    template <class P>
+    struct SetPolicy
+    {
+        template<int I, class T>
+        static Detail::TComparable Set(P policy)
+        {
+            typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+            typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+
+            return Detail::TComparable::MakeCompareByPolicy<ToType>(policy);
+        }
+    };
+
 	template<int I, class T>
 	TReturnMatchBuilder Expect(T expect)
 	{
-		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
-
-		//****************************************/
-		//** If you see this, that's mean your  **/
-		//** expect type is not convertiable to **/
-		//** actual type.						**/
-		//****************************************/
-		typedef int ItIsNotConvertible[
-			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-		
-		Detail::TComparable compare = Detail::TComparable::MakeCompare<ToType>(expect);
-
-		mObjectHolder->SetExpectDefault(mOffset, I, compare);
+		typedef typename Detail::Selector<
+            Detail::IsConvertible<T, Policy::TPolicy>::Result
+            , SetPolicy<T>
+            , SetNormal
+        >::Type Setter;
+        
+        mObjectHolder->SetExpectDefault(mOffset, I, Setter::Set<I, T>(expect));
 		return *this;
 	}
 
 	template<int I, class T>
 	TReturnMatchBuilder Expects(T expect)
 	{
-		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+        typedef typename Detail::Selector<
+            Detail::IsConvertible<T, Policy::TPolicy>::Result
+            , SetPolicy<T>
+            , SetNormal
+        >::Type Setter;
 
-		//****************************************/
-		//** If you see this, that's mean your  **/
-		//** expect type is not convertiable to **/
-		//** actual type.						**/
-		//****************************************/
-		typedef int ItIsNotConvertible[
-			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-		
-		Detail::TComparable compare = Detail::TComparable::MakeCompare<ToType>(expect);
-
-		mObjectHolder->SetExpect(mOffset, I, compare);
+		mObjectHolder->SetExpect(mOffset, I, Setter::Set<I, T>(expect));
 		return *this;
 	}
 
+    
     template<int I, class T>
 	TReturnMatchBuilder Set(T result)
 	{
-		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
-
-		//****************************************/
-		//** If you see this, that's mean your  **/
-		//** expect type is not convertiable to **/
-		//** actual type.						**/
-		//****************************************/
-		typedef int ItIsNotConvertible[
-			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-		
-		Detail::TComparable compare = Detail::TComparable::MakeCompare<ToType>(result);
-				
-		mObjectHolder->SetSetterDefault(mOffset, I, compare);
+        typedef typename Detail::Selector<
+            Detail::IsConvertible<T, Policy::TPolicy>::Result
+            , SetPolicy<T>
+            , SetNormal
+        >::Type Setter;
+        
+        mObjectHolder->SetSetterDefault(mOffset, I, Setter::Set<I, T>(result));
 		return *this;
 	}
 
     template<int I, class T>
 	TReturnMatchBuilder Sets(T result)
 	{
-		typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-		typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
-
-		//****************************************/
-		//** If you see this, that's mean your  **/
-		//** expect type is not convertiable to **/
-		//** actual type.						**/
-		//****************************************/
-		typedef int ItIsNotConvertible[
-			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-		
-		Detail::TComparable compare = Detail::TComparable::MakeCompare<ToType>(result);
-
-		mObjectHolder->SetSetter(mOffset, I, compare);
+		typedef typename Detail::Selector<
+            Detail::IsConvertible<T, Policy::TPolicy>::Result
+            , SetPolicy<T>
+            , SetNormal
+        >::Type Setter;
+        
+        mObjectHolder->SetSetter(mOffset, I, Setter::Set<I, T>(result));
 		return *this;
 	}
 

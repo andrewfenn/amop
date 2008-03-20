@@ -1,6 +1,12 @@
 #summary History
 #labels Featured
 
+= Version 0.31 =
+
+The following feature was added in Version 0.31
+  * Set method.
+  * Pointer and Array Policy (for Set and Expect)
+
 = Version 0.3 =
 
 The following feature was added in Version 0.3

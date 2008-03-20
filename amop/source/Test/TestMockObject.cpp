@@ -26,6 +26,13 @@ public:
     virtual std::string ComplexConstFunction(const std::string& crs,
         std::string& rs, std::string s) const = 0;
 
+    virtual void PolicyTestFunction(
+        std::string& str
+        , std::string* pointedStr
+        , char* const buffer
+        );
+
+
     virtual ~IInterface(){}
 };
 
@@ -152,6 +159,23 @@ TEST(MockObjectMethodSimpleExpect)
         .Expect<2>("SomeText");
 
     ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleExpectPolicy)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::PolicyTestFunction)
+        .Expect<0>("First")
+        .Expect<1>(Policy::Pointer("Second"))
+        .Expect<2>(Policy::Array("Third", strlen("Third") + 1) );
+
+    std::string first = "First";
+    std::string second = "Second";
+    char buf[] = "Third";
+    
+    ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
 }
 
 //------------------------------------------------------------------
@@ -321,6 +345,28 @@ TEST(MockObjectMethodSet)
         ((IInterface*)mock)->ComplexFunction("First", second, "Third");
 
     CHECK_EQUAL("CHANGED", second.c_str());	
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleSetPolicy)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::PolicyTestFunction)
+        .Set<0>("First")
+        .Set<1>(Policy::Pointer("Second"))
+        .Set<2>(Policy::Array("Third", strlen("Third") + 1) );
+
+    std::string first;
+    std::string second;
+    char buf[sizeof("Third")];
+
+    ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
+
+    CHECK_EQUAL( "First", first.c_str() );
+    CHECK_EQUAL( "Second", second.c_str()  );
+    CHECK( memcmp("Third", buf, sizeof("Third") )== 0  );
+
 }
 
 //------------------------------------------------------------------

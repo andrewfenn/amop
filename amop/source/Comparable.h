@@ -20,6 +20,18 @@ struct IsConvertible
 
 	enum { Result = (sizeof (Convertor(MakeFrom())) == sizeof(Yes)) };
 };
+
+template <bool, class T1, class T2>
+struct Selector
+{
+    typedef T1 Type;
+};
+
+template <class T1, class T2>
+struct Selector<false, T1, T2>
+{
+    typedef T2 Type;
+};
 	
 class TComparable;
 
@@ -57,6 +69,29 @@ protected:
 	any mData;
 };
 
+//------------------------------------------------------------------
+template<class P, class To>
+class TComparablePolicyImp : public TComparableBase
+{
+public:
+    TComparablePolicyImp(P& policy) : mPolicy(policy) {}
+
+	virtual bool Compare(const any& other) const
+	{
+		return mPolicy.Compare((*(any_cast<const To*>(other))));
+	}
+
+    virtual void Assign(const any& other) 
+    {
+        return mPolicy.Assign(*const_cast<To*>(any_cast<const To*>(other)));
+    }
+
+	virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To>(mPolicy); }
+
+protected:
+	P mPolicy;
+};
+
 
 //------------------------------------------------------------------
 class TComparable
@@ -71,6 +106,14 @@ public:
 		compare.mHolder = new TComparableImp<From, To>(value);
 		return compare;
 	}
+
+    template<class To, class P>
+    static TComparable MakeCompareByPolicy(P& policy)
+    {
+        TComparable compare;
+        compare.mHolder = new TComparablePolicyImp<P, To>(policy);
+        return compare;
+    }
 
 	TComparable(const TComparable& other)
 	{

@@ -93,7 +93,7 @@ namespace Detail
 		}
 
         template <class F, class Type>
-		TReturnMatchBuilder<F> CreateMatchBuilder(const Destructor& d)
+		TReturnMatchBuilder<F> CreateMatchBuilder(const Destructor& )
 		{
             size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<Type>();
 

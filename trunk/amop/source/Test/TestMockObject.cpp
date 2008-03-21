@@ -26,6 +26,8 @@ public:
     virtual std::string ComplexConstFunction(const std::string& crs,
         std::string& rs, std::string s) const = 0;
 
+    virtual int GetInt(const std::wstring & ws, const int defaultValue) = 0;
+
     virtual void PolicyTestFunction(
         std::string& str
         , std::string* pointedStr
@@ -68,7 +70,6 @@ TEST(MockObjectNotImplementedThrowComplexFunction)
         TNotImplementedException);
 }
 
-//mockSubscriber.method("receive").expects(once()).with( eq(message) );
 //------------------------------------------------------------------
 TEST(MockObjectMethodSimple)
 {
@@ -377,6 +378,7 @@ TEST(MockObjectMethodSetMultiple)
     TMockObject<IInterface> mock;
 
     mock.Method(&IInterface::ComplexFunction)
+        .Expect<0>("First")
         .Sets<1>("C1").Sets<1>("C2").Sets<1>("C3")
         .Will("");        
 
@@ -499,5 +501,16 @@ TEST(MockObjectMethodWillsCallCountVerify)
         .Wills(3);
 
     CHECK_THROW(mock.Verify(), TCallCountException);
+}
+
+// Bug Test
+//------------------------------------------------------------------
+TEST(MockObjectMethodExpectConstInt)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::GetInt).Expect<0>(std::wstring(L"Item")).Expect<1>(10).Will(15);
+
+    CHECK_EQUAL(15, ((IInterface*)mock)->GetInt(std::wstring(L"Item"), 10));
 }
 

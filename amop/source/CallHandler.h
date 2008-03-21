@@ -52,7 +52,7 @@ struct CallHandler::SelectID<MAX_NUM_VIRTUAL_FUNCTIONS>
 	template <class T>
 	struct Get
 	{		
-		static TFunctionAddress Select(size_t offset)
+		static TFunctionAddress Select(size_t)
 		{
 			return 0;
 		}

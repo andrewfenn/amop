@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="TestAMOP"
 	ProjectGUID="{55A92575-FD47-4FDC-81F9-C3FD22388C03}"
+	RootNamespace="TestAMOP"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -46,7 +47,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
@@ -125,7 +126,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>

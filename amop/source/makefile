@@ -22,7 +22,7 @@ test: main
 	@./runTest
 
 clean:
-	@rm $(TESTOBJS) $(OBJS) libAmop.a runTest 2> /dev/null
+	@rm -f $(TESTOBJS) $(OBJS) libAmop.a runTest 2> /dev/null
 	
 all: test
 	

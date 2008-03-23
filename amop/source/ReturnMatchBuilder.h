@@ -57,8 +57,8 @@ public:
 
     struct SetNormal
     {
-        template<int I, class T>
-        static Detail::TComparable Set(T result)
+        template<int I, class T, bool ReadOnly>
+        static Detail::TComparable Make(T result)
         {
             typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
             typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
@@ -71,20 +71,20 @@ public:
             typedef int ItIsNotConvertible[
                 Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 
-                return Detail::TComparable::MakeCompare<ToType>(result);
+                return Detail::TComparable::MakeCompare<ToType, ReadOnly>(result);
         }
     };
 
     template <class P>
     struct SetPolicy
     {
-        template<int I, class T>
-        static Detail::TComparable Set(P policy)
+        template<int I, class T, bool ReadOnly>
+        static Detail::TComparable Make(P policy)
         {
             typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
             typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
 
-            return Detail::TComparable::MakeCompareByPolicy<ToType>(policy);
+            return Detail::TComparable::MakeCompareByPolicy<ToType, ReadOnly>(policy);
         }
     };
 
@@ -97,7 +97,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetExpectDefault(mOffset, I, Setter::template Set<I, T>(expect));
+        mObjectHolder->SetExpectDefault(mOffset, I, Setter::template Make<I, T, true>(expect));
 		return *this;
 	}
 
@@ -110,7 +110,7 @@ public:
             , SetNormal
         >::Type Setter;
 
-		mObjectHolder->SetExpect(mOffset, I, Setter::template Set<I, T>(expect));
+		mObjectHolder->SetExpect(mOffset, I, Setter::template Make<I, T, true>(expect));
 		return *this;
 	}
 
@@ -124,7 +124,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetSetterDefault(mOffset, I, Setter::template Set<I, T>(result));
+        mObjectHolder->SetSetterDefault(mOffset, I, Setter::template Make<I, T, false>(result));
 		return *this;
 	}
 
@@ -137,7 +137,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetSetter(mOffset, I, Setter::template Set<I, T>(result));
+        mObjectHolder->SetSetter(mOffset, I, Setter::template Make<I, T, false>(result));
 		return *this;
 	}
 

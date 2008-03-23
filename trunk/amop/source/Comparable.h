@@ -47,8 +47,34 @@ public:
 };
 
 //------------------------------------------------------------------
+template<class From, class To, bool ReadOnly>
+class TComparableImp;
+
+//------------------------------------------------------------------
 template<class From, class To>
-class TComparableImp : public TComparableBase
+class TComparableImp<From, To, true> : public TComparableBase
+{
+public:
+	TComparableImp(const any& data) : mData(data) {}
+
+	virtual bool Compare(const any& other) const
+	{
+		return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(mData));
+	}
+
+    virtual void Assign(const any& other) 
+    {
+    }
+
+	virtual TComparableBase* Clone() { return new TComparableImp<From, To, true>(mData); }
+
+protected:
+	any mData;
+};
+
+//------------------------------------------------------------------
+template<class From, class To>
+class TComparableImp<From, To, false> : public TComparableBase
 {
 public:
 	TComparableImp(const any& data) : mData(data) {}
@@ -63,15 +89,40 @@ public:
         *const_cast<To*>(any_cast<const To*>(other)) = (To)any_cast<From>(mData);
     }
 
-	virtual TComparableBase* Clone() { return new TComparableImp<From, To>(mData); }
+	virtual TComparableBase* Clone() { return new TComparableImp<From, To, false>(mData); }
 
 protected:
 	any mData;
 };
 
+template<class P, class To, bool ReadOnly>
+class TComparablePolicyImp;
+
 //------------------------------------------------------------------
 template<class P, class To>
-class TComparablePolicyImp : public TComparableBase
+class TComparablePolicyImp<P, To, true> : public TComparableBase
+{
+public:
+    TComparablePolicyImp(P& policy) : mPolicy(policy) {}
+
+	virtual bool Compare(const any& other) const
+	{
+		return mPolicy.Compare((*(any_cast<const To*>(other))));
+	}
+
+    virtual void Assign(const any& other) 
+    {
+    }
+
+	virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To, true>(mPolicy); }
+
+protected:
+	P mPolicy;
+};
+
+//------------------------------------------------------------------
+template<class P, class To>
+class TComparablePolicyImp<P, To, false> : public TComparableBase
 {
 public:
     TComparablePolicyImp(P& policy) : mPolicy(policy) {}
@@ -86,7 +137,7 @@ public:
         return mPolicy.Assign(*const_cast<To*>(any_cast<const To*>(other)));
     }
 
-	virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To>(mPolicy); }
+	virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To, false>(mPolicy); }
 
 protected:
 	P mPolicy;
@@ -99,19 +150,19 @@ class TComparable
 public:
 	TComparable() : mHolder(NULL) {}
 
-	template<class To, class From>
+	template<class To, bool ReadOnly, class From>
 	static TComparable MakeCompare(From value)
 	{
 		TComparable compare;
-		compare.mHolder = new TComparableImp<From, To>(value);
+		compare.mHolder = new TComparableImp<From, To, ReadOnly>(value);
 		return compare;
 	}
 
-    template<class To, class P>
+    template<class To, bool ReadOnly, class P >
     static TComparable MakeCompareByPolicy(P& policy)
     {
         TComparable compare;
-        compare.mHolder = new TComparablePolicyImp<P, To>(policy);
+        compare.mHolder = new TComparablePolicyImp<P, To, ReadOnly>(policy);
         return compare;
     }
 

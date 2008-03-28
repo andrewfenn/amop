@@ -45,8 +45,9 @@ namespace Detail
 	template <int I, class C>
 	struct FunctionHolderBase<I, void (C::*)(), false>
 	{			
-		void Func() { 
-			typedef void (C::*FunctorType)();
+		typedef void (C::*FunctorType)();
+        
+        void Func() { 
 			VT_THIS->AddCallCounter(I); 
 			if(VT_THIS->template Redirector<FunctorType>(I))
 				VT_THIS->template Redirector<FunctorType>(I)();

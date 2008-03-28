@@ -4,7 +4,7 @@
 namespace amop
 {
 
-#define MAX_NUM_VIRTUAL_FUNCTIONS 25
+#define MAX_NUM_VIRTUAL_FUNCTIONS 50
 
 #define DETAIL_TYPELIST_WITHOUT_HEAD typename T2,typename T3, typename T4, \
   typename T5, typename T6, typename T7, typename T8, typename T9, \

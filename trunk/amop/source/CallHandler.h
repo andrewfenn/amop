@@ -13,7 +13,8 @@ namespace Detail
 
 struct CallHandler
 {
-	template <int I>
+	/*
+    template <int I>
 	struct SelectID
 	{
 		template <class T>
@@ -27,13 +28,32 @@ struct CallHandler
 					return SelectID<I+1>::template Get<T>::Select(offset);
 			}
 		};
-	};
+	};*/
 
 		
 	template <class T>
 	static TFunctionAddress Select(size_t offset)
 	{
-		return SelectID<0>::Get<T>::Select(offset);
+        std::vector<TFunctionAddress> funcs;
+
+#define DETAIL_FUNC_ITEM(n, t) funcs.push_back(     \
+    HorribleCast<TFunctionAddress>(&FunctionHolder<n-1,T>::Func) );    
+#define DETAIL_FUNC_ITEMS(n) DETAIL_REPEAT(n,DETAIL_FUNC_ITEM,DETAIL_FUNC_ITEM,t)
+        DETAIL_FUNC_ITEMS(MAX_NUM_VIRTUAL_FUNCTIONS);
+
+//#undef DETAIL_FUNC_ITEM
+//#define DETAIL_FUNC_ITEM(n, t) funcs.push_back(     \
+//    HorribleCast<TFunctionAddress>(&FunctionHolder<n+200-1,T>::Func) );    
+//
+//        DETAIL_FUNC_ITEMS(200);	
+//
+//#undef DETAIL_FUNC_ITEM
+//#define DETAIL_FUNC_ITEM(n, t) funcs.push_back(     \
+//    HorribleCast<TFunctionAddress>(&FunctionHolder<n+400-1,T>::Func) );    
+//        DETAIL_FUNC_ITEMS(100);	
+//        
+        return funcs[offset];
+        //return SelectID<0>::Get<T>::Select(offset);
 	}
 
 	template<class T>
@@ -46,18 +66,18 @@ struct CallHandler
 	}
 };
 
-template <>
-struct CallHandler::SelectID<MAX_NUM_VIRTUAL_FUNCTIONS>
-{
-	template <class T>
-	struct Get
-	{		
-		static TFunctionAddress Select(size_t)
-		{
-			return 0;
-		}
-	};
-};
+//template <>
+//struct CallHandler::SelectID<MAX_NUM_VIRTUAL_FUNCTIONS>
+//{
+//	template <class T>
+//	struct Get
+//	{		
+//		static TFunctionAddress Select(size_t offset)
+//		{
+//			return 0;
+//		}
+//	};
+//};
 
 }
 

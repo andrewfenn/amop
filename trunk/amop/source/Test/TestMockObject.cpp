@@ -26,8 +26,6 @@ public:
     virtual std::string ComplexConstFunction(const std::string& crs,
         std::string& rs, std::string s) const = 0;
 
-    virtual int GetInt(const std::wstring & ws, const int defaultValue) = 0;
-
     virtual void PolicyTestFunction(
         std::string& str
         , std::string* pointedStr
@@ -70,6 +68,7 @@ TEST(MockObjectNotImplementedThrowComplexFunction)
         TNotImplementedException);
 }
 
+//mockSubscriber.method("receive").expects(once()).with( eq(message) );
 //------------------------------------------------------------------
 TEST(MockObjectMethodSimple)
 {
@@ -378,7 +377,6 @@ TEST(MockObjectMethodSetMultiple)
     TMockObject<IInterface> mock;
 
     mock.Method(&IInterface::ComplexFunction)
-        .Expect<0>("First")
         .Sets<1>("C1").Sets<1>("C2").Sets<1>("C3")
         .Will("");        
 
@@ -503,14 +501,106 @@ TEST(MockObjectMethodWillsCallCountVerify)
     CHECK_THROW(mock.Verify(), TCallCountException);
 }
 
-// Bug Test
 //------------------------------------------------------------------
-TEST(MockObjectMethodExpectConstInt)
+class ISimple1
 {
-    TMockObject<IInterface> mock;
+public:
+    virtual void SimpleFunction() = 0;
+    virtual int SimpleFunctionWithReturn() = 0;
+};
 
-    mock.Method(&IInterface::GetInt).Expect<0>(std::wstring(L"Item")).Expect<1>(10).Will(15);
+//------------------------------------------------------------------
+class ISimple2
+{
+public:
+    virtual void SimpleFunction() = 0;
+    virtual int SimpleFunctionWithReturn() = 0;
+};
 
-    CHECK_EQUAL(15, ((IInterface*)mock)->GetInt(std::wstring(L"Item"), 10));
+//------------------------------------------------------------------
+TEST(TwoInterfaces_noneImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunctionWithReturn(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
 }
 
+//------------------------------------------------------------------
+TEST(TwoInterfaces_oneSimpleImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    mock1.Method(&ISimple1::SimpleFunction);
+
+    ((ISimple1*)mock1)->SimpleFunction();
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunctionWithReturn(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_bothSimpleImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    mock1.Method(&ISimple1::SimpleFunction);
+    mock2.Method(&ISimple2::SimpleFunction);
+
+    ((ISimple1*)mock1)->SimpleFunction();
+    ((ISimple2*)mock2)->SimpleFunction();
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunctionWithReturn(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_oneReturnImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    int expected1 = 1;
+    mock1.Method(&ISimple1::SimpleFunctionWithReturn)
+        .Will(expected1);
+
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    int got = ((ISimple1*)mock1)->SimpleFunctionWithReturn();
+    CHECK_EQUAL(expected1, got);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_bothReturnImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    int expected1 = 1;
+    int expected2 = 2;
+
+    mock1.Method(&ISimple1::SimpleFunctionWithReturn)
+        .Will(expected1);
+    mock2.Method(&ISimple2::SimpleFunctionWithReturn)
+        .Will(expected2);
+
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    int got;
+    got = ((ISimple1*)mock1)->SimpleFunctionWithReturn();
+    CHECK_EQUAL(expected1, got);
+    got = ((ISimple2*)mock2)->SimpleFunctionWithReturn();
+    CHECK_EQUAL(expected2, got);
+}

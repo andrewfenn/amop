@@ -604,3 +604,4 @@ TEST(TwoInterfaces_bothReturnImplemented)
     got = ((ISimple2*)mock2)->SimpleFunctionWithReturn();
     CHECK_EQUAL(expected2, got);
 }
+

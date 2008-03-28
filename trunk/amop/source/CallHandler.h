@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "VirtualTable.h"
 #include "FunctionHolder.h"
+#include <vector>
 
 namespace amop
 {

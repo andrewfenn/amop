@@ -134,7 +134,7 @@ public:
 
     virtual void Assign(const any& other) 
     {
-        return mPolicy.Assign(*const_cast<To*>(any_cast<const To*>(other)));
+        mPolicy.Assign(*const_cast<To*>(any_cast<const To*>(other)));
     }
 
 	virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To, false>(mPolicy); }

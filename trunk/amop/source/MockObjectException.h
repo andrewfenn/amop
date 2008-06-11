@@ -29,9 +29,9 @@ namespace amop
           size_t GetParam() { return mParam; }
 
     protected:
+        size_t mParam;
         any mExpect;
         any mActual;
-        size_t mParam;
 
     };
 

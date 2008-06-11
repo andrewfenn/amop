@@ -21,12 +21,12 @@ public:
 //------------------------------------------------------------------
 TEST(TestGetOffset)
 {
-    CHECK_EQUAL(1, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo2));
-	CHECK_EQUAL(0, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo1));
-
-	CHECK_EQUAL(4, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo5));
-	CHECK_EQUAL(5, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo6));
-	CHECK_EQUAL(6, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo7));	
+  CHECK_EQUAL(1u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo2));
+  CHECK_EQUAL(0u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo1));
+  
+  CHECK_EQUAL(4u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo5));
+  CHECK_EQUAL(5u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo6));
+  CHECK_EQUAL(6u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo7));	
 }
 
 //------------------------------------------------------------------
@@ -54,4 +54,5 @@ class D: public A, public B {
  public: 
     virtual int Dfunc() { return 5; };
 };
+
 

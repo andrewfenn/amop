@@ -404,7 +404,7 @@ TEST(MockObjectMethodAddCallCount)
     ((IInterface*)mock)->ComplexFunction("First", second, "Third");
     ((IInterface*)mock)->ComplexFunction("First", second, "Third");
 
-    CHECK_EQUAL(3, mock.Method(&IInterface::ComplexFunction).Count());
+    CHECK_EQUAL(3u, mock.Method(&IInterface::ComplexFunction).Count());
 }
 
 //------------------------------------------------------------------
@@ -604,4 +604,5 @@ TEST(TwoInterfaces_bothReturnImplemented)
     got = ((ISimple2*)mock2)->SimpleFunctionWithReturn();
     CHECK_EQUAL(expected2, got);
 }
+
 

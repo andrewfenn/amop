@@ -172,8 +172,8 @@ public:
     }
 
 private:
-	size_t mOffset;
 	Detail::TObjectHolder* mObjectHolder;
+	size_t mOffset;
 };
 
 }

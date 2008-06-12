@@ -62,7 +62,7 @@ public:
 		return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(mData));
 	}
 
-    virtual void Assign(const any& other) 
+    virtual void Assign(const any& /*other*/) 
     {
     }
 

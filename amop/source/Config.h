@@ -179,12 +179,11 @@ namespace amop
                 return this>&rhs;
             }
         };
-        
 
-
-#define TSharedPtr SmartPtr
-
+#define AmopSharedPtr Detail::SmartPtr
 #endif
+
+
 
 #ifdef __GNUC__
 
@@ -210,14 +209,13 @@ namespace amop
             return u.out.funcadr;
         }
 
-using std::tr1::shared_ptr;
-
-#define TSharedPtr shared_ptr
+#define AmopSharedPtr std::tr1::shared_ptr
 #endif
         typedef void* TFunctionAddress;
 
         }        
 }
+
 
 #endif //__AMOP_CONFIG__HH
 

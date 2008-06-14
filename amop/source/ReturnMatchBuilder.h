@@ -73,7 +73,7 @@ public:
     TReturnMatchBuilder Throws(T exception)
     {
         //Can we verify that it is convertible to throw specifier.
-        mObjectHolder->SetReturn(mOffset, std::make_pair(true,Detail::TSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
+        mObjectHolder->SetReturn(mOffset, std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
 		return *this;
 	}
 

@@ -31,7 +31,7 @@ TEST(TestTuple)
 }
 
 template <class T>
-static void MakeFunctor(T f)
+static void MakeFunctor(T /*t*/)
 {
 	Detail::Functor<T>();
 }

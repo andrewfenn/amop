@@ -32,9 +32,9 @@ public:
 	{
             std::pair<bool, any> & exitValue = GetReturn(idx);
             if(exitValue.first){
-                TSharedPtr<ExceptionThrowerBase> thrower;
+                AmopSharedPtr<ExceptionThrowerBase> thrower;
                 try{
-                    thrower = any_cast<TSharedPtr<ExceptionThrowerBase> >(exitValue.second);
+                    thrower = any_cast<AmopSharedPtr<ExceptionThrowerBase> >(exitValue.second);
                 }catch(bad_any_cast & /*bac*/){
                     assert(false);
                 }

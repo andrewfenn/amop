@@ -15,6 +15,7 @@ namespace amop
 
 namespace Detail
 {
+  
 	class TVirtualTable;
 
 
@@ -33,8 +34,8 @@ namespace Detail
 		typedef std::map<size_t, TComparableList> TParamMap;
 		typedef std::map<size_t, TComparable> TParamDefaultMap;
 
-		std::map<size_t, any> mReturnDefaults;
-		std::map<size_t, std::vector<any> > mReturns;
+        std::map<size_t, std::pair<bool,any> > mReturnDefaults;
+        std::map<size_t, std::vector<std::pair<bool,any> > > mReturns;
 		std::map<size_t, size_t> mCallCounter;
         std::map<size_t, size_t> mExpectCallCounter;
 		
@@ -54,9 +55,9 @@ namespace Detail
 		any& GetRedirect(size_t idx);
 		void SetRedirect(size_t idx, const any& redirect);
 
-		void SetReturnDefault(size_t idx, const any& result);
-		void SetReturn(size_t idx, const any& result);
-		any& GetReturn(size_t idx);
+        void SetReturnDefault(size_t idx, const std::pair<bool, any>& result);
+        void SetReturn(size_t idx, const std::pair<bool, any>& result);
+        std::pair<bool, any>& GetReturn(size_t idx);
 
 		void SetActual(size_t idx, size_t paramId, const any& param);
 		void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param);
@@ -106,4 +107,7 @@ namespace Detail
 
 }
 
+//Local Variables:
+//c-basic-offset: 4
+//End:
 #endif //__AMOP_MOCKOBJECTBASE_HH

@@ -120,6 +120,75 @@ TEST(MockObjectMethodConstSimple)
     ((IInterface*)mock)->SimpleConstFunction();	
 }
 
+struct SimpleException : public std::exception
+{
+  int value;
+  SimpleException(int v)
+    : std::exception()
+    , value(v){
+  }
+};
+
+void ThisThrows(){
+  throw SimpleException(42);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithThrow)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(std::exception());
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn(), std::exception );
+    
+    mock.Verify();
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithInheritedThrow)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(SimpleException(22));
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn(), std::exception);
+    
+    mock.Verify();
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithManyThrow)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(SimpleException(22));
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Wills(42);
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(SimpleException(142));
+    
+    try{
+      ((IInterface*)mock)->SimpleFunctionWithReturn();
+      CHECK(false);
+    }catch(SimpleException & se){
+      CHECK_EQUAL(22, se.value);
+    }
+    CHECK_EQUAL(42, ((IInterface*)mock)->SimpleFunctionWithReturn());
+    try{
+      ((IInterface*)mock)->SimpleFunctionWithReturn();
+      CHECK(false);
+    }catch(SimpleException & se){
+      CHECK_EQUAL(142, se.value);
+    }
+    
+    mock.Verify();
+}
+
+
 //------------------------------------------------------------------
 TEST(MockObjectMethodConstComplex)
 {

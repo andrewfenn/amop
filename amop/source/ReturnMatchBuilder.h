@@ -1,11 +1,13 @@
 #ifndef __AMOP_RETURNMATCHBUILDER_HH
 #define __AMOP_RETURNMATCHBUILDER_HH
 
+
 #include "ObjectHolder.h"
 #include "Functor.h"
 #include "Comparable.h"
 #include "Policy.h"
-
+#include <utility>
+#include <tr1/memory>
 namespace amop
 {
 
@@ -34,7 +36,7 @@ public:
 		typedef int ItIsNotConvertible[
 			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 				
-		mObjectHolder->SetReturnDefault(mOffset, (ToType)result);
+            mObjectHolder->SetReturnDefault(mOffset, std::make_pair(false,(ToType)result));
 		return *this;
 	}
 
@@ -51,7 +53,23 @@ public:
 		typedef int ItIsNotConvertible[
 			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 				
-		mObjectHolder->SetReturn(mOffset, (ToType)result);
+            mObjectHolder->SetReturn(mOffset, std::make_pair(false,(ToType)result));
+            return *this;
+    }
+
+    template<class T>
+    TReturnMatchBuilder Throw(T exception)
+    {
+        //Can we verify that it is convertible to throw specifier.
+        mObjectHolder->SetReturnDefault(mOffset, std::make_pair(true,std::tr1::shared_ptr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
+        return *this;
+    }
+
+    template<class T>
+    TReturnMatchBuilder Throws(T exception)
+    {
+        //Can we verify that it is convertible to throw specifier.
+        mObjectHolder->SetReturn(mOffset, std::make_pair(true,std::tr1::shared_ptr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
 		return *this;
 	}
 
@@ -70,7 +88,6 @@ public:
             //****************************************/
             typedef int ItIsNotConvertible[
                 Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-
                 return Detail::TComparable::MakeCompare<ToType, ReadOnly>(result);
         }
     };
@@ -179,4 +196,7 @@ private:
 }
 
 
+//Local Variables:
+//c-basic-offset: 4
+//End:
 #endif //__AMOP_RETURNMATCHBUILDER_HH

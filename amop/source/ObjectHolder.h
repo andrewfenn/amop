@@ -1,9 +1,11 @@
 #ifndef __AMOP_OBJECTHOLDER_HH
 #define __AMOP_OBJECTHOLDER_HH
 
+#include "ExceptionThrower.h"
 #include "Any.h"
 #include "Functor.h"
-
+#include <cassert>
+#include <tr1/memory>
 namespace amop
 {
 namespace Detail
@@ -24,7 +26,17 @@ public:
 	template <class R>
 	R Return(size_t idx)
 	{
-		return any_cast<R>(GetReturn(idx));
+            std::pair<bool, any> & exitValue = GetReturn(idx);
+            if(exitValue.first){
+                std::tr1::shared_ptr<ExceptionThrowerBase> thrower;
+                try{
+                    thrower = any_cast<std::tr1::shared_ptr<ExceptionThrowerBase> >(exitValue.second);
+                }catch(bad_any_cast & bac){
+                    assert(false);
+                }
+                thrower->ThrowTypedException();
+            }//else
+            return any_cast<R>(exitValue.second);
 	}
 
 	template <class T>
@@ -51,10 +63,10 @@ public:
 	virtual any& GetRedirect(size_t idx) = 0;
 	virtual void SetRedirect(size_t idx, const any& redirector) = 0;
 
-	virtual void SetReturn(size_t idx, const any& result) = 0;
-	virtual void SetReturnDefault(size_t idx, const any& result) = 0;
+	virtual void SetReturn(size_t idx, const std::pair<bool, any>& result) = 0;
+	virtual void SetReturnDefault(size_t idx, const std::pair<bool, any>& result) = 0;
 	
-	virtual any& GetReturn(size_t idx) = 0;
+	virtual std::pair<bool, any>& GetReturn(size_t idx) = 0;
 	virtual void SetActual(size_t idx, size_t paramId, const any& param) = 0;
 	
 	virtual void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param) = 0;
@@ -72,6 +84,10 @@ public:
 }
 
 }
+
+//Local Variables:
+//c-basic-offset: 4
+//End:
 
 #endif //__AMOP_OBJECTHOLDER_HH
 

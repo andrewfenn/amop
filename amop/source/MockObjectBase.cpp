@@ -65,7 +65,7 @@ void TMockObjectBase::Verify()
     }    
 
     // Check wills
-    for( std::map<size_t, std::vector<any> >::iterator iter = mReturns.begin()
+    for( std::map<size_t, std::vector<std::pair<bool, any> > >::iterator iter = mReturns.begin()
         ; iter != mReturns.end()
         ; ++iter )
     {
@@ -131,7 +131,7 @@ void TMockObjectBase::SetExpectCallCounter(size_t idx, size_t c)
 }
 
 //------------------------------------------------------------------
-void TMockObjectBase::SetReturnDefault(size_t idx, const any& result)
+void TMockObjectBase::SetReturnDefault(size_t idx, const std::pair<bool, any>& result)
 {
 	mReturnDefaults[idx] = result;
 }
@@ -144,7 +144,7 @@ void TMockObjectBase::SetSetterDefault(size_t idx
 }
 
 //------------------------------------------------------------------
-void TMockObjectBase::SetReturn(size_t idx, const any& result)
+void TMockObjectBase::SetReturn(size_t idx, const std::pair<bool, any>& result)
 {
 	mReturns[idx].push_back(result);
 }
@@ -156,20 +156,16 @@ void TMockObjectBase::SetRedirect(size_t idx, const any& result)
 }
 
 //------------------------------------------------------------------
-any& TMockObjectBase::GetReturn(size_t idx)
+std::pair<bool, any>& TMockObjectBase::GetReturn(size_t idx)
 {
 	size_t callCounter = mCallCounter[idx] - 1;
     
-	if( mReturns.count(idx) && 
-		callCounter < mReturns[idx].size())
-	{
-		return (mReturns[idx])[callCounter] ;
+    if( mReturns.count(idx) && callCounter < mReturns[idx].size()){
+        return mReturns[idx][callCounter];
 	}	
 	
-    if(!mReturnDefaults.count(idx))
-    {
+    if(!mReturnDefaults.count(idx)){
         size_t expect = mReturns.count(idx) ? mReturns[idx].size() : 0;
-        
         throw TCallCountException(expect, callCounter);
     }
 
@@ -348,4 +344,8 @@ void* TMockObjectBase::GetVptr()
 
 }
 }
+
+//Local Variables:
+//c-basic-offset: 4
+//End:
 

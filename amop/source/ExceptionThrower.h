@@ -1,6 +1,8 @@
 #ifndef __AMOP_EXCEPTIONTHROWER_HH
 #define __AMOP_EXCEPTIONTHROWER_HH
 
+#include "Config.h"
+
 namespace amop{
   
     namespace Detail{
@@ -14,6 +16,8 @@ namespace amop{
         class ExceptionThrower : public ExceptionThrowerBase{
         private:
             E const _exception;
+
+            ExceptionThrower& operator=(const ExceptionThrower&);
             
         public:
             ExceptionThrower(E const & exception)

@@ -7,7 +7,11 @@
 #include "Comparable.h"
 #include "Policy.h"
 #include <utility>
+
+#ifdef __GNUC__
 #include <tr1/memory>
+#endif 
+
 namespace amop
 {
 
@@ -69,7 +73,7 @@ public:
     TReturnMatchBuilder Throws(T exception)
     {
         //Can we verify that it is convertible to throw specifier.
-        mObjectHolder->SetReturn(mOffset, std::make_pair(true,std::tr1::shared_ptr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
+        mObjectHolder->SetReturn(mOffset, std::make_pair(true,Detail::TSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
 		return *this;
 	}
 

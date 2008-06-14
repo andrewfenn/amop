@@ -110,7 +110,7 @@ public:
 		return mPolicy.Compare((*(any_cast<const To*>(other))));
 	}
 
-    virtual void Assign(const any& other) 
+    virtual void Assign(const any&) 
     {
     }
 

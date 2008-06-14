@@ -5,7 +5,11 @@
 #include "Any.h"
 #include "Functor.h"
 #include <cassert>
+
+#ifdef __GNUC__
 #include <tr1/memory>
+#endif
+
 namespace amop
 {
 namespace Detail
@@ -28,10 +32,10 @@ public:
 	{
             std::pair<bool, any> & exitValue = GetReturn(idx);
             if(exitValue.first){
-                std::tr1::shared_ptr<ExceptionThrowerBase> thrower;
+                TSharedPtr<ExceptionThrowerBase> thrower;
                 try{
-                    thrower = any_cast<std::tr1::shared_ptr<ExceptionThrowerBase> >(exitValue.second);
-                }catch(bad_any_cast & bac){
+                    thrower = any_cast<TSharedPtr<ExceptionThrowerBase> >(exitValue.second);
+                }catch(bad_any_cast & /*bac*/){
                     assert(false);
                 }
                 thrower->ThrowTypedException();

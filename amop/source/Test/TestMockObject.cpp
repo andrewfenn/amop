@@ -576,6 +576,7 @@ class ISimple1
 public:
     virtual void SimpleFunction() = 0;
     virtual int SimpleFunctionWithReturn() = 0;
+    virtual ~ISimple1();
 };
 
 //------------------------------------------------------------------
@@ -584,6 +585,7 @@ class ISimple2
 public:
     virtual void SimpleFunction() = 0;
     virtual int SimpleFunctionWithReturn() = 0;
+    virtual ~ISimple2();
 };
 
 //------------------------------------------------------------------

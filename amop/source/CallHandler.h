@@ -42,17 +42,6 @@ struct CallHandler
 #define DETAIL_FUNC_ITEMS(n) DETAIL_REPEAT(n,DETAIL_FUNC_ITEM,DETAIL_FUNC_ITEM,t)
         DETAIL_FUNC_ITEMS(MAX_NUM_VIRTUAL_FUNCTIONS);
 
-//#undef DETAIL_FUNC_ITEM
-//#define DETAIL_FUNC_ITEM(n, t) funcs.push_back(     \
-//    HorribleCast<TFunctionAddress>(&FunctionHolder<n+200-1,T>::Func) );    
-//
-//        DETAIL_FUNC_ITEMS(200);	
-//
-//#undef DETAIL_FUNC_ITEM
-//#define DETAIL_FUNC_ITEM(n, t) funcs.push_back(     \
-//    HorribleCast<TFunctionAddress>(&FunctionHolder<n+400-1,T>::Func) );    
-//        DETAIL_FUNC_ITEMS(100);	
-//        
         return funcs[offset];
         //return SelectID<0>::Get<T>::Select(offset);
 	}

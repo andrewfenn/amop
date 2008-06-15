@@ -3,9 +3,16 @@
 
 = Version 0.31 =
 
-The following feature was added in Version 0.31
+==0.31.1==
   * Set method.
   * Pointer and Array Policy (for Set and Expect)
+
+==0.31.2===
+  Minor Bugs Fixed
+
+==0.31.3===
+  Some Warnings Fixed
+  Added Exception Handling TMockObject::Throws (Contribute by Jarl.)
 
 = Version 0.3 =
 

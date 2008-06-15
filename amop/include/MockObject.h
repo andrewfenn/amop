@@ -6,6 +6,7 @@
 #include "MockObjectException.h"
 #include "ReturnMatchBuilder.h"
 #include "Destructor.h"
+#include "Policy.h"
 
 namespace amop
 {

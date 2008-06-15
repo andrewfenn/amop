@@ -15,6 +15,7 @@ namespace amop
 
 namespace Detail
 {
+  
 	class TVirtualTable;
 
 
@@ -32,15 +33,18 @@ namespace Detail
 		typedef std::vector<TComparable> TComparableList;
 		typedef std::map<size_t, TComparableList> TParamMap;
 		typedef std::map<size_t, TComparable> TParamDefaultMap;
-		
-		std::map<size_t, any> mReturnDefaults;
-		std::map<size_t, std::vector<any> > mReturns;
+
+        std::map<size_t, std::pair<bool,any> > mReturnDefaults;
+        std::map<size_t, std::vector<std::pair<bool,any> > > mReturns;
 		std::map<size_t, size_t> mCallCounter;
         std::map<size_t, size_t> mExpectCallCounter;
 		
 		std::map<size_t, any> mRedirects;
 		std::map<size_t,  TParamMap> mExpects;
 		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
+        
+        std::map<size_t,  TParamMap> mSetters;
+        std::map<size_t,  TParamDefaultMap > mSetterDefaults;
 
 		Detail::TVirtualTable* mVirtualTable;	
 
@@ -51,9 +55,9 @@ namespace Detail
 		any& GetRedirect(size_t idx);
 		void SetRedirect(size_t idx, const any& redirect);
 
-		void SetReturnDefault(size_t idx, const any& result);
-		void SetReturn(size_t idx, const any& result);
-		any& GetReturn(size_t idx);
+        void SetReturnDefault(size_t idx, const std::pair<bool, any>& result);
+        void SetReturn(size_t idx, const std::pair<bool, any>& result);
+        std::pair<bool, any>& GetReturn(size_t idx);
 
 		void SetActual(size_t idx, size_t paramId, const any& param);
 		void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param);
@@ -61,6 +65,13 @@ namespace Detail
 
         bool HaveExpectDefault(size_t idx, size_t paramId);
         bool HaveExpect(size_t idx, size_t paramId);
+
+        void SetSetterDefault(size_t idx, size_t paramId, const TComparable& result);
+        void SetSetter(size_t idx, size_t paramId, const TComparable& param);
+
+        bool HaveSetterDefault(size_t idx, size_t paramId);
+        bool HaveSetter(size_t idx, size_t paramId);
+        void ApplySetter(size_t idx, size_t paramId, const any& param);
 
 		void* GetVptr();
 
@@ -83,7 +94,7 @@ namespace Detail
 		}
 
         template <class F, class Type>
-		TReturnMatchBuilder<F> CreateMatchBuilder(const Destructor& d)
+		TReturnMatchBuilder<F> CreateMatchBuilder(const Destructor& )
 		{
             size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<Type>();
 
@@ -96,4 +107,7 @@ namespace Detail
 
 }
 
+//Local Variables:
+//c-basic-offset: 4
+//End:
 #endif //__AMOP_MOCKOBJECTBASE_HH

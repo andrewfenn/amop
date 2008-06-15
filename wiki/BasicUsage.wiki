@@ -131,6 +131,75 @@ TEST(MockObjectMethodConstSimple)
     ((IInterface*)mock)->SimpleConstFunction();	
 }
 
+struct SimpleException : public std::exception
+{
+  int value;
+  SimpleException(int v)
+    : std::exception()
+    , value(v){
+  }
+};
+
+void ThisThrows(){
+  throw SimpleException(42);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithThrow)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(std::exception());
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn(), std::exception );
+    
+    mock.Verify();
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithInheritedThrow)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(SimpleException(22));
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn(), std::exception);
+    
+    mock.Verify();
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithManyThrow)
+{
+    TMockObject<IInterface> mock;
+
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(SimpleException(22));
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Wills(42);
+    mock.Method(&IInterface::SimpleFunctionWithReturn)
+      .Throws(SimpleException(142));
+    
+    try{
+      ((IInterface*)mock)->SimpleFunctionWithReturn();
+      CHECK(false);
+    }catch(SimpleException & se){
+      CHECK_EQUAL(22, se.value);
+    }
+    CHECK_EQUAL(42, ((IInterface*)mock)->SimpleFunctionWithReturn());
+    try{
+      ((IInterface*)mock)->SimpleFunctionWithReturn();
+      CHECK(false);
+    }catch(SimpleException & se){
+      CHECK_EQUAL(142, se.value);
+    }
+    
+    mock.Verify();
+}
+
+
 //------------------------------------------------------------------
 TEST(MockObjectMethodConstComplex)
 {
@@ -415,7 +484,7 @@ TEST(MockObjectMethodAddCallCount)
     ((IInterface*)mock)->ComplexFunction("First", second, "Third");
     ((IInterface*)mock)->ComplexFunction("First", second, "Third");
 
-    CHECK_EQUAL(3, mock.Method(&IInterface::ComplexFunction).Count());
+    CHECK_EQUAL(3u, mock.Method(&IInterface::ComplexFunction).Count());
 }
 
 //------------------------------------------------------------------
@@ -510,5 +579,111 @@ TEST(MockObjectMethodWillsCallCountVerify)
         .Wills(3);
 
     CHECK_THROW(mock.Verify(), TCallCountException);
+}
+
+//------------------------------------------------------------------
+class ISimple1
+{
+public:
+    virtual void SimpleFunction() = 0;
+    virtual int SimpleFunctionWithReturn() = 0;
+    virtual ~ISimple1();
+};
+
+//------------------------------------------------------------------
+class ISimple2
+{
+public:
+    virtual void SimpleFunction() = 0;
+    virtual int SimpleFunctionWithReturn() = 0;
+    virtual ~ISimple2();
+};
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_noneImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunctionWithReturn(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_oneSimpleImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    mock1.Method(&ISimple1::SimpleFunction);
+
+    ((ISimple1*)mock1)->SimpleFunction();
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunctionWithReturn(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_bothSimpleImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    mock1.Method(&ISimple1::SimpleFunction);
+    mock2.Method(&ISimple2::SimpleFunction);
+
+    ((ISimple1*)mock1)->SimpleFunction();
+    ((ISimple2*)mock2)->SimpleFunction();
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunctionWithReturn(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_oneReturnImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    int expected1 = 1;
+    mock1.Method(&ISimple1::SimpleFunctionWithReturn)
+        .Will(expected1);
+
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    int got = ((ISimple1*)mock1)->SimpleFunctionWithReturn();
+    CHECK_EQUAL(expected1, got);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunctionWithReturn(), TNotImplementedException);
+}
+
+//------------------------------------------------------------------
+TEST(TwoInterfaces_bothReturnImplemented)
+{
+    TMockObject<ISimple1> mock1;
+    TMockObject<ISimple2> mock2;
+
+    int expected1 = 1;
+    int expected2 = 2;
+
+    mock1.Method(&ISimple1::SimpleFunctionWithReturn)
+        .Will(expected1);
+    mock2.Method(&ISimple2::SimpleFunctionWithReturn)
+        .Will(expected2);
+
+
+    CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
+
+    int got;
+    got = ((ISimple1*)mock1)->SimpleFunctionWithReturn();
+    CHECK_EQUAL(expected1, got);
+    got = ((ISimple2*)mock2)->SimpleFunctionWithReturn();
+    CHECK_EQUAL(expected2, got);
 }
 }}}

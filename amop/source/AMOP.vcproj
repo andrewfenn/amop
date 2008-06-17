@@ -156,11 +156,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DynamicObject.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MockObject.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\MockObjectBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\VirtualTable.cpp"
 				>
 			</File>
 		</Filter>
@@ -191,6 +199,10 @@
 			</File>
 			<File
 				RelativePath=".\Destructor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicObject.h"
 				>
 			</File>
 			<File

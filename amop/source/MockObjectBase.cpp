@@ -1,11 +1,7 @@
 #include "MockObjectBase.h"
 
-#include "VirtualTable.h"
-#include "CheckOffsetFunc.h"
-#include "CallHandler.h"
 #include "Any.h"
 #include "ObjectHolder.h"
-#include "ReturnMatchBuilder.h"
 #include "MockObjectException.h"
 #include "Comparable.h"
 
@@ -15,27 +11,22 @@ namespace amop
 {
 
 namespace Detail
-{
-
+{        
 //------------------------------------------------------------------
 TMockObjectBase::TMockObjectBase()
 {
-    mVirtualTable = Detail::TVirtualTable::CreateVirtualTable(
-		this);
+    mDynamicObject.reset(new TDynamicObject(this));
 }
 
 //------------------------------------------------------------------
 TMockObjectBase::~TMockObjectBase()
 {
-	delete mVirtualTable;
 }		
 
 //------------------------------------------------------------------
 void TMockObjectBase::Clear()
 {
-	delete mVirtualTable;
-    mVirtualTable = Detail::TVirtualTable::CreateVirtualTable(
-		this);
+	mDynamicObject.reset(new TDynamicObject(this)) ;
     
     mReturnDefaults.clear();
 	mReturns.clear();
@@ -339,7 +330,7 @@ void TMockObjectBase::SetSetter(size_t idx, size_t paramId, const TComparable& p
 //------------------------------------------------------------------
 void* TMockObjectBase::GetVptr()
 {
-	return &mVirtualTable->mVtpr;
+	return mDynamicObject->GetVptr();
 }
 
 }

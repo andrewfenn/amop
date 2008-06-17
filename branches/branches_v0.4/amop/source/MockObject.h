@@ -11,37 +11,36 @@
 namespace amop
 {
 
-//------------------------------------------------------------------
-template <class T>
-class TMockObject : public Detail::TMockObjectBase
-{
-public:
-	operator T*()
-	{ 
-		return (T*)GetVptr();
-	}	
+    //------------------------------------------------------------------
+    template <class T>
+    class TMockObject : public Detail::TMockObjectBase
+    {
+    public:
+        operator T*()
+        { 
+            return (T*)GetVptr();
+        }	
 
-	template <class F>
-	TReturnMatchBuilder<F> Method(F method)
-	{
-		typedef int ItIsNotPointerToMemberMethod[
-			Detail::IsPointerToMethod<F>::Result ? 1 : -1];
-		
-		return CreateMatchBuilder<F, T>(method);
-	}
+        template <class F>
+        TReturnMatchBuilder<F> Method(F method)
+        {
+            typedef int ItIsNotPointerToMemberMethod[
+                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
-    TReturnMatchBuilder<void (T::*)(void*)> Method(const Destructor& d)
-	{
-		return CreateMatchBuilder<void (T::*)(void*), T>(d);
-	}
+            return TReturnMatchBuilder<F>(this, mDynamicObject->Bind(method));
+        }
+
+        TReturnMatchBuilder<void (T::*)(void*)> Method(const Destructor&)
+        {
+            typedef void (T::*TDestructorType)(void*);               
+            
+            return TReturnMatchBuilder<TDestructorType>(this, 
+                mDynamicObject->BindDestructor<T>() );
+        }
+    private:
 
 
-
-private:
-	
-
-};
-
+    };
 }
 
 

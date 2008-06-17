@@ -79,6 +79,9 @@ TEST(MockObjectMethodSimple)
 
     ((IInterface*)mock)->SimpleFunction();
     ((IInterface*)mock)->SimpleFunctionWithAlotParams(0, 0, 0, 0, std::string());
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
 }
 
 //------------------------------------------------------------------
@@ -118,6 +121,9 @@ TEST(MockObjectMethodConstSimple)
     mock.Method(&IInterface::SimpleConstFunction);
 
     ((IInterface*)mock)->SimpleConstFunction();	
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
 }
 
 struct SimpleException : public std::exception
@@ -228,6 +234,9 @@ TEST(MockObjectMethodSimpleExpect)
         .Expect<2>("SomeText");
 
     ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
 }
 
 //------------------------------------------------------------------
@@ -245,6 +254,9 @@ TEST(MockObjectMethodSimpleExpectPolicy)
     char buf[] = "Third";
     
     ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
 }
 
 //------------------------------------------------------------------
@@ -274,7 +286,10 @@ TEST(MockObjectMethodMultipleExpect)
 
     ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
     ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
-    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
+    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");\
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
 }
 
 //------------------------------------------------------------------
@@ -496,6 +511,9 @@ TEST(MockObjectMethodDestructor)
     mock.Method(Destructor());
 
     delete ((IInterface*)mock);
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
 }
 
 //------------------------------------------------------------------

@@ -3,10 +3,8 @@
 
 #include "Any.h"
 #include "ObjectHolder.h"
-#include "ReturnMatchBuilder.h"
-#include "CheckOffsetFunc.h"
-#include "CallHandler.h"
-#include "Destructor.h"
+#include "DynamicObject.h"
+
 #include <map>
 #include <vector>
 
@@ -16,10 +14,6 @@ namespace amop
 namespace Detail
 {
   
-	class TVirtualTable;
-
-
-	//------------------------------------------------------------------
 	class TMockObjectBase : public Detail::TObjectHolder
 	{
 	public:
@@ -29,7 +23,7 @@ namespace Detail
 		void Clear();
         void Verify();
 
-	protected:
+	protected:       
 		typedef std::vector<TComparable> TComparableList;
 		typedef std::map<size_t, TComparableList> TParamMap;
 		typedef std::map<size_t, TComparable> TParamDefaultMap;
@@ -44,9 +38,9 @@ namespace Detail
 		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
         
         std::map<size_t,  TParamMap> mSetters;
-        std::map<size_t,  TParamDefaultMap > mSetterDefaults;
+        std::map<size_t,  TParamDefaultMap > mSetterDefaults;		
 
-		Detail::TVirtualTable* mVirtualTable;	
+        std::auto_ptr<TDynamicObject> mDynamicObject;
 
 		void AddCallCounter(size_t idx);
 		size_t GetCallCounter(size_t idx);
@@ -74,33 +68,10 @@ namespace Detail
         void ApplySetter(size_t idx, size_t paramId, const any& param);
 
 		void* GetVptr();
-
-		template <class F>
-		TReturnMatchBuilder<F> CreateMatchBuilder(size_t offset, TFunctionAddress data)
-		{
-			assert(offset < MAX_NUM_VIRTUAL_FUNCTIONS);
-			mVirtualTable->mVtable[offset] = data;
-
-			return TReturnMatchBuilder<F>(this, offset);
-		}
-
-		template <class F, class Type>
-		TReturnMatchBuilder<F> CreateMatchBuilder(F method)
-		{
-            size_t offset = Detail::Inner::TCheckOffset::GetOffset(method);
-
-			return CreateMatchBuilder<F>(offset, 
-				Detail::CallHandler::Create<F>(offset) );
-		}
-
-        template <class F, class Type>
-		TReturnMatchBuilder<F> CreateMatchBuilder(const Destructor& )
-		{
-            size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<Type>();
-
-			return CreateMatchBuilder<F>(offset, 
-				Detail::CallHandler::Create<F>(offset) );
-		}
+		
+    private:
+        TMockObjectBase( const TMockObjectBase& );
+        TMockObjectBase& operator=(const TMockObjectBase& );
 
 	};
 }

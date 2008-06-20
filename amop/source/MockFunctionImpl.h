@@ -18,27 +18,30 @@ namespace amop
         public:
             TMockFunctionImpl();            
 
-            virtual void SetExpectCallCounter(size_t counter);            
+            // IMockFunction Interface
+            void SetExpectCallCounter(size_t counter);            
 
-            virtual void SetRedirect(const any& result);
+            void SetRedirect(const any& result);
 
-            virtual void SetSetter(size_t paramId, const TComparable& param, bool isDefault);
+            void SetSetter(size_t paramId, const TComparable& param, bool isDefault);
 
-            virtual void SetExpect(size_t paramId, const TComparable& param, bool isDefault);
+            void SetExpect(size_t paramId, const TComparable& param, bool isDefault);
 
-            virtual void SetReturn(const std::pair<bool, any>& result, bool isDefault);
+            void SetReturn(const std::pair<bool, any>& result, bool isDefault);
 
             virtual size_t GetCallCounter();
 
+            // IDynamicFunctionHandler Interface         
             any& GetRedirect();
 
             void AddCallCounter();
 
-            void Verify();
-
             any& GetReturn();
 
             void SetActual(size_t paramId, const any& param);
+
+            // Its own public interface
+            void Verify();
 
         protected:              
             void VerifyCallCounter();

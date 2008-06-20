@@ -15,7 +15,6 @@ namespace amop
             return TVirtualTable::GetThis(pointer);
         }
 
-
         //------------------------------------------------------------------
         class TNotImplemented
         {

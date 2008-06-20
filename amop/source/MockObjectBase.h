@@ -2,19 +2,22 @@
 #define __AMOP_MOCKOBJECTBASE_HH
 
 #include "Any.h"
-#include "ObjectHolder.h"
 #include "DynamicObject.h"
 
 #include <map>
 #include <vector>
+#include <set>
 
 namespace amop
 {
 
 namespace Detail
 {
-  
-	class TMockObjectBase : public Detail::TObjectHolder
+    class TDynamicFunction;
+    class IMockFunction;
+
+    //------------------------------------------------------------------
+    class TMockObjectBase         
 	{
 	public:
 		TMockObjectBase();
@@ -23,56 +26,33 @@ namespace Detail
 		void Clear();
         void Verify();
 
-	protected:       
-		typedef std::vector<TComparable> TComparableList;
-		typedef std::map<size_t, TComparableList> TParamMap;
-		typedef std::map<size_t, TComparable> TParamDefaultMap;
+    protected:
+        void* GetVptr();
 
-        std::map<size_t, std::pair<bool,any> > mReturnDefaults;
-        std::map<size_t, std::vector<std::pair<bool,any> > > mReturns;
-		std::map<size_t, size_t> mCallCounter;
-        std::map<size_t, size_t> mExpectCallCounter;
-		
-		std::map<size_t, any> mRedirects;
-		std::map<size_t,  TParamMap> mExpects;
-		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
-        
-        std::map<size_t,  TParamMap> mSetters;
-        std::map<size_t,  TParamDefaultMap > mSetterDefaults;		
+        TDynamicObject* GetDynamicObject()
+        {
+            return mDynamicObject.get();
+        }		
 
-        std::auto_ptr<TDynamicObject> mDynamicObject;
+        std::pair<IMockFunction*, IDynamicFunctionHandler*> CreateMockFunction();
 
-		void AddCallCounter(size_t idx);
-		size_t GetCallCounter(size_t idx);
-        void SetExpectCallCounter(size_t idx, size_t c);
+        IMockFunction* GetMockFunction(TDynamicFunction* func);
 
-		any& GetRedirect(size_t idx);
-		void SetRedirect(size_t idx, const any& redirect);
+	private:       
+        // Inheritent from IDynamicObjectHandler
+        any& GetRedirect(TDynamicFunction* dynamicFunction);
 
-        void SetReturnDefault(size_t idx, const std::pair<bool, any>& result);
-        void SetReturn(size_t idx, const std::pair<bool, any>& result);
-        std::pair<bool, any>& GetReturn(size_t idx);
+        std::pair<bool, any>& GetReturn(TDynamicFunction* dynamicFunction);
+        void SetActual(TDynamicFunction* dynamicFunction, size_t paramId, const any& param);
+        void AddCallCounter(TDynamicFunction* dynamicFunction);
 
-		void SetActual(size_t idx, size_t paramId, const any& param);
-		void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param);
-		void SetExpect(size_t idx, size_t paramId, const TComparable& param);
+        friend class TMockFunctionImpl;        
+        std::vector<TMockFunctionImpl*> mFunctions;
 
-        bool HaveExpectDefault(size_t idx, size_t paramId);
-        bool HaveExpect(size_t idx, size_t paramId);
-
-        void SetSetterDefault(size_t idx, size_t paramId, const TComparable& result);
-        void SetSetter(size_t idx, size_t paramId, const TComparable& param);
-
-        bool HaveSetterDefault(size_t idx, size_t paramId);
-        bool HaveSetter(size_t idx, size_t paramId);
-        void ApplySetter(size_t idx, size_t paramId, const any& param);
-
-		void* GetVptr();
-		
-    private:
+        std::auto_ptr<TDynamicObject> mDynamicObject;              
+		    
         TMockObjectBase( const TMockObjectBase& );
         TMockObjectBase& operator=(const TMockObjectBase& );
-
 	};
 }
 

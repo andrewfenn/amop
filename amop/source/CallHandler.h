@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "FunctionHolder.h"
 #include <vector>
+#include <assert.h>
 
 namespace amop
 {

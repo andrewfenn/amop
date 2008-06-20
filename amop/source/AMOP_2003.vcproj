@@ -23,6 +23,7 @@
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
 				Detect64BitPortabilityProblems="TRUE"
@@ -61,6 +62,7 @@
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -101,10 +103,22 @@
 				RelativePath=".\CheckOffsetFunc.cpp">
 			</File>
 			<File
+				RelativePath=".\DynamicFunction.cpp">
+			</File>
+			<File
+				RelativePath=".\DynamicObject.cpp">
+			</File>
+			<File
+				RelativePath=".\MockFunctionImpl.cpp">
+			</File>
+			<File
 				RelativePath=".\MockObject.cpp">
 			</File>
 			<File
 				RelativePath=".\MockObjectBase.cpp">
+			</File>
+			<File
+				RelativePath=".\VirtualTable.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -130,6 +144,12 @@
 				RelativePath=".\Destructor.h">
 			</File>
 			<File
+				RelativePath=".\DynamicFunction.h">
+			</File>
+			<File
+				RelativePath=".\DynamicObject.h">
+			</File>
+			<File
 				RelativePath=".\FastDelegate.h">
 			</File>
 			<File
@@ -152,6 +172,12 @@
 			</File>
 			<File
 				RelativePath=".\MacroRepeat.h">
+			</File>
+			<File
+				RelativePath=".\MockFunction.h">
+			</File>
+			<File
+				RelativePath=".\MockFunctionImpl.h">
 			</File>
 			<File
 				RelativePath=".\MockObject.h">

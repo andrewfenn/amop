@@ -1,7 +1,6 @@
 #ifndef __AMOP_OBJECTHOLDER_HH
 #define __AMOP_OBJECTHOLDER_HH
 
-#include "ExceptionThrower.h"
 #include "Any.h"
 #include "Functor.h"
 #include <cassert>
@@ -29,18 +28,8 @@ namespace amop
 
             template <class R>
             R Return(size_t idx)
-            {
-                std::pair<bool, any> & exitValue = GetReturn(idx);
-                if(exitValue.first){
-                    AmopSharedPtr<ExceptionThrowerBase> thrower;
-                    try{
-                        thrower = any_cast<AmopSharedPtr<ExceptionThrowerBase> >(exitValue.second);
-                    }catch(bad_any_cast & /*bac*/){
-                        assert(false);
-                    }
-                    thrower->ThrowTypedException();
-                }//else
-                return any_cast<R>(exitValue.second);
+            {                                                
+                return any_cast<R>(GetReturn(idx));
             }
 
             template <class T>
@@ -66,7 +55,7 @@ namespace amop
 
             virtual any& GetRedirect(size_t idx) = 0;
             
-            virtual std::pair<bool, any>& GetReturn(size_t idx) = 0;
+            virtual any& GetReturn(size_t idx) = 0;
             virtual void SetActual(size_t idx, size_t paramId, const any& param) = 0;	
 
             virtual void AddCallCounter(size_t idx) = 0;	

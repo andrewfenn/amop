@@ -36,7 +36,7 @@ namespace amop
 
             void Verify();
 
-            std::pair<bool, any>& GetReturn();
+            any& GetReturn();
 
             void SetActual(size_t paramId, const any& param);
 
@@ -49,6 +49,7 @@ namespace amop
 
             void ApplySetter(size_t paramId, const any& param);
 
+            std::pair<bool, any>& _GetReturn();
 
             any mRedirect;
             size_t mCallCounter;

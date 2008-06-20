@@ -24,49 +24,33 @@ namespace amop
             ~TDynamicObject();
 
             void* GetVptr();
-
-            template<class F>
-            TDynamicFunction* GetBinded(F method)
-            {
-                size_t offset = Detail::Inner::TCheckOffset::GetOffset(method);
-
-                return !mFunctions.count(offset) ? NULL : mFunctions[offset];
-            }
-
-            template<class T>
-            TDynamicFunction* GetBindedDestructor()
-            {
-                size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<T>();
-
-                return !mFunctions.count(offset) ? NULL : mFunctions[offset];
-            }
-
+            
             template <class F>
-            void Bind(F method, IDynamicFunctionHandler* handler)
+            TDynamicFunction* Bind(F method)
             {
                 size_t offset = Detail::Inner::TCheckOffset::GetOffset(method);
 
-                _BindFunction(offset, Detail::CallHandler::Create<F>(offset), handler);
+                return _BindFunction(offset, Detail::CallHandler::Create<F>(offset));
             }
 
             template <class T>
-            void BindDestructor(IDynamicFunctionHandler* handler)
+            TDynamicFunction*  BindDestructor()
             {
                 typedef void (T::*TDestructorType)(void*);
                 
                 size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<T>();
 
-                _BindFunction(offset, Detail::CallHandler::Create<TDestructorType>(offset), handler);
+                return _BindFunction(offset, Detail::CallHandler::Create<TDestructorType>(offset));
             }            
 
         public:
             // Inheritent from TObjectHolder        
             any& GetRedirect(size_t idx);
-            std::pair<bool, any>& GetReturn(size_t idx);
+            any& GetReturn(size_t idx);
             void SetActual(size_t idx, size_t paramId, const any& param);
             void AddCallCounter(size_t idx);
 
-            void _BindFunction(size_t offset, TFunctionAddress data, IDynamicFunctionHandler* handler);
+            TDynamicFunction* _BindFunction(size_t offset, TFunctionAddress data);
             
             typedef std::map<size_t, TDynamicFunction*> TDynamicFunctionMap;
 

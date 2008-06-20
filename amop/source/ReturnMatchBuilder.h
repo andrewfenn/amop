@@ -6,6 +6,7 @@
 #include "Comparable.h"
 #include "Policy.h"
 #include "MockFunction.h"
+#include "ExceptionThrower.h"
 
 #include <utility>
 

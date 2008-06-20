@@ -32,10 +32,9 @@ namespace amop
         }            
 
         //------------------------------------------------------------------
-        void TDynamicObject::_BindFunction(
+        TDynamicFunction* TDynamicObject::_BindFunction(
             size_t offset
-            , TFunctionAddress data
-            , IDynamicFunctionHandler* handler
+            , TFunctionAddress data            
             )
         {
             assert(offset < MAX_NUM_VIRTUAL_FUNCTIONS);
@@ -43,10 +42,13 @@ namespace amop
 
             if( mFunctions.count(offset) )
             {
-                return;
+                return mFunctions[offset];
             }
 
-            mFunctions[offset] = new TDynamicFunction(handler);
+            TDynamicFunction* p = new TDynamicFunction();
+            mFunctions[offset] = p;
+            
+            return p;
         }          
 
         //------------------------------------------------------------------
@@ -54,15 +56,15 @@ namespace amop
         {
             assert(mFunctions.count(idx));
             
-            return mFunctions[idx]->GetHandler()->GetRedirect();
+            return mFunctions[idx]->GetRedirect();
         }
 
         //------------------------------------------------------------------
-        std::pair<bool, any>& TDynamicObject::GetReturn(size_t idx)
+        any& TDynamicObject::GetReturn(size_t idx)
         {
             assert(mFunctions.count(idx));
             
-            return mFunctions[idx]->GetHandler()->GetReturn();
+            return mFunctions[idx]->GetReturn();
         }
 
         //------------------------------------------------------------------
@@ -70,7 +72,7 @@ namespace amop
         {
             assert(mFunctions.count(idx));
             
-            mFunctions[idx]->GetHandler()->SetActual(paramId, param);
+            mFunctions[idx]->SetActual(paramId, param);
         }
 
         //------------------------------------------------------------------
@@ -78,7 +80,7 @@ namespace amop
         {
             assert(mFunctions.count(idx));
             
-            mFunctions[idx]->GetHandler()->AddCallCounter();
+            mFunctions[idx]->AddCallCounter();
         }
     }
 }

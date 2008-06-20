@@ -14,7 +14,6 @@ namespace amop
         public:
             virtual ~IDynamicFunctionHandler(){}
 
-            // Inheritent from TObjectHolder        
             virtual any& GetRedirect() = 0;
             
             virtual any& GetReturn() = 0;

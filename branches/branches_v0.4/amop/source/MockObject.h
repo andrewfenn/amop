@@ -21,25 +21,99 @@ namespace amop
             return (T*)GetVptr();
         }	
 
+        //*****************************************
+        //     Single Version
+        //*****************************************
         template <class F>
-        TReturnMatchBuilder<F> Method(F method)
+        TReturnMatchBuilder<F, TSinglePolicy> Single(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F>(CreateMockFunction(function));
+            return TReturnMatchBuilder<F, TSinglePolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*)> Method(const Destructor&)
+        TReturnMatchBuilder<void (T::*)(void*), TSinglePolicy> Single(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
             Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType>(CreateMockFunction(function));            
+            return TReturnMatchBuilder<TDestructorType, TSinglePolicy>(CreateMockFunction(function));            
         }
+
+
+        //*****************************************
+        //     All Version
+        //*****************************************
+        template <class F>
+        TReturnMatchBuilder<F, TAllPolicy> All(F method)
+        {
+            typedef int ItIsNotPointerToMemberMethod[
+                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
+
+            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
+
+            return TReturnMatchBuilder<F, TAllPolicy>(CreateMockFunction(function));
+        }
+
+        TReturnMatchBuilder<void (T::*)(void*), TAllPolicy> All(const Destructor&)
+        {
+            typedef void (T::*TDestructorType)(void*);               
+            
+            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            
+            return TReturnMatchBuilder<TDestructorType, TAllPolicy>(CreateMockFunction(function));            
+        }
+
+        //*****************************************
+        //     Query Version
+        //*****************************************
+        template <class F>
+        TReturnMatchBuilder<F, TQueryPolicy> Query(F method)
+        {
+            typedef int ItIsNotPointerToMemberMethod[
+                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
+
+            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
+
+            return TReturnMatchBuilder<F, TQueryPolicy>(CreateMockFunction(function));
+        }
+
+        TReturnMatchBuilder<void (T::*)(void*), TQueryPolicy> Query(const Destructor&)
+        {
+            typedef void (T::*TDestructorType)(void*);               
+            
+            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            
+            return TReturnMatchBuilder<TDestructorType, TQueryPolicy>(CreateMockFunction(function));            
+        }
+
+        //*****************************************
+        //     Query Version
+        //*****************************************
+        template <class F>
+        TReturnMatchBuilder<F, TRedirectPolicy> Redirect(F method)
+        {
+            typedef int ItIsNotPointerToMemberMethod[
+                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
+
+            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
+
+            return TReturnMatchBuilder<F, TRedirectPolicy>(CreateMockFunction(function));
+        }
+
+        TReturnMatchBuilder<void (T::*)(void*), TRedirectPolicy> Redirect(const Destructor&)
+        {
+            typedef void (T::*TDestructorType)(void*);               
+            
+            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            
+            return TReturnMatchBuilder<TDestructorType, TRedirectPolicy>(CreateMockFunction(function));            
+        }
+
     private:
 
 

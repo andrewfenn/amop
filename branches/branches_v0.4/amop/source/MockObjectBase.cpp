@@ -21,18 +21,23 @@ namespace amop
         }		
 
         //------------------------------------------------------------------
-        std::pair<IMockFunction*, IDynamicFunctionHandler*> TMockObjectBase::CreateMockFunction()
+        IMockFunction* TMockObjectBase::CreateMockFunction(TDynamicFunction* function)
         {
+            if( function->GetHandler() )
+            {
+                std::vector<TMockFunctionImpl*>::iterator iter = 
+                    std::find(mFunctions.begin(), mFunctions.end(), function->GetHandler() );
+                
+                if( iter != mFunctions.end() )
+                {
+                    return *iter;
+                }
+            }
+            
             TMockFunctionImpl* func = new TMockFunctionImpl();
             mFunctions.push_back(func);
-
-            return std::pair<IMockFunction*, IDynamicFunctionHandler*>(func, func);
-        }
-
-        //------------------------------------------------------------------
-        IMockFunction* TMockObjectBase::GetMockFunction(TDynamicFunction* func)
-        {
-            return dynamic_cast<TMockFunctionImpl*>( func->GetHandler() );
+            function->SetHandler( func );
+            return func;
         }
 
         //------------------------------------------------------------------

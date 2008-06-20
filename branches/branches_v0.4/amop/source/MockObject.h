@@ -27,36 +27,18 @@ namespace amop
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
-            if(Detail::TDynamicFunction* func = GetDynamicObject()->GetBinded(method))
-            {
-                return TReturnMatchBuilder<F>(GetMockFunction(func));
-            }
-            else
-            {
-                std::pair<Detail::IMockFunction*, Detail::IDynamicFunctionHandler*> ptr = CreateMockFunction();
-                
-                GetDynamicObject()->Bind(method, ptr.second);
+            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-                return TReturnMatchBuilder<F>(ptr.first);
-            }
+            return TReturnMatchBuilder<F>(CreateMockFunction(function));
         }
 
         TReturnMatchBuilder<void (T::*)(void*)> Method(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            if(Detail::TDynamicFunction* func = GetDynamicObject()->GetBindedDestructor<T>())
-            {
-                return TReturnMatchBuilder<TDestructorType>(GetMockFunction(func));
-            }
-            else
-            {
-                std::pair<Detail::IMockFunction*, Detail::IDynamicFunctionHandler*> ptr = CreateMockFunction();
-                
-                GetDynamicObject()->BindDestructor<T>(ptr.second);
-
-                return TReturnMatchBuilder<TDestructorType>(ptr.first);
-            }
+            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            
+            return TReturnMatchBuilder<TDestructorType>(CreateMockFunction(function));            
         }
     private:
 

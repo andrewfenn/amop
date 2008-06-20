@@ -1,6 +1,9 @@
 #include "MockFunctionImpl.h"
 #include "Comparable.h"
 #include "MockObjectException.h"
+#include "ExceptionThrower.h"
+
+#include <assert.h>
 
 namespace amop
 {
@@ -171,14 +174,36 @@ namespace amop
         }
 
         //------------------------------------------------------------------
-        std::pair<bool, any>& TMockFunctionImpl::GetReturn()
+        any& TMockFunctionImpl::GetReturn()
+        {
+            std::pair<bool, any> & exitValue = _GetReturn();
+            if(exitValue.first)
+            {
+                AmopSharedPtr<ExceptionThrowerBase> thrower;
+                try
+                {
+                    thrower = any_cast<AmopSharedPtr<ExceptionThrowerBase> >(exitValue.second);
+                }
+                catch(bad_any_cast & /*bac*/)
+                {
+                    assert(false);
+                }
+                
+                thrower->ThrowTypedException();
+            }//else
+
+            return exitValue.second;
+        }
+
+        //------------------------------------------------------------------
+        std::pair<bool, any>& TMockFunctionImpl::_GetReturn()
         {
             size_t callCounter = mCallCounter - 1;
 
             if( mReturn.get() && callCounter < mReturn->size())
             {
                 return (*mReturn)[callCounter];
-            }	
+            }	            
 
             if(!mReturnDefault.get())
             {

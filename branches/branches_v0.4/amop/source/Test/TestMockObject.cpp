@@ -178,17 +178,17 @@ TEST(MockObjectMethodSimpleWithManyThrow)
       .Throws(SimpleException(142));
     
     try{
-      ((IInterface*)mock)->SimpleFunctionWithReturn();
-      CHECK(false);
+        ((IInterface*)mock)->SimpleFunctionWithReturn();
+        CHECK(false);
     }catch(SimpleException & se){
-      CHECK_EQUAL(22, se.value);
+        CHECK_EQUAL(22, se.value);
     }
     CHECK_EQUAL(42, ((IInterface*)mock)->SimpleFunctionWithReturn());
     try{
-      ((IInterface*)mock)->SimpleFunctionWithReturn();
-      CHECK(false);
+        ((IInterface*)mock)->SimpleFunctionWithReturn();
+        CHECK(false);
     }catch(SimpleException & se){
-      CHECK_EQUAL(142, se.value);
+        CHECK_EQUAL(142, se.value);
     }
     
     mock.Verify();

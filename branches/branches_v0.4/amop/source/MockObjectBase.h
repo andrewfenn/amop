@@ -34,9 +34,7 @@ namespace Detail
             return mDynamicObject.get();
         }		
 
-        std::pair<IMockFunction*, IDynamicFunctionHandler*> CreateMockFunction();
-
-        IMockFunction* GetMockFunction(TDynamicFunction* func);
+        IMockFunction* CreateMockFunction(TDynamicFunction* function);        
 
 	private:       
         // Inheritent from IDynamicObjectHandler

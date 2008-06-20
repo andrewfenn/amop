@@ -156,7 +156,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DynamicFunction.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DynamicObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MockFunctionImpl.cpp"
 				>
 			</File>
 			<File
@@ -202,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DynamicFunction.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DynamicObject.h"
 				>
 			</File>
@@ -211,6 +223,14 @@
 			</File>
 			<File
 				RelativePath=".\Functor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MockFunction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MockFunctionImpl.h"
 				>
 			</File>
 			<File

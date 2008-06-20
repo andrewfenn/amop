@@ -27,15 +27,36 @@ namespace amop
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
-            return TReturnMatchBuilder<F>(this, mDynamicObject->Bind(method));
+            if(Detail::TDynamicFunction* func = GetDynamicObject()->GetBinded(method))
+            {
+                return TReturnMatchBuilder<F>(GetMockFunction(func));
+            }
+            else
+            {
+                std::pair<Detail::IMockFunction*, Detail::IDynamicFunctionHandler*> ptr = CreateMockFunction();
+                
+                GetDynamicObject()->Bind(method, ptr.second);
+
+                return TReturnMatchBuilder<F>(ptr.first);
+            }
         }
 
         TReturnMatchBuilder<void (T::*)(void*)> Method(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            return TReturnMatchBuilder<TDestructorType>(this, 
-                mDynamicObject->BindDestructor<T>() );
+            if(Detail::TDynamicFunction* func = GetDynamicObject()->GetBindedDestructor<T>())
+            {
+                return TReturnMatchBuilder<TDestructorType>(GetMockFunction(func));
+            }
+            else
+            {
+                std::pair<Detail::IMockFunction*, Detail::IDynamicFunctionHandler*> ptr = CreateMockFunction();
+                
+                GetDynamicObject()->BindDestructor<T>(ptr.second);
+
+                return TReturnMatchBuilder<TDestructorType>(ptr.first);
+            }
         }
     private:
 

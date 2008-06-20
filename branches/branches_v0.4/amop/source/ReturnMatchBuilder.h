@@ -2,10 +2,11 @@
 #define __AMOP_RETURNMATCHBUILDER_HH
 
 
-#include "ObjectHolder.h"
 #include "Functor.h"
 #include "Comparable.h"
 #include "Policy.h"
+#include "MockFunction.h"
+
 #include <utility>
 
 #ifdef __GNUC__
@@ -20,9 +21,11 @@ template <typename F>
 class TReturnMatchBuilder
 {
 public:
-	TReturnMatchBuilder(Detail::TObjectHolder* objectHolder,
-		size_t offset) : mObjectHolder(objectHolder),
-			mOffset(offset)
+	TReturnMatchBuilder(
+        Detail::IMockFunction* function
+        ) 
+        : mFunction(function)
+			
 	{
 	}
 
@@ -40,7 +43,7 @@ public:
 		typedef int ItIsNotConvertible[
 			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 				
-            mObjectHolder->SetReturnDefault(mOffset, std::make_pair(false,(ToType)result));
+            mFunction->SetReturn(std::make_pair(false,(ToType)result), true);
 		return *this;
 	}
 
@@ -57,15 +60,15 @@ public:
 		typedef int ItIsNotConvertible[
 			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 				
-            mObjectHolder->SetReturn(mOffset, std::make_pair(false,(ToType)result));
-            return *this;
+        mFunction->SetReturn(std::make_pair(false,(ToType)result), false);
+        return *this;
     }
 
     template<class T>
     TReturnMatchBuilder Throw(T exception)
     {
         //Can we verify that it is convertible to throw specifier.
-        mObjectHolder->SetReturnDefault(mOffset, std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
+        mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), true);
         return *this;
     }
 
@@ -73,7 +76,7 @@ public:
     TReturnMatchBuilder Throws(T exception)
     {
         //Can we verify that it is convertible to throw specifier.
-        mObjectHolder->SetReturn(mOffset, std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
+        mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), false);
 		return *this;
 	}
 
@@ -118,7 +121,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetExpectDefault(mOffset, I, Setter::template Make<I, T, true>(expect));
+        mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), true);
 		return *this;
 	}
 
@@ -131,7 +134,7 @@ public:
             , SetNormal
         >::Type Setter;
 
-		mObjectHolder->SetExpect(mOffset, I, Setter::template Make<I, T, true>(expect));
+		mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), false);
 		return *this;
 	}
 
@@ -145,7 +148,7 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetSetterDefault(mOffset, I, Setter::template Make<I, T, false>(result));
+        mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), true);
 		return *this;
 	}
 
@@ -158,43 +161,42 @@ public:
             , SetNormal
         >::Type Setter;
         
-        mObjectHolder->SetSetter(mOffset, I, Setter::template Make<I, T, false>(result));
+        mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), false);
 		return *this;
 	}
 
-	template <typename T>
-	TReturnMatchBuilder Redirect(T freeFunc)
-	{
-		typename Detail::Functor<F>::FunctorType functor(freeFunc);
+    template <typename T>
+    TReturnMatchBuilder Redirect(T freeFunc)
+    {
+        typename Detail::Functor<F>::FunctorType functor(freeFunc);
 
-		mObjectHolder->SetRedirect(mOffset, functor);
+        mFunction->SetRedirect(functor);
 
-		return *this;
-	}
+        return *this;
+    }
 
-	template <typename C, typename T>
-	TReturnMatchBuilder Redirect(C* pointer, T func)
-	{
-		typename Detail::Functor<F>::FunctorType functor(pointer, func);
+    template <typename C, typename T>
+    TReturnMatchBuilder Redirect(C* pointer, T func)
+    {
+        typename Detail::Functor<F>::FunctorType functor(pointer, func);
 
-		mObjectHolder->SetRedirect(mOffset, functor);
+        mFunction->SetRedirect(functor);
 
-		return *this;
-	}
+        return *this;
+    }
 
 	size_t Count()
 	{
-		return mObjectHolder->GetCallCounter(mOffset);
+		return mFunction->GetCallCounter();
 	}
 
     void Count(size_t counter)
     {
-        return mObjectHolder->SetExpectCallCounter(mOffset, counter);
+        mFunction->SetExpectCallCounter(counter);
     }
 
 private:
-	Detail::TObjectHolder* mObjectHolder;
-	size_t mOffset;
+    Detail::IMockFunction* mFunction;
 };
 
 }

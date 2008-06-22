@@ -21,7 +21,7 @@ namespace Detail
 	{
 	public:
 		TMockObjectBase();
-		~TMockObjectBase();
+		virtual ~TMockObjectBase();
 
 		void Clear();
         void Verify();

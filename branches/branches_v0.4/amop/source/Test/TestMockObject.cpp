@@ -68,7 +68,6 @@ TEST(MockObjectNotImplementedThrowComplexFunction)
         TNotImplementedException);
 }
 
-//mockSubscriber.method("receive").expects(once()).with( eq(message) );
 //------------------------------------------------------------------
 TEST(MockObjectMethodSimple)
 {
@@ -90,7 +89,7 @@ TEST(MockObjectMethodComplex)
     TMockObject<IInterface> mock;
 
     mock.All(&IInterface::ComplexFunction)
-        .Will("Test Result");
+        .Return("Test Result");
     std::string crs, rs, s;
 
     std::string result = 
@@ -105,9 +104,9 @@ TEST(MockObjectMethodSimpleWithReturn)
     TMockObject<IInterface> mock;
 
     mock.All(&IInterface::SimpleFunctionWithReturn)
-        .Will(22);
+        .Return(22);
     mock.All(&IInterface::SimpleFunctionWithRefReturn)
-        .Will(1262);
+        .Return(1262);
 
     CHECK_EQUAL(22, ((IInterface*)mock)->SimpleFunctionWithReturn());
     CHECK_EQUAL(1262, ((IInterface*)mock)->SimpleFunctionWithRefReturn());
@@ -173,7 +172,7 @@ TEST(MockObjectMethodSimpleWithManyThrow)
     mock.Single(&IInterface::SimpleFunctionWithReturn)
       .Throws(SimpleException(22));
     mock.Single(&IInterface::SimpleFunctionWithReturn)
-      .Wills(42);
+      .Returns(42);
     mock.Single(&IInterface::SimpleFunctionWithReturn)
       .Throws(SimpleException(142));
     
@@ -201,7 +200,7 @@ TEST(MockObjectMethodConstComplex)
     TMockObject<IInterface> mock;
 
     mock.All(&IInterface::ComplexConstFunction)
-        .Will("Test Result");
+        .Return("Test Result");
     std::string crs, rs, s;
 
     std::string result = 
@@ -217,7 +216,7 @@ TEST(MockObjectMethodMultiWithReturn)
     TMockObject<IInterface> mock;
 
     mock.Single(&IInterface::SimpleFunctionWithReturn)
-        .Wills(22).Wills(11);
+        .Returns(22).Returns(11);
 
     CHECK_EQUAL(22, ((IInterface*)mock)->SimpleFunctionWithReturn());
     CHECK_EQUAL(11, ((IInterface*)mock)->SimpleFunctionWithReturn());
@@ -240,6 +239,34 @@ TEST(MockObjectMethodSimpleExpect)
 }
 
 //------------------------------------------------------------------
+TEST(MockObjectMethodSimpleExpectAll)
+{
+    TMockObject<IInterface> mock;
+
+    mock.All(&IInterface::SimpleFunctionWithParams)
+        .Expect(All(21.0f, "Hello World", "SomeText"));
+
+    ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleExpectAllButSkip)
+{
+    TMockObject<IInterface> mock;
+
+    mock.All(&IInterface::SimpleFunctionWithParams)
+        .Expect(All(21.0f, Skip(), "SomeText"));
+
+    ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
+}
+
+//------------------------------------------------------------------
 TEST(MockObjectMethodSimpleExpectPolicy)
 {
     TMockObject<IInterface> mock;
@@ -248,6 +275,24 @@ TEST(MockObjectMethodSimpleExpectPolicy)
         .Expect<0>("First")
         .Expect<1>(Policy::Pointer("Second"))
         .Expect<2>(Policy::Array("Third", strlen("Third") + 1) );
+
+    std::string first = "First";
+    std::string second = "Second";
+    char buf[] = "Third";
+    
+    ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodSimpleExpectPolicyAll)
+{
+    TMockObject<IInterface> mock;
+
+    mock.All(&IInterface::PolicyTestFunction)
+        .Expect(All("First", Policy::Pointer("Second"), Policy::Array("Third", strlen("Third") + 1)) );
 
     std::string first = "First";
     std::string second = "Second";
@@ -280,22 +325,41 @@ TEST(MockObjectMethodMultipleExpect)
     TMockObject<IInterface> mock;
 
     mock.Single(&IInterface::SimpleFunctionWithParams)
-        .Expects<0>(1.0f)		.Expects<0>(2.0f)			.Expects<0>(3.0f)
-        .Expects<1>("Hello 1")	.Expects<1>("Hello 2")		.Expects<1>("Hello 3")
-        .Expects<2>("SomeText1").Expects<2>("SomeText2")	.Expects<2>("SomeText3");
+        .Expects<0>(1.0f).Expects<1>("Hello 1").Expects<2>("SomeText1") 
+        .Expects<0>(2.0f).Expects<1>("Hello 2").Expects<2>("SomeText2")	
+        .Expects<0>(3.0f).Expects<1>("Hello 3").Expects<2>("SomeText3");
 
     ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
     ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
-    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");\
+    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodMultipleExpectThrow)
+TEST(MockObjectMethodMultipleAll)
 {
     TMockObject<IInterface> mock;
+
+    mock.Single(&IInterface::SimpleFunctionWithParams)
+        .Expects(All(1.0f, "Hello 1", "SomeText1"))
+        .Expects(All(2.0f, "Hello 2", "SomeText2"))	
+        .Expects(All(3.0f, "Hello 3", "SomeText3"));
+
+    ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
+    ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
+    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
+
+    // To disable  unreferenced formal parameter in UnitTest++
+    CHECK(true);
+}
+
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodMultipleExpectThrow)
+{
+    TMockObject<IInterface, ManualVerify> mock;
 
     mock.Single(&IInterface::SimpleFunctionWithParams)
         .Expects<0>(1.0f)		.Expects<0>(2.0f)			.Expects<0>(3.0f)
@@ -316,7 +380,7 @@ TEST(MockObjectMethodSimpleExpectAndReturn)
         .Expect<0>(21.0f)
         .Expect<1>("Hello World")
         .Expect<2>("SomeText")
-        .Will(2);
+        .Return(2);
 
     CHECK_EQUAL(2, 
         ((IInterface*)mock)->SimpleFunctionWithParamsAndReturn(21.0f, "Hello World", "SomeText") );
@@ -421,7 +485,7 @@ TEST(MockObjectMethodSet)
 
     mock.All(&IInterface::ComplexFunction)
         .Set<1>("CHANGED")
-        .Will("");        
+        .Return("");        
 
     std::string second = "Second";
 
@@ -464,7 +528,7 @@ TEST(MockObjectMethodSetMultiple)
         .Sets<1>("C1").Sets<1>("C2").Sets<1>("C3");
 
     mock.All(&IInterface::ComplexFunction)
-        .Will("");        
+        .Return("");        
 
     std::string second = "Second";
 
@@ -482,7 +546,7 @@ TEST(MockObjectMethodAddCallCount)
 {		
     TMockObject<IInterface> mock;
 
-    mock.All(&IInterface::ComplexFunction).Will(std::string());
+    mock.All(&IInterface::ComplexFunction).Return(std::string());
 
     std::string second = "Second";
 
@@ -521,7 +585,7 @@ TEST(MockObjectMethodDestructor)
 //------------------------------------------------------------------
 TEST(MockObjectMethodVerifyCallCount)
 {		
-    TMockObject<IInterface> mock;
+    TMockObject<IInterface, ManualVerify> mock;
 
     mock.All(&IInterface::SimpleFunction)
         .Count(3);
@@ -540,7 +604,7 @@ TEST(MockObjectMethodVerifyCallCount)
 //------------------------------------------------------------------
 TEST(MockObjectMethodVerifyExpects)
 {		
-    TMockObject<IInterface> mock;
+    TMockObject<IInterface, ManualVerify> mock;
 
     mock.Single(&IInterface::SimpleFunctionWithParams)
         .Expects<0>(1.0f).Expects<0>(2.0f).Expects<0>(3.0f);
@@ -562,14 +626,14 @@ TEST(MockObjectMethodVerifyExpects)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodWillsCallCountException)
+TEST(MockObjectMethodReturnsCallCountException)
 {		
-    TMockObject<IInterface> mock;
+    TMockObject<IInterface, ManualVerify> mock;
 
     mock.Single(&IInterface::SimpleFunctionWithReturn)
-        .Wills(1)
-        .Wills(2)
-        .Wills(3);
+        .Returns(1)
+        .Returns(2)
+        .Returns(3);
 
     ((IInterface*)mock)->SimpleFunctionWithReturn();
     ((IInterface*)mock)->SimpleFunctionWithReturn();
@@ -580,14 +644,14 @@ TEST(MockObjectMethodWillsCallCountException)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodWillsCallCountVerify)
+TEST(MockObjectMethodReturnsCallCountVerify)
 {		
-    TMockObject<IInterface> mock;
+    TMockObject<IInterface, ManualVerify> mock;
 
     mock.Single(&IInterface::SimpleFunctionWithReturn)
-        .Wills(1)
-        .Wills(2)
-        .Wills(3);
+        .Returns(1)
+        .Returns(2)
+        .Returns(3);
 
     CHECK_THROW(mock.Verify(), TCallCountException);
 }
@@ -662,7 +726,7 @@ TEST(TwoInterfaces_oneReturnImplemented)
 
     int expected1 = 1;
     mock1.All(&ISimple1::SimpleFunctionWithReturn)
-        .Will(expected1);
+        .Return(expected1);
 
     CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
     CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);
@@ -682,9 +746,9 @@ TEST(TwoInterfaces_bothReturnImplemented)
     int expected2 = 2;
 
     mock1.All(&ISimple1::SimpleFunctionWithReturn)
-        .Will(expected1);
+        .Return(expected1);
     mock2.All(&ISimple2::SimpleFunctionWithReturn)
-        .Will(expected2);
+        .Return(expected2);
 
     CHECK_THROW(((ISimple1*)mock1)->SimpleFunction(), TNotImplementedException);
     CHECK_THROW(((ISimple2*)mock2)->SimpleFunction(), TNotImplementedException);

@@ -168,10 +168,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MockObject.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\MockObjectBase.cpp"
 				>
 			</File>
@@ -215,6 +211,10 @@
 			</File>
 			<File
 				RelativePath=".\DynamicObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExpectsMaker.h"
 				>
 			</File>
 			<File

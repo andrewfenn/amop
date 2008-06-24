@@ -27,6 +27,10 @@ namespace amop
         }
     };
     
+    //! The main mock object class
+    /*!
+        
+    */
     //------------------------------------------------------------------
     template <class T, typename VerifyPolicy = AutoVerify >
     class TMockObject : public Detail::TMockObjectBase
@@ -43,50 +47,50 @@ namespace amop
         }	
 
         //*****************************************
-        //     Single Version
+        //     Call Version
         //*****************************************
         template <class F>
-        TReturnMatchBuilder<F, Detail::TSinglePolicy> Single(F method)
+        TReturnMatchBuilder<F, Detail::TCallPolicy> Call(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F, Detail::TSinglePolicy>(CreateMockFunction(function));
+            return TReturnMatchBuilder<F, Detail::TCallPolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*), Detail::TSinglePolicy> Single(const Destructor&)
+        TReturnMatchBuilder<void (T::*)(void*), Detail::TCallPolicy> Call(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
             Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType, Detail::TSinglePolicy>(CreateMockFunction(function));            
+            return TReturnMatchBuilder<TDestructorType, Detail::TCallPolicy>(CreateMockFunction(function));            
         }
 
 
         //*****************************************
-        //     All Version
+        //     EveryCall Version
         //*****************************************
         template <class F>
-        TReturnMatchBuilder<F, Detail::TAllPolicy> All(F method)
+        TReturnMatchBuilder<F, Detail::TEveryCallPolicy> EveryCall(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F, Detail::TAllPolicy>(CreateMockFunction(function));
+            return TReturnMatchBuilder<F, Detail::TEveryCallPolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*), Detail::TAllPolicy> All(const Destructor&)
+        TReturnMatchBuilder<void (T::*)(void*), Detail::TEveryCallPolicy> EveryCall(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
             Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType, Detail::TAllPolicy>(CreateMockFunction(function));            
+            return TReturnMatchBuilder<TDestructorType, Detail::TEveryCallPolicy>(CreateMockFunction(function));            
         }
 
         //*****************************************

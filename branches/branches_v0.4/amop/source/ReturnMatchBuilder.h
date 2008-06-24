@@ -7,6 +7,7 @@
 #include "Policy.h"
 #include "MockFunction.h"
 #include "ExceptionThrower.h"
+#include "ExpectsMaker.h"
 
 #include <utility>
 
@@ -18,22 +19,15 @@ namespace amop
 {    
     namespace Detail
     {
-        class TSinglePolicy{};
-        class TAllPolicy{};
+        class TCallPolicy{};
+        class TEveryCallPolicy{};
         class TQueryPolicy{};
         class TRedirectPolicy{};      
 
         template <DETAIL_TPARAMS_DEF(8, Empty)> 
-        struct TAll
+        struct TExpectsAll
         {
-            TAll(T1 t1 = T1(),
-                T2 t2 = T2(),
-                T3 t3 = T3(),
-                T4 t4 = T4(),
-                T5 t5 = T5(),
-                T6 t6 = T6(),
-                T7 t7 = T7(),
-                T8 t8 = T8() )
+            TExpectsAll(DETAIL_ARGS_DEFAULT(8))
                 : p0(t1)
                 , p1(t2)
                 , p2(t3)
@@ -59,9 +53,9 @@ namespace amop
 
 #define DETAIL_ALL_MAKER_BUILD(i)       \
     template <DETAIL_TPARAMS(i)>                                            \
-    Detail::TAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
+    Detail::TExpectsAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
     {                                                                       \
-        return Detail::TAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
+        return Detail::TExpectsAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
     }
 
 DETAIL_ALL_MAKER_BUILD(1);
@@ -186,20 +180,28 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             return mFunction->GetCallCounter();
         }
-    };
+    };    
     
     //------------------------------------------------------------------
     template <typename F>
-    class TReturnMatchBuilder<F, Detail::TSinglePolicy>
-        : public TReturnMatchBuilderBase<F, Detail::TSinglePolicy>
+    class TReturnMatchBuilder<F, Detail::TCallPolicy>
+        : public TReturnMatchBuilderBase<F, Detail::TCallPolicy>
+        , public TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
+            typename TReturnMatchBuilder<F, Detail::TCallPolicy> 
+            >
     {
     public:
+        typedef TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
+            typename TReturnMatchBuilder<F, Detail::TCallPolicy> 
+            >
+        TExpectMakersType;                
+        
         TReturnMatchBuilder(
             Detail::IMockFunction* function
             ) 
-            : TReturnMatchBuilderBase(function)
-
+            : TReturnMatchBuilderBase(function)            
         {
+            SetSelf(this);
         }   	
 
         template<class T>
@@ -228,7 +230,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         }
 
         template<int I, class T>
-        TReturnMatchBuilder Expects(T expect)
+        TReturnMatchBuilder ExpectOne(T expect)
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
@@ -241,15 +243,11 @@ DETAIL_ALL_MAKER_BUILD(8);
         }    
 
         template<int I>
-        void Expects(Detail::Empty){};        
-
-        template<DETAIL_TPARAMS(8)>
-        TReturnMatchBuilder Expects(const Detail::TAll<DETAIL_ARGS(8)>& expect)
+        void ExpectOne(Detail::Empty)
         {
-            DETAIL_APPLY_ALL(Expects, expect);
-            return *this;
-        }
-
+            mFunction->SetExpect(I, Detail::TComparable(), false);
+        };                
+        
         template<int I, class T>
         TReturnMatchBuilder Sets(T result)
         {
@@ -262,13 +260,24 @@ DETAIL_ALL_MAKER_BUILD(8);
             mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), false);
             return *this;
         }                        
+
+        template<DETAIL_TPARAMS(8)>
+        TReturnMatchBuilder _Expects(const Detail::TExpectsAll<DETAIL_ARGS(8)>& expect)
+        {
+            DETAIL_APPLY_ALL(ExpectOne, expect);
+            return *this;
+        }
+
     };
 
 
     //------------------------------------------------------------------
     template <typename F>
-    class TReturnMatchBuilder<F, Detail::TAllPolicy>
-        : public TReturnMatchBuilderBase<F, Detail::TAllPolicy>
+    class TReturnMatchBuilder<F, Detail::TEveryCallPolicy>
+        : public TReturnMatchBuilderBase<F, Detail::TEveryCallPolicy>
+        , public TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
+            typename TReturnMatchBuilder<F, Detail::TEveryCallPolicy> 
+            >
     {
     public:
         TReturnMatchBuilder(
@@ -277,6 +286,7 @@ DETAIL_ALL_MAKER_BUILD(8);
             : TReturnMatchBuilderBase(function)
 
         {
+            SetSelf(this);
         }   	
 
         template<class T>
@@ -306,7 +316,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         }
 
         template<int I, class T>
-        TReturnMatchBuilder Expect(T expect)
+        TReturnMatchBuilder ExpectOne(T expect)
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
@@ -319,12 +329,15 @@ DETAIL_ALL_MAKER_BUILD(8);
         }
 
         template<int I>
-        void Expect(Detail::Empty){}
+        void ExpectOne(Detail::Empty)
+        {
+            mFunction->SetExpect(I, Detail::TComparable() , true);
+        }
 
         template<DETAIL_TPARAMS(8)>
-        TReturnMatchBuilder Expect(const Detail::TAll<DETAIL_ARGS(8)>& expect)
+        TReturnMatchBuilder _Expects(const Detail::TExpectsAll<DETAIL_ARGS(8)>& expect)
         {
-            DETAIL_APPLY_ALL(Expect, expect);
+            DETAIL_APPLY_ALL(ExpectOne, expect);
             return *this;
         }
 
@@ -348,12 +361,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         }    
     };
 
-
-    Detail::Empty Skip()
-    {
-        return Detail::Empty();
-    }
-
+    static Detail::Empty Ignore;
 }
 
 

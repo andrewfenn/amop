@@ -150,6 +150,11 @@ namespace amop
         public:
             TComparable() : mHolder(NULL) {}
 
+            bool IsEmpty()
+            {
+                return mHolder == NULL;
+            }
+
             template<class To, bool ReadOnly, class From>
             static TComparable MakeCompare(From value)
             {

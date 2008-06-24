@@ -228,6 +228,11 @@ namespace amop
                 }
                 else
                 {
+                    if( (*mExpectDefault)[paramId].IsEmpty() )
+                    {
+                        return ;
+                    }
+                    
                     if( (*mExpectDefault)[paramId] == param )
                     {
                         return ;
@@ -252,8 +257,11 @@ namespace amop
                     throw TNotEqualException(paramId, paramDefaultMap[paramId], param);
             }
 
-            if( clist[mCallCounter] != param )
-                throw TNotEqualException(paramId, clist[mCallCounter], param);
+            if( !clist[mCallCounter].IsEmpty() )
+            {
+                if( clist[mCallCounter] != param )
+                    throw TNotEqualException(paramId, clist[mCallCounter], param);
+            }
         }
 
         //------------------------------------------------------------------

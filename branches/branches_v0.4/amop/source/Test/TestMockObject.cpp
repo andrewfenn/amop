@@ -779,4 +779,32 @@ TEST(TwoInterfaces_bothReturnImplemented)
     CHECK_EQUAL(expected2, got);
 }
 
+TEST(Overloads1)
+{
+    // An example of an interface with method overrides
+    struct IOverloads
+    {
+        virtual int SimpleFunction() = 0;
+        virtual int SimpleFunction(int x) = 0;
+    };
+
+    // The method with no parameters
+    typedef int (IOverloads::*PMF0)();
+    PMF0 pmf0 = &IOverloads::SimpleFunction;
+
+    // The method with a single parameter
+    typedef int (IOverloads::*PMF1)(int);
+    PMF1 pmf1 = &IOverloads::SimpleFunction;
+
+    TMockObject<IOverloads> mock;
+
+    mock.EveryCall(pmf0).Return(1);
+    mock.EveryCall(pmf1).Return(2);
+
+    IOverloads * pI = mock;
+
+    CHECK_EQUAL(1, pI->SimpleFunction());
+    CHECK_EQUAL(2, pI->SimpleFunction(3)); 
+};
+
 

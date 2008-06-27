@@ -156,11 +156,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MockObject.cpp"
+				RelativePath=".\DynamicFunction.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MockFunctionImpl.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\MockObjectBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\VirtualTable.cpp"
 				>
 			</File>
 		</Filter>
@@ -194,11 +206,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DynamicFunction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExpectsMaker.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FunctionHolder.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Functor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MockFunction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MockFunctionImpl.h"
 				>
 			</File>
 			<File

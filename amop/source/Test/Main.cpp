@@ -2,6 +2,6 @@
 
 int main(int, char const *[])
 {
-	UnitTest::RunAllTests();
+	return UnitTest::RunAllTests();
 }
 

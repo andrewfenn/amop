@@ -152,6 +152,19 @@ TEST(MockObjectMethodSimpleWithThrow)
 }
 
 //------------------------------------------------------------------
+TEST(MockObjectMethodSimpleWithThrowNoReturn)
+{
+    TMockObject<IInterface> mock;
+
+    mock.EveryCall(&IInterface::SimpleFunction)
+      .Throw(std::exception());
+
+    CHECK_THROW(((IInterface*)mock)->SimpleFunction(), std::exception );
+    
+    mock.Verify();
+}
+
+//------------------------------------------------------------------
 TEST(MockObjectMethodSimpleWithInheritedThrow)
 {
     TMockObject<IInterface> mock;

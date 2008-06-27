@@ -52,7 +52,7 @@ namespace amop
 
             void ApplySetter(size_t paramId, const any& param);
 
-            std::pair<bool, any>& _GetReturn();
+            std::pair<bool, any>* _GetReturn(bool check) const;
 
             any mRedirect;
             size_t mCallCounter;

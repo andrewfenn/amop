@@ -107,6 +107,23 @@ namespace amop
         void TMockFunctionImpl::AddCallCounter()
         {
             mCallCounter++;
+
+            std::pair<bool, any>* exitValue = _GetReturn(false);
+
+            if(exitValue && exitValue->first)
+            {
+                AmopSharedPtr<ExceptionThrowerBase> thrower;
+                try
+                {
+                    thrower = any_cast<AmopSharedPtr<ExceptionThrowerBase> >(exitValue->second);
+                }
+                catch(bad_any_cast & /*bac*/)
+                {
+                    assert(false);
+                }
+                
+                thrower->ThrowTypedException();
+            }
         }
 
         //------------------------------------------------------------------
@@ -176,43 +193,36 @@ namespace amop
         //------------------------------------------------------------------
         any& TMockFunctionImpl::GetReturn()
         {
-            std::pair<bool, any> & exitValue = _GetReturn();
-            if(exitValue.first)
-            {
-                AmopSharedPtr<ExceptionThrowerBase> thrower;
-                try
-                {
-                    thrower = any_cast<AmopSharedPtr<ExceptionThrowerBase> >(exitValue.second);
-                }
-                catch(bad_any_cast & /*bac*/)
-                {
-                    assert(false);
-                }
-                
-                thrower->ThrowTypedException();
-            }//else
+            std::pair<bool, any> * exitValue = _GetReturn(true);            
 
-            return exitValue.second;
+            return exitValue->second;
         }
 
         //------------------------------------------------------------------
-        std::pair<bool, any>& TMockFunctionImpl::_GetReturn()
+        std::pair<bool, any>* TMockFunctionImpl::_GetReturn(
+            bool check
+            ) const
         {
             size_t callCounter = mCallCounter - 1;
 
             if( mReturn.get() && callCounter < mReturn->size())
             {
-                return (*mReturn)[callCounter];
+                return &(*mReturn)[callCounter];
             }	            
 
             if(!mReturnDefault.get())
             {
+                if( !check )
+                {
+                    return NULL;
+                }
+                
                 size_t expect = mReturn.get() ? mReturn->size() : 0;
 
                 throw TCallCountException(expect, callCounter);
             }
 
-            return *mReturnDefault;
+            return mReturnDefault.get();
         }
 
         //------------------------------------------------------------------

@@ -60,6 +60,10 @@ DETAIL_ALL_MAKER_BUILD(8);
         class TExpectsMakerBase
         {
         public:
+            TExpectsMakerBase() : Self(NULL)
+            {
+            }
+
             template <int I>
             struct P
             {

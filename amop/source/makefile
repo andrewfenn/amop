@@ -15,10 +15,10 @@ main:$(OBJS)
 	ar rcs libAmop.a $(OBJS)
 
 $(OBJS):
-	$(CC) -Wall -c $(SRCS) 
+	$(CC) -Wall -g -O0 -c $(SRCS) 
 
 test: main
-	$(CC) -Wall -I$(INCPATH) $(LIBPATH) $(TESTSRCS) -lAmop -lUnitTest++ -o runTest
+	$(CC) -Wall -g -O0 -I$(INCPATH) $(LIBPATH) $(TESTSRCS) -lAmop -lUnitTest++ -o runTest
 	@./runTest
 
 clean:

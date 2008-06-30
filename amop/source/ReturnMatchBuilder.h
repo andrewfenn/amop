@@ -104,7 +104,7 @@ namespace amop
         TReturnMatchBuilder(
             Detail::IMockFunction* function
             ) 
-            : TBase(function)
+            : TReturnMatchBuilderBase(function)
         {
         }        
         
@@ -259,10 +259,14 @@ namespace amop
             >
     {
     public:
+        typedef TReturnMatchBuilderBase TBase;
+
+
+    public:
         TReturnMatchBuilder(
             Detail::IMockFunction* function
             ) 
-            : TReturnMatchBuilderBase(function)
+            : TBase(function)
 
         {
             SetSelf(this);
@@ -282,7 +286,7 @@ namespace amop
             typedef int ItIsNotConvertible[
                 Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 
-                mFunction->SetReturn(std::make_pair(false,(ToType)result), true);
+                TBase::mFunction->SetReturn(std::make_pair(false,(ToType)result), true);
                 return *this;
         }
 
@@ -290,7 +294,7 @@ namespace amop
         TReturnMatchBuilder Throw(T exception)
         {
             //Can we verify that it is convertible to throw specifier.
-            mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), true);
+            TBase::mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), true);
             return *this;
         }
 
@@ -303,14 +307,16 @@ namespace amop
                 , SetNormal<F>
             >::Type Setter;
 
-            mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), true);
+            Detail::TComparable c = Setter::template Make<I, T, true>(expect);
+            
+            TBase::mFunction->SetExpect(I, c, true);
             return *this;
         }
 
         template<int I>
         void ExpectOne(Detail::Empty)
         {
-            mFunction->SetExpect(I, Detail::TComparable() , true);
+            TBase::mFunction->SetExpect(I, Detail::TComparable() , true);
         }
 
         template<DETAIL_TPARAMS(8)>
@@ -330,13 +336,13 @@ namespace amop
                 , SetNormal<F>
             >::Type Setter;
 
-            mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), true);
+            TBase::mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), true);
             return *this;
         }
 
         void Count(size_t counter)
         {
-            mFunction->SetExpectCallCounter(counter);
+            TBase::mFunction->SetExpectCallCounter(counter);
         }    
     };
 }

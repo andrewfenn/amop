@@ -3,6 +3,10 @@
 #include "MockObjectException.h"
 #include "ExceptionThrower.h"
 
+#ifdef __GNUC__
+#include <tr1/memory>
+#endif
+
 #include <assert.h>
 
 namespace amop

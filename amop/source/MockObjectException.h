@@ -1,38 +1,38 @@
 #ifndef __AMOP_MOCKOBJECTEXECEPTION__HH
 #define __AMOP_MOCKOBJECTEXECEPTION__HH
 
-#include <exception>
+#include <stdexcept>
 #include "Any.h"
 
 namespace amop
 {
 
     //------------------------------------------------------------------
-    class TNotImplementedException : public std::exception        
+    class TNotImplementedException : public std::runtime_error        
     {
     public:
         TNotImplementedException()
-            : std::exception("Not Implemented")
+            : std::runtime_error("Not Implemented")
         {
         }
     };
 
     //------------------------------------------------------------------
-    class TNotPureVirtualException : public std::exception        
+    class TNotPureVirtualException : public std::runtime_error        
     {
     public:        
         TNotPureVirtualException()
-            : std::exception("It is not a pure virtual function")
+            : std::runtime_error("It is not a pure virtual function")
         {
         }
     };
 
     //------------------------------------------------------------------
-    class TNotEqualException : public std::exception
+    class TNotEqualException : public std::runtime_error
     {
     public:
         TNotEqualException(size_t param, const any& expect, const any& actual) 
-            : std::exception("Not Equal")
+            : std::runtime_error("Not Equal")
             , mParam(param)
             , mExpect(expect)
             , mActual(actual)
@@ -52,11 +52,11 @@ namespace amop
     };
 
     //------------------------------------------------------------------
-    class TCallCountException : public std::exception
+    class TCallCountException : public std::runtime_error
     {
     public:
         TCallCountException(size_t expect, size_t actual) 
-            : std::exception("Call Count Fail")
+            : std::runtime_error("Call Count Fail")
             , mExpect(expect)
             , mActual(actual)
           {

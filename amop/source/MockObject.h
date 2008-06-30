@@ -174,23 +174,23 @@ namespace amop
         //     Call Version
         //*****************************************
         template <class F>
-        TReturnMatchBuilder<F, Detail::TCallPolicy> Call(F method)
+        Detail::TReturnMatchBuilder<F, typename Detail::TCallPolicy> Call(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F, Detail::TCallPolicy>(CreateMockFunction(function));
+            return Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*), Detail::TCallPolicy> Call(const Destructor&)
+        Detail::TReturnMatchBuilder<void (T::*)(void*), typename Detail::TCallPolicy> Call(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType, Detail::TCallPolicy>(CreateMockFunction(function));            
+            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TCallPolicy>(CreateMockFunction(function));            
         }
 
 
@@ -198,23 +198,23 @@ namespace amop
         //     EveryCall Version
         //*****************************************
         template <class F>
-        TReturnMatchBuilder<F, Detail::TEveryCallPolicy> EveryCall(F method)
+        Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy> EveryCall(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F, Detail::TEveryCallPolicy>(CreateMockFunction(function));
+            return Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*), Detail::TEveryCallPolicy> EveryCall(const Destructor&)
+        Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TEveryCallPolicy> EveryCall(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType, Detail::TEveryCallPolicy>(CreateMockFunction(function));            
+            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TEveryCallPolicy>(CreateMockFunction(function));            
         }
 
         //*****************************************
@@ -227,46 +227,46 @@ namespace amop
             This function binds a function to query mode. After you 
         */
         template <class F>
-        TReturnMatchBuilder<F, Detail::TQueryPolicy> Query(F method)
+        Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy> Query(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F, Detail::TQueryPolicy>(CreateMockFunction(function));
+            return Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*), Detail::TQueryPolicy> Query(const Destructor&)
+        Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TQueryPolicy> Query(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType, Detail::TQueryPolicy>(CreateMockFunction(function));            
+            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TQueryPolicy>(CreateMockFunction(function));            
         }
 
         //*****************************************
         //     Redirect Version
         //*****************************************
         template <class F>
-        TReturnMatchBuilder<F, Detail::TRedirectPolicy> Redirect(F method)
+        Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy> Redirect(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
                 Detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
             Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
 
-            return TReturnMatchBuilder<F, Detail::TRedirectPolicy>(CreateMockFunction(function));
+            return Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>(CreateMockFunction(function));
         }
 
-        TReturnMatchBuilder<void (T::*)(void*), Detail::TRedirectPolicy> Redirect(const Destructor&)
+        Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TRedirectPolicy> Redirect(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->BindDestructor<T>();
+            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
             
-            return TReturnMatchBuilder<TDestructorType, Detail::TRedirectPolicy>(CreateMockFunction(function));            
+            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TRedirectPolicy>(CreateMockFunction(function));            
         }
 
     private:

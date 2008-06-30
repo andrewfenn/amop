@@ -129,6 +129,11 @@ DETAIL_ALL_MAKER_BUILD(8);
         Detail::IMockFunction* mFunction;
     };
 
+    //! The builder object for query mode
+    /*!
+        This template class defined the query mode return object from 
+        \ref TMockObject::Query
+    */
     //------------------------------------------------------------------
     template<typename F>
     class TReturnMatchBuilder<F, Detail::TRedirectPolicy>
@@ -163,6 +168,8 @@ DETAIL_ALL_MAKER_BUILD(8);
         }
     };
 
+    /*!
+    */
     //------------------------------------------------------------------
     template<typename F>
     class TReturnMatchBuilder<F, Detail::TQueryPolicy>
@@ -182,6 +189,8 @@ DETAIL_ALL_MAKER_BUILD(8);
         }
     };    
     
+    /*!
+    */
     //------------------------------------------------------------------
     template <typename F>
     class TReturnMatchBuilder<F, Detail::TCallPolicy>
@@ -271,6 +280,8 @@ DETAIL_ALL_MAKER_BUILD(8);
     };
 
 
+    /*!
+    */
     //------------------------------------------------------------------
     template <typename F>
     class TReturnMatchBuilder<F, Detail::TEveryCallPolicy>

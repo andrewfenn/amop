@@ -1,0 +1,36 @@
+/*!
+    \mainpage
+    
+    \section intro_sec Introduction
+    
+    Welcome to the Automatic Mock Object Library (AMOP). Our goal is: Let's us creating a 
+    mock object in C++ much easier. By using an ABI based implementation, we can create 
+    our mock object in only one statement:
+
+    \code
+    TMockObject<YourInterface> mock;
+    \endcode
+        
+    And then we can create our test and set the expect values into it, without writing 
+    the implementation of your interface. The time is saved and when adding a new function 
+    in your interface, there are no needed to added it in your 'poor-man' implementation. 
+
+    \section limitation
+    
+    Because of AMOP is based on ABI of C++, there are some limitations:
+
+    - Only supports __cdecl calling convention., 
+    which is the default calling convention of almost all compliers 
+    - Only supports Pure Virtual Classes 
+    ( No member variables, No non virtual member funtions )
+    - Only supports Single Inheritance Interface.
+    - The maximum number of virtual functions of your interface 
+    should be lower than MAX_NUM_VIRTUAL_FUNCTIONS. 
+    (The default is 50, you can changed it in amop/Config.h, but it will slow down the compiler)
+    
+    \section need_help More?
+    
+    We are trying to document all usable classes and functions in here, but maybe that is not 
+    covered all your needs, just feel free to ask your question in our google group
+    (http://groups.google.com/group/amop-group). 
+*/

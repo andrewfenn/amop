@@ -51,7 +51,8 @@ TEST(MockObjectNotImplementedThrowSimpleFunction)
 
     CHECK((IInterface*)mock);
 
-    CHECK_THROW(((IInterface*)mock)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(mock->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW((*mock).SimpleFunction(), TNotImplementedException);
 }
 
 //------------------------------------------------------------------
@@ -64,7 +65,7 @@ TEST(MockObjectNotImplementedThrowComplexFunction)
     std::string crs, rs, s;
 
     CHECK_THROW(
-        ((IInterface*)mock)->ComplexFunction(crs, rs, s), 
+        mock->ComplexFunction(crs, rs, s), 
         TNotImplementedException);
 }
 
@@ -76,8 +77,8 @@ TEST(MockObjectMethodSimple)
     mock.EveryCall(&IInterface::SimpleFunction);
     mock.EveryCall(&IInterface::SimpleFunctionWithAlotParams);
 
-    ((IInterface*)mock)->SimpleFunction();
-    ((IInterface*)mock)->SimpleFunctionWithAlotParams(0, 0, 0, 0, std::string());
+    mock->SimpleFunction();
+    mock->SimpleFunctionWithAlotParams(0, 0, 0, 0, std::string());
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -93,7 +94,7 @@ TEST(MockObjectMethodComplex)
     std::string crs, rs, s;
 
     std::string result = 
-        ((IInterface*)mock)->ComplexFunction(crs, rs, s);
+        mock->ComplexFunction(crs, rs, s);
 
     CHECK_EQUAL("Test Result", result.c_str());
 }
@@ -108,8 +109,8 @@ TEST(MockObjectMethodSimpleWithReturn)
     mock.EveryCall(&IInterface::SimpleFunctionWithRefReturn)
         .Return(1262);
 
-    CHECK_EQUAL(22, ((IInterface*)mock)->SimpleFunctionWithReturn());
-    CHECK_EQUAL(1262, ((IInterface*)mock)->SimpleFunctionWithRefReturn());
+    CHECK_EQUAL(22, mock->SimpleFunctionWithReturn());
+    CHECK_EQUAL(1262, mock->SimpleFunctionWithRefReturn());
 }
 
 //------------------------------------------------------------------
@@ -119,7 +120,7 @@ TEST(MockObjectMethodConstSimple)
 
     mock.EveryCall(&IInterface::SimpleConstFunction);
 
-    ((IInterface*)mock)->SimpleConstFunction();	
+    mock->SimpleConstFunction();	
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -146,7 +147,7 @@ TEST(MockObjectMethodSimpleWithThrow)
     mock.EveryCall(&IInterface::SimpleFunctionWithReturn)
       .Throw(std::exception());
 
-    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn(), std::exception );
+    CHECK_THROW(mock->SimpleFunctionWithReturn(), std::exception );
     
     mock.Verify();
 }
@@ -159,7 +160,7 @@ TEST(MockObjectMethodSimpleWithThrowNoReturn)
     mock.EveryCall(&IInterface::SimpleFunction)
       .Throw(std::exception());
 
-    CHECK_THROW(((IInterface*)mock)->SimpleFunction(), std::exception );
+    CHECK_THROW(mock->SimpleFunction(), std::exception );
     
     mock.Verify();
 }
@@ -172,7 +173,7 @@ TEST(MockObjectMethodSimpleWithInheritedThrow)
     mock.EveryCall(&IInterface::SimpleFunctionWithReturn)
       .Throw(SimpleException(22));
 
-    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn(), std::exception);
+    CHECK_THROW(mock->SimpleFunctionWithReturn(), std::exception);
     
     mock.Verify();
 }
@@ -190,14 +191,14 @@ TEST(MockObjectMethodSimpleWithManyThrow)
       .Throws(SimpleException(142));
     
     try{
-        ((IInterface*)mock)->SimpleFunctionWithReturn();
+        mock->SimpleFunctionWithReturn();
         CHECK(false);
     }catch(SimpleException & se){
         CHECK_EQUAL(22, se.value);
     }
-    CHECK_EQUAL(42, ((IInterface*)mock)->SimpleFunctionWithReturn());
+    CHECK_EQUAL(42, mock->SimpleFunctionWithReturn());
     try{
-        ((IInterface*)mock)->SimpleFunctionWithReturn();
+        mock->SimpleFunctionWithReturn();
         CHECK(false);
     }catch(SimpleException & se){
         CHECK_EQUAL(142, se.value);
@@ -217,7 +218,7 @@ TEST(MockObjectMethodConstComplex)
     std::string crs, rs, s;
 
     std::string result = 
-        ((IInterface*)mock)->ComplexConstFunction(crs, rs, s);
+        mock->ComplexConstFunction(crs, rs, s);
 
     CHECK_EQUAL("Test Result", result.c_str());
 }
@@ -231,8 +232,8 @@ TEST(MockObjectMethodMultiWithReturn)
     mock.Call(&IInterface::SimpleFunctionWithReturn)
         .Returns(22).Returns(11);
 
-    CHECK_EQUAL(22, ((IInterface*)mock)->SimpleFunctionWithReturn());
-    CHECK_EQUAL(11, ((IInterface*)mock)->SimpleFunctionWithReturn());
+    CHECK_EQUAL(22, mock->SimpleFunctionWithReturn());
+    CHECK_EQUAL(11, mock->SimpleFunctionWithReturn());
 }
 
 //------------------------------------------------------------------
@@ -245,7 +246,7 @@ TEST(MockObjectMethodSimpleExpect)
         .ExpectOne<1>("Hello World")
         .ExpectOne<2>("SomeText");
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+    mock->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -259,7 +260,7 @@ TEST(MockObjectMethodSimpleExpectAll)
     mock.EveryCall(&IInterface::SimpleFunctionWithParams)
         .Expects(21.0f, "Hello World", "SomeText");
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+    mock->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -273,7 +274,7 @@ TEST(MockObjectMethodSimpleExpectAllIgnore)
     mock.EveryCall(&IInterface::SimpleFunctionWithParams)
         .Expects(21.0f, Ignore, "SomeText");
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
+    mock->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -293,7 +294,7 @@ TEST(MockObjectMethodSimpleExpectPolicy)
     std::string second = "Second";
     char buf[] = "Third";
     
-    ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
+    mock->PolicyTestFunction(first, &second, buf) ;
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -311,7 +312,7 @@ TEST(MockObjectMethodSimpleExpectPolicyAll)
     std::string second = "Second";
     char buf[] = "Third";
     
-    ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
+    mock->PolicyTestFunction(first, &second, buf) ;
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -327,7 +328,7 @@ TEST(MockObjectMethodSimpleExpectThrow)
         .ExpectOne<1>("Hello World")
         .ExpectOne<2>("SomeText");
 
-    CHECK_THROW( ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hllo World", "SomeTet")
+    CHECK_THROW( mock->SimpleFunctionWithParams(2.0f, "Hllo World", "SomeTet")
         , TNotEqualException );
 }
 
@@ -342,9 +343,9 @@ TEST(MockObjectMethodMultipleExpectOne)
         .ExpectOne<0>(2.0f).ExpectOne<1>("Hello 2").ExpectOne<2>("SomeText2")	
         .ExpectOne<0>(3.0f).ExpectOne<1>("Hello 3").ExpectOne<2>("SomeText3");
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
-    ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
-    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
+    mock->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
+    mock->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
+    mock->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -360,9 +361,9 @@ TEST(MockObjectMethodMultipleExpects)
         .Expects(2.0f, "Hello 2", "SomeText2")	
         .Expects(3.0f, "Hello 3", "SomeText3");
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
-    ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
-    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
+    mock->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
+    mock->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
+    mock->SimpleFunctionWithParams(3.0f, "Hello 3", "SomeText3");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -378,9 +379,9 @@ TEST(MockObjectMethodMultipleExpectsgnoreMultiple)
         .Expects(Ignore, "Hello World", Ignore)
         .Expects(3.0f,  Ignore, Ignore);
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "asfdlkjsf",  "SomeText");
-    ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hello World", "fsda");
-    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "asdfjdskjfl", "fdsafjl");
+    mock->SimpleFunctionWithParams(1.0f, "asfdlkjsf",  "SomeText");
+    mock->SimpleFunctionWithParams(2.0f, "Hello World", "fsda");
+    mock->SimpleFunctionWithParams(3.0f, "asdfjdskjfl", "fdsafjl");
 
     // To disable  unreferenced formal parameter in UnitTest++
     CHECK(true);
@@ -398,7 +399,7 @@ TEST(MockObjectMethodMultipleExpectThrow)
         .ExpectOne<1>("Hello 1")	.ExpectOne<1>("Hello 2")		.ExpectOne<1>("Hello 3")
         .ExpectOne<2>("SomeText1").ExpectOne<2>("SomeText2")	.ExpectOne<2>("SomeText3");
 
-    CHECK_THROW( ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "Hllo 1", "SmeText1")
+    CHECK_THROW( mock->SimpleFunctionWithParams(2.0f, "Hllo 1", "SmeText1")
         , TNotEqualException );
 }
 
@@ -415,10 +416,10 @@ TEST(MockObjectMethodSimpleExpectAndReturn)
         .Return(2);
 
     CHECK_EQUAL(2, 
-        ((IInterface*)mock)->SimpleFunctionWithParamsAndReturn(21.0f, "Hello World", "SomeText") );
+        mock->SimpleFunctionWithParamsAndReturn(21.0f, "Hello World", "SomeText") );
 
     CHECK_THROW(
-        ((IInterface*)mock)->SimpleFunctionWithParamsAndReturn(1.0f, "Heo World", "SoText")
+        mock->SimpleFunctionWithParamsAndReturn(1.0f, "Heo World", "SoText")
         , TNotEqualException );
 }
 
@@ -452,7 +453,7 @@ TEST(MockObjectMethodRedirectFreeFunc)
     std::string second = "Second";
 
     std::string result = 
-        ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+        mock->ComplexFunction("First", second, "Third");
 
     CHECK_EQUAL("RESULT", result.c_str());
 
@@ -497,7 +498,7 @@ TEST(MockObjectMethodRedirectMethod)
     std::string second = "Second";
 
     std::string result = 
-        ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+        mock->ComplexFunction("First", second, "Third");
 
     CHECK_EQUAL("RESULT", result.c_str());
 
@@ -522,7 +523,7 @@ TEST(MockObjectMethodSet)
     std::string second = "Second";
 
     std::string result = 
-        ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+        mock->ComplexFunction("First", second, "Third");
 
     CHECK_EQUAL("CHANGED", second.c_str());	
 }
@@ -541,7 +542,7 @@ TEST(MockObjectMethodSimpleSetPolicy)
     std::string second;
     char buf[sizeof("Third")];
 
-    ((IInterface*)mock)->PolicyTestFunction(first, &second, buf) ;
+    mock->PolicyTestFunction(first, &second, buf) ;
 
     CHECK_EQUAL( "First", first.c_str() );
     CHECK_EQUAL( "Second", second.c_str()  );
@@ -564,11 +565,11 @@ TEST(MockObjectMethodSetMultiple)
 
     std::string second = "Second";
 
-    ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+    mock->ComplexFunction("First", second, "Third");
     CHECK_EQUAL("C1", second.c_str());	
-    ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+    mock->ComplexFunction("First", second, "Third");
     CHECK_EQUAL("C2", second.c_str());	
-    ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+    mock->ComplexFunction("First", second, "Third");
     CHECK_EQUAL("C3", second.c_str());	
 
 }
@@ -582,9 +583,9 @@ TEST(MockObjectMethodAddCallCount)
 
     std::string second = "Second";
 
-    ((IInterface*)mock)->ComplexFunction("First", second, "Third");
-    ((IInterface*)mock)->ComplexFunction("First", second, "Third");
-    ((IInterface*)mock)->ComplexFunction("First", second, "Third");
+    mock->ComplexFunction("First", second, "Third");
+    mock->ComplexFunction("First", second, "Third");
+    mock->ComplexFunction("First", second, "Third");
 
     CHECK_EQUAL(3u, mock.Query(&IInterface::ComplexFunction).Count());
 }
@@ -598,7 +599,7 @@ TEST(MockObjectMethodReset)
 
     mock.Clear();
 
-    CHECK_THROW(((IInterface*)mock)->SimpleFunction(), TNotImplementedException);
+    CHECK_THROW(mock->SimpleFunction(), TNotImplementedException);
 }
 
 //------------------------------------------------------------------
@@ -622,14 +623,14 @@ TEST(MockObjectMethodVerifyCallCount)
     mock.EveryCall(&IInterface::SimpleFunction)
         .Count(3);
 
-    ((IInterface*)mock)->SimpleFunction();
-    ((IInterface*)mock)->SimpleFunction();
-    ((IInterface*)mock)->SimpleFunction();
+    mock->SimpleFunction();
+    mock->SimpleFunction();
+    mock->SimpleFunction();
 
     // It will not throw
     mock.Verify();
 
-    ((IInterface*)mock)->SimpleFunction();
+    mock->SimpleFunction();
     CHECK_THROW(mock.Verify(), TCallCountException);
 }
 
@@ -646,14 +647,14 @@ TEST(MockObjectMethodVerifyExpects)
         .ExpectOne<2>("");
 
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(1.0f, "", "");
-    ((IInterface*)mock)->SimpleFunctionWithParams(2.0f, "", "");
-    ((IInterface*)mock)->SimpleFunctionWithParams(3.0f, "", "");
+    mock->SimpleFunctionWithParams(1.0f, "", "");
+    mock->SimpleFunctionWithParams(2.0f, "", "");
+    mock->SimpleFunctionWithParams(3.0f, "", "");
 
     // It will not throw
     mock.Verify();
 
-    ((IInterface*)mock)->SimpleFunctionWithParams(4.0f, "", "");
+    mock->SimpleFunctionWithParams(4.0f, "", "");
     CHECK_THROW(mock.Verify(), TCallCountException);
 }
 
@@ -667,11 +668,11 @@ TEST(MockObjectMethodReturnsCallCountException)
         .Returns(2)
         .Returns(3);
 
-    ((IInterface*)mock)->SimpleFunctionWithReturn();
-    ((IInterface*)mock)->SimpleFunctionWithReturn();
-    ((IInterface*)mock)->SimpleFunctionWithReturn();
+    mock->SimpleFunctionWithReturn();
+    mock->SimpleFunctionWithReturn();
+    mock->SimpleFunctionWithReturn();
 
-    CHECK_THROW(((IInterface*)mock)->SimpleFunctionWithReturn()
+    CHECK_THROW(mock->SimpleFunctionWithReturn()
         , TCallCountException);
 }
 

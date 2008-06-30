@@ -60,7 +60,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         class TExpectsMakerBase
         {
         public:
-            TExpectsMakerBase() : Self(NULL)
+            TExpectsMakerBase()
             {
             }
 
@@ -68,14 +68,12 @@ DETAIL_ALL_MAKER_BUILD(8);
             struct P
             {
                 typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I >::Type Type;
-            };
+            };            
 
-            void SetSelf(S* p)
+            S* GetSelf()
             {
-                Self = p;
+                return ((S*)this);
             }
-
-            S* Self;
         };
 
         template <typename F, typename S>
@@ -84,7 +82,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         public:
             S Expects()            
             {
-                return TExpectsMakerBase<F,S>::Self->_Expects(All());
+                return TExpectsMakerBase<F,S>::GetSelf()->_Expects(All());
             }        
         };
 
@@ -108,7 +106,7 @@ DETAIL_ALL_MAKER_BUILD(8);
             template<DETAIL_TPARAMS(i)>                     \
             S Expects(DETAIL_FUNC_PARAMS(i,t))               \
             {                                               \
-                return TExpectsMakerBase<F,S>::Self->_Expects(All(DETAIL_ARGS_P(i))); \
+                return TExpectsMakerBase<F,S>::GetSelf()->_Expects(All(DETAIL_ARGS_P(i))); \
             }                                               \
         }
 

@@ -177,8 +177,7 @@ namespace amop
             Detail::IMockFunction* function
             ) 
             : TBase(function)            
-        {
-            SetSelf(this);
+        {            
         }   	
 
         template<class T>
@@ -269,7 +268,6 @@ namespace amop
             : TBase(function)
 
         {
-            SetSelf(this);
         }   	
 
         template<class T>

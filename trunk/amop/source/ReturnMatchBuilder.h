@@ -24,49 +24,6 @@ namespace amop
         class TQueryPolicy{};
         class TRedirectPolicy{};      
 
-        template <DETAIL_TPARAMS_DEF(8, Empty)> 
-        struct TExpectsAll
-        {
-            TExpectsAll(DETAIL_ARGS_DEFAULT(8))
-                : p0(t1)
-                , p1(t2)
-                , p2(t3)
-                , p3(t4)
-                , p4(t5)
-                , p5(t6)
-                , p6(t7)
-                , p7(t8)
-            {
-            }
-            
-            T1 p0;
-            T2 p1;
-            T3 p2;
-            T4 p3;
-            
-            T5 p4;
-            T6 p5;
-            T7 p6;
-            T8 p7;
-        };
-    }
-
-#define DETAIL_ALL_MAKER_BUILD(i)       \
-    template <DETAIL_TPARAMS(i)>                                            \
-    Detail::TExpectsAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
-    {                                                                       \
-        return Detail::TExpectsAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
-    }
-
-DETAIL_ALL_MAKER_BUILD(1);
-DETAIL_ALL_MAKER_BUILD(2);
-DETAIL_ALL_MAKER_BUILD(3);
-DETAIL_ALL_MAKER_BUILD(4);
-DETAIL_ALL_MAKER_BUILD(5);
-DETAIL_ALL_MAKER_BUILD(6);
-DETAIL_ALL_MAKER_BUILD(7);
-DETAIL_ALL_MAKER_BUILD(8);
-
 #define DETAIL_APPLY_ALL(Action, param) \
     Action<0>(param.p0); \
     Action<1>(param.p1); \
@@ -80,18 +37,7 @@ DETAIL_ALL_MAKER_BUILD(8);
     template <typename F, typename Policy>
     class TReturnMatchBuilder;
 
-    //------------------------------------------------------------------
-    template <typename F, typename Policy>
-    class TReturnMatchBuilderBase
-    {
-    public:
-        TReturnMatchBuilderBase(
-            Detail::IMockFunction* function
-            ) 
-            : mFunction(function)
-        {
-        }   	        
-
+        template <class F>
         struct SetNormal
         {
             template<int I, class T, bool ReadOnly>
@@ -111,7 +57,7 @@ DETAIL_ALL_MAKER_BUILD(8);
             }
         };
 
-        template <class P>
+        template <class P, class F>
         struct SetPolicy
         {
             template<int I, class T, bool ReadOnly>
@@ -123,6 +69,18 @@ DETAIL_ALL_MAKER_BUILD(8);
                 return Detail::TComparable::MakeCompareByPolicy<ToType, ReadOnly>(policy);
             }
         };
+
+
+    //------------------------------------------------------------------
+    class TReturnMatchBuilderBase
+    {
+    public:
+        TReturnMatchBuilderBase(
+            Detail::IMockFunction* function
+            ) 
+            : mFunction(function)
+        {
+        }   	        
 
 
     protected:
@@ -137,13 +95,16 @@ DETAIL_ALL_MAKER_BUILD(8);
     //------------------------------------------------------------------
     template<typename F>
     class TReturnMatchBuilder<F, Detail::TRedirectPolicy>
-        : public TReturnMatchBuilderBase<F, Detail::TQueryPolicy>
+        : public TReturnMatchBuilderBase
     {
+    public:
+        typedef TReturnMatchBuilderBase TBase;
+
     public:
         TReturnMatchBuilder(
             Detail::IMockFunction* function
             ) 
-            : TReturnMatchBuilderBase(function)
+            : TBase(function)
         {
         }        
         
@@ -152,9 +113,9 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             typename Detail::Functor<F>::FunctorType functor(freeFunc);
 
-            mFunction->SetRedirect(functor);
+            TBase::mFunction->SetRedirect(functor);
 
-            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(mFunction);
+            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(TBase::mFunction);
         }
 
         template <typename C, typename T>
@@ -162,9 +123,9 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             typename Detail::Functor<F>::FunctorType functor(pointer, func);
 
-            mFunction->SetRedirect(functor);
+            TBase::mFunction->SetRedirect(functor);
 
-            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(mFunction);
+            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(TBase::mFunction);
         }
     };
 
@@ -173,19 +134,23 @@ DETAIL_ALL_MAKER_BUILD(8);
     //------------------------------------------------------------------
     template<typename F>
     class TReturnMatchBuilder<F, Detail::TQueryPolicy>
-        : public TReturnMatchBuilderBase<F, Detail::TQueryPolicy>
+        : public TReturnMatchBuilderBase
     {
+    public:
+        typedef TReturnMatchBuilderBase TBase;
+
+
     public:
         TReturnMatchBuilder(
             Detail::IMockFunction* function
             ) 
-            : TReturnMatchBuilderBase(function)
+            : TBase(function)
         {
         }   	
 
         size_t Count()
         {
-            return mFunction->GetCallCounter();
+            return TBase::mFunction->GetCallCounter();
         }
     };    
     
@@ -194,21 +159,24 @@ DETAIL_ALL_MAKER_BUILD(8);
     //------------------------------------------------------------------
     template <typename F>
     class TReturnMatchBuilder<F, Detail::TCallPolicy>
-        : public TReturnMatchBuilderBase<F, Detail::TCallPolicy>
-        , public TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
-            typename TReturnMatchBuilder<F, Detail::TCallPolicy> 
+        : public TReturnMatchBuilderBase
+        , public Detail::TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value, 
+            TReturnMatchBuilder<F, Detail::TCallPolicy> 
             >
     {
     public:
+        typedef TReturnMatchBuilderBase TBase;
+
+    public:
         typedef TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
-            typename TReturnMatchBuilder<F, Detail::TCallPolicy> 
+            TReturnMatchBuilder<F, Detail::TCallPolicy> 
             >
         TExpectMakersType;                
         
         TReturnMatchBuilder(
             Detail::IMockFunction* function
             ) 
-            : TReturnMatchBuilderBase(function)            
+            : TBase(function)            
         {
             SetSelf(this);
         }   	
@@ -226,7 +194,7 @@ DETAIL_ALL_MAKER_BUILD(8);
             typedef int ItIsNotConvertible[
                 Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
 
-                mFunction->SetReturn(std::make_pair(false,(ToType)result), false);
+                TBase::mFunction->SetReturn(std::make_pair(false,(ToType)result), false);
                 return *this;
         }    
 
@@ -234,7 +202,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         TReturnMatchBuilder Throws(T exception)
         {
             //Can we verify that it is convertible to throw specifier.
-            mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), false);
+            TBase::mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), false);
             return *this;
         }
 
@@ -243,18 +211,18 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
-                , SetPolicy<T>
-                , SetNormal
+                , SetPolicy<T, F>
+                , SetNormal<F>
             >::Type Setter;
 
-            mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), false);
+            TBase::mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), false);
             return *this;
         }    
 
         template<int I>
         void ExpectOne(Detail::Empty)
         {
-            mFunction->SetExpect(I, Detail::TComparable(), false);
+            TBase::mFunction->SetExpect(I, Detail::TComparable(), false);
         };                
         
         template<int I, class T>
@@ -262,11 +230,11 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
-                , SetPolicy<T>
-                , SetNormal
+                , SetPolicy<T, F>
+                , SetNormal<F>
             >::Type Setter;
 
-            mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), false);
+            TBase::mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), false);
             return *this;
         }                        
 
@@ -285,9 +253,9 @@ DETAIL_ALL_MAKER_BUILD(8);
     //------------------------------------------------------------------
     template <typename F>
     class TReturnMatchBuilder<F, Detail::TEveryCallPolicy>
-        : public TReturnMatchBuilderBase<F, Detail::TEveryCallPolicy>
-        , public TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
-            typename TReturnMatchBuilder<F, Detail::TEveryCallPolicy> 
+        : public TReturnMatchBuilderBase
+        , public Detail::TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value ,
+            TReturnMatchBuilder<F, Detail::TEveryCallPolicy> 
             >
     {
     public:
@@ -331,8 +299,8 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
-                , SetPolicy<T>
-                , SetNormal
+                , SetPolicy<T, F>
+                , SetNormal<F>
             >::Type Setter;
 
             mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), true);
@@ -358,8 +326,8 @@ DETAIL_ALL_MAKER_BUILD(8);
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
-                , SetPolicy<T>
-                , SetNormal
+                , SetPolicy<T,F>
+                , SetNormal<F>
             >::Type Setter;
 
             mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), true);
@@ -371,6 +339,7 @@ DETAIL_ALL_MAKER_BUILD(8);
             mFunction->SetExpectCallCounter(counter);
         }    
     };
+}
 
     static Detail::Empty Ignore;
 }

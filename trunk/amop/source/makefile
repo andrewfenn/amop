@@ -1,6 +1,6 @@
 CC=g++
 
-SRCS=MockObject.cpp MockObjectBase.cpp CheckOffsetFunc.cpp 
+SRCS=MockObjectBase.cpp DynamicObject.cpp CheckOffsetFunc.cpp DynamicFunction.cpp MockFunctionImpl.cpp VirtualTable.cpp
 
 TESTSRCS=./Test/Main.cpp ./Test/TestMockObject.cpp ./Test/TestTemplateHelppers.cpp ./Test/TestVirtualFunctionRedirect.cpp 
 

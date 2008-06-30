@@ -793,14 +793,17 @@ TEST(TwoInterfaces_bothReturnImplemented)
     CHECK_EQUAL(expected2, got);
 }
 
+struct IOverloads
+{
+    virtual ~IOverloads(){}
+    virtual int SimpleFunction() = 0;
+    virtual int SimpleFunction(int x) = 0;
+};
+
 TEST(Overloads1)
 {
     // An example of an interface with method overrides
-    struct IOverloads
-    {
-        virtual int SimpleFunction() = 0;
-        virtual int SimpleFunction(int x) = 0;
-    };
+    
 
     // The method with no parameters
     typedef int (IOverloads::*PMF0)();

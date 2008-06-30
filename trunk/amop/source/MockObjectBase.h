@@ -15,6 +15,7 @@ namespace Detail
 {
     class TDynamicFunction;
     class IMockFunction;
+    class TMockFunctionImpl;
 
     //------------------------------------------------------------------
     class TMockObjectBase         

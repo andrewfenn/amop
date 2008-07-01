@@ -90,7 +90,7 @@ namespace amop
     //! The builder object for query mode
     /*!
         This template class defined the query mode return object from 
-        \ref TMockObject::Query
+        \ref TMockObject::Query.
     */
     //------------------------------------------------------------------
     template<typename F>
@@ -154,7 +154,10 @@ namespace amop
         }
     };    
     
+    //! The builder object for Call mode 
     /*!
+        This template class defined the query mode return object from 
+        \ref TMockObject::Call.
     */
     //------------------------------------------------------------------
     template <typename F>

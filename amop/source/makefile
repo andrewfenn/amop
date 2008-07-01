@@ -4,7 +4,7 @@ SRCS=MockObjectBase.cpp DynamicObject.cpp CheckOffsetFunc.cpp DynamicFunction.cp
 
 TESTSRCS=./Test/Main.cpp ./Test/TestMockObject.cpp ./Test/TestTemplateHelppers.cpp ./Test/TestVirtualFunctionRedirect.cpp 
 
-INCPATH=./UnitTest++/src
+INCPATH=-I./UnitTest++/src -I../Include
 
 LIBPATH=-L./ -L./UnitTest++/
 
@@ -15,10 +15,10 @@ main:$(OBJS)
 	ar rcs libAmop.a $(OBJS)
 
 $(OBJS):
-	$(CC) -Wall -g -c $(SRCS) 
+	$(CC) -Wall -g -c $(INCPATH) $(SRCS) 
 
 test: main
-	$(CC) -Wall -g -I$(INCPATH) $(LIBPATH) $(TESTSRCS) -lAmop -lUnitTest++ -o runTest
+	$(CC) -Wall -g $(INCPATH) $(LIBPATH) $(TESTSRCS) -lAmop -lUnitTest++ -o runTest
 	@./runTest
 
 clean:

@@ -5,6 +5,7 @@ namespace amop
 {
     //! Trait class for binding to destructor
     /*!
+    */
     class Destructor
     {
     };

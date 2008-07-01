@@ -109,9 +109,9 @@ namespace amop
         \subsection ss_call Call
 
         In this mode, your can verify the arguments, setting the return values
-        of your function. The number of calls must match exactly, 
-        and each call has distinct arguments that it shall verify against, 
-        and distinct return values it shall mock. When the expectation is not corrected,
+        of your function. <b>The number of calls must match exactly, 
+        each call has distinct arguments that it shall verify against, 
+        and distinct return values it shall mock. </b> When the expectation is not corrected,
         an exception will be thrown:
         
         \code
@@ -119,12 +119,20 @@ namespace amop
                 .Expects(10).Return(1)
                 .Expects(20).Return(2);          
             
-            // We use UnitTest++ here, but you can any unit-test library with amoop.
+            // We use UnitTest++ here, but you can use any unit-test library with amop.
             CHECK(1, mock->Foo4(10));
             CHECK(2, mock->Foo4(20));
 
             CHECK_THROW(mock->Foo4(30), TCallCountException);            
         \endcode
+
+        The TMockObject::Call method will bind your given method to Call mode, 
+        and it will return an object, which you can call its method to setting the
+        behaviors of given function when it is mocked. Please 
+        reference Detail::TReturnMatchBuilder<F, Detail::TCallPolicy> for its usage.
+
+        \sa TMockObject::Call
+        \sa Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>                
        
         \subsection ss_everycall EveryCall
 
@@ -136,7 +144,26 @@ namespace amop
 
         \subsection ss_redirect Redirect
 
-        The Call function of TMockObject is used for                
+        The Call function of TMockObject is used for            
+
+        \subsection ss_destructor Binding to destructor
+        
+        In some case, your will want to mock the destructor of a interface,
+        your can use the trait object Destructor:
+
+        \code
+            mock.Call(Destructor());
+        \endcode
+
+        \remarks
+            In fact, it is not binding to your constructor directly, but
+            it is binding to the delete operator of your interface.
+            However, because it is a pure virutal class, 
+            there are only 2 way to call the destructor, 
+            one is delete it by using the delete operator, 
+            another one is call it directly ( mock->~IInterface() ). 
+            Normally latter method is rarely happened.
+
     */
     //------------------------------------------------------------------
     template <class T, typename VerifyPolicy = AutoVerify >
@@ -171,8 +198,22 @@ namespace amop
         void Verify() { Detail::TMockObjectBase::Verify(); }
 
         //*****************************************
-        //     Call Version
+        //     Call Mode
         //*****************************************
+        //! Create the call mode binding        
+        /*!
+            This function create the call mode binding. The call mode is used for
+            verify and setting arguments for each calls, which the number of calls must match exactly.
+
+            \param method
+                The method to be binding with
+
+            \return
+                The builder object for setting the behavior the given method.
+
+            \sa \ref ss_call, Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>                
+        */
+        
         template <class F>
         Detail::TReturnMatchBuilder<F, typename Detail::TCallPolicy> Call(F method)
         {
@@ -184,6 +225,17 @@ namespace amop
             return Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>(CreateMockFunction(function));
         }
 
+        //! Create the call mode binding for destructor        
+        /*!
+            This function create the call mode binding for destructor. The call mode is used for
+            verify and setting arguments for each calls, which the number of calls must match exactly.
+            To binding a function to destructor, using the Destructor() trait object.
+
+            \return
+                The builder object for setting the behavior the given method.
+
+            \sa \ref ss_call, \ref ss_destructor, Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>
+        */
         Detail::TReturnMatchBuilder<void (T::*)(void*), typename Detail::TCallPolicy> Call(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
@@ -195,7 +247,7 @@ namespace amop
 
 
         //*****************************************
-        //     EveryCall Version
+        //     EveryCall Mode
         //*****************************************
         template <class F>
         Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy> EveryCall(F method)
@@ -218,7 +270,7 @@ namespace amop
         }
 
         //*****************************************
-        //     Query Version
+        //     Query Mode
         //*****************************************        
 
 
@@ -247,7 +299,7 @@ namespace amop
         }
 
         //*****************************************
-        //     Redirect Version
+        //     Redirect Mode
         //*****************************************
         template <class F>
         Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy> Redirect(F method)

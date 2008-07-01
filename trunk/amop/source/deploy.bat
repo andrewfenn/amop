@@ -1,4 +1,3 @@
-copy *.h ..\include
 copy Release\*.lib ..\release
 copy Release\*.pdb ..\release
 

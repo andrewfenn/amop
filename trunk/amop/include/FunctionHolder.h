@@ -8,7 +8,11 @@ namespace amop
 {
 namespace Detail
 {
-	//------------------------------------------------------------------
+	class TObjectHolder;
+    
+    TObjectHolder* GetHolderFromThis(void* pointer);    
+    
+    //------------------------------------------------------------------
 	template <int I, class T, bool>
 	struct FunctionHolderBase;
 	
@@ -20,7 +24,7 @@ namespace Detail
 	};
 	
 #ifndef VT_THIS 
-#define VT_THIS TVirtualTable::GetThis(this)
+#define VT_THIS GetHolderFromThis(this)
 #endif
 
 

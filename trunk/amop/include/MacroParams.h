@@ -20,10 +20,13 @@
 #define DETAIL_ARG_END(n,t) t##n
 #define DETAIL_ARG_S(n,t) DETAIL_APPEND(t, DETAIL_CNTINC_##n),
 #define DETAIL_ARG_S_END(n,t) DETAIL_APPEND(t, DETAIL_CNTINC_##n)
+#define DETAIL_DEFAULT_ARG(n,t) T##n t##n = T##n(),
+#define DETAIL_DEFAULT_ARG_END(n,t) T##n t##n = T##n()
 
 #define DETAIL_ARGS(n) DETAIL_REPEAT(n, DETAIL_ARG, DETAIL_ARG_END, T)
 #define DETAIL_ARGS_P(n) DETAIL_REPEAT(n, DETAIL_ARG, DETAIL_ARG_END, t)
 #define DETAIL_ARGS_S(n) DETAIL_REPEAT(n, DETAIL_ARG_S, DETAIL_ARG_S_END, T)
+#define DETAIL_ARGS_DEFAULT(n) DETAIL_REPEAT(n, DETAIL_DEFAULT_ARG, DETAIL_DEFAULT_ARG_END, t)
 
 #define DETAIL_TYPEDEF(n, t) typedef t##n type##n;
 #define DETAIL_TYPEDEF_END(n, t) typedef t##n type##n;

@@ -2,106 +2,56 @@
 #define __AMOP_MOCKOBJECTBASE_HH
 
 #include "Any.h"
-#include "ObjectHolder.h"
-#include "ReturnMatchBuilder.h"
-#include "CheckOffsetFunc.h"
-#include "CallHandler.h"
-#include "Destructor.h"
+#include "DynamicObject.h"
+
 #include <map>
 #include <vector>
+#include <set>
 
 namespace amop
 {
 
 namespace Detail
 {
-  
-	class TVirtualTable;
+    class TDynamicFunction;
+    class IMockFunction;
+    class TMockFunctionImpl;
 
-
-	//------------------------------------------------------------------
-	class TMockObjectBase : public Detail::TObjectHolder
+    //------------------------------------------------------------------
+    class TMockObjectBase         
 	{
 	public:
 		TMockObjectBase();
-		~TMockObjectBase();
+		virtual ~TMockObjectBase();
 
 		void Clear();
         void Verify();
 
-	protected:
-		typedef std::vector<TComparable> TComparableList;
-		typedef std::map<size_t, TComparableList> TParamMap;
-		typedef std::map<size_t, TComparable> TParamDefaultMap;
+    protected:
+        void* GetVptr();
 
-        std::map<size_t, std::pair<bool,any> > mReturnDefaults;
-        std::map<size_t, std::vector<std::pair<bool,any> > > mReturns;
-		std::map<size_t, size_t> mCallCounter;
-        std::map<size_t, size_t> mExpectCallCounter;
-		
-		std::map<size_t, any> mRedirects;
-		std::map<size_t,  TParamMap> mExpects;
-		std::map<size_t,  TParamDefaultMap> mExpectDefaults;
-        
-        std::map<size_t,  TParamMap> mSetters;
-        std::map<size_t,  TParamDefaultMap > mSetterDefaults;
+        TDynamicObject* GetDynamicObject()
+        {
+            return mDynamicObject.get();
+        }		
 
-		Detail::TVirtualTable* mVirtualTable;	
+        IMockFunction* CreateMockFunction(TDynamicFunction* function);        
 
-		void AddCallCounter(size_t idx);
-		size_t GetCallCounter(size_t idx);
-        void SetExpectCallCounter(size_t idx, size_t c);
+	private:       
+        // Inheritent from IDynamicObjectHandler
+        any& GetRedirect(TDynamicFunction* dynamicFunction);
 
-		any& GetRedirect(size_t idx);
-		void SetRedirect(size_t idx, const any& redirect);
+        std::pair<bool, any>& GetReturn(TDynamicFunction* dynamicFunction);
+        void SetActual(TDynamicFunction* dynamicFunction, size_t paramId, const any& param);
+        void AddCallCounter(TDynamicFunction* dynamicFunction);
 
-        void SetReturnDefault(size_t idx, const std::pair<bool, any>& result);
-        void SetReturn(size_t idx, const std::pair<bool, any>& result);
-        std::pair<bool, any>& GetReturn(size_t idx);
+        friend class TMockFunctionImpl;        
+        std::vector<TMockFunctionImpl*> mFunctions;
 
-		void SetActual(size_t idx, size_t paramId, const any& param);
-		void SetExpectDefault(size_t idx, size_t paramId, const TComparable& param);
-		void SetExpect(size_t idx, size_t paramId, const TComparable& param);
-
-        bool HaveExpectDefault(size_t idx, size_t paramId);
-        bool HaveExpect(size_t idx, size_t paramId);
-
-        void SetSetterDefault(size_t idx, size_t paramId, const TComparable& result);
-        void SetSetter(size_t idx, size_t paramId, const TComparable& param);
-
-        bool HaveSetterDefault(size_t idx, size_t paramId);
-        bool HaveSetter(size_t idx, size_t paramId);
-        void ApplySetter(size_t idx, size_t paramId, const any& param);
-
-		void* GetVptr();
-
-		template <class F>
-		TReturnMatchBuilder<F> CreateMatchBuilder(size_t offset, TFunctionAddress data)
-		{
-			assert(offset < MAX_NUM_VIRTUAL_FUNCTIONS);
-			mVirtualTable->mVtable[offset] = data;
-
-			return TReturnMatchBuilder<F>(this, offset);
-		}
-
-		template <class F, class Type>
-		TReturnMatchBuilder<F> CreateMatchBuilder(F method)
-		{
-            size_t offset = Detail::Inner::TCheckOffset::GetOffset(method);
-
-			return CreateMatchBuilder<F>(offset, 
-				Detail::CallHandler::Create<F>(offset) );
-		}
-
-        template <class F, class Type>
-		TReturnMatchBuilder<F> CreateMatchBuilder(const Destructor& )
-		{
-            size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<Type>();
-
-			return CreateMatchBuilder<F>(offset, 
-				Detail::CallHandler::Create<F>(offset) );
-		}
-
+        std::auto_ptr<TDynamicObject> mDynamicObject;              
+		    
+        TMockObjectBase( const TMockObjectBase& );
+        TMockObjectBase& operator=(const TMockObjectBase& );
 	};
 }
 

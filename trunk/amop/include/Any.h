@@ -23,7 +23,7 @@ public: // structors
 	{
 	}
 
-	~any()
+	~any() throw()
 	{
 		delete content;
 	}

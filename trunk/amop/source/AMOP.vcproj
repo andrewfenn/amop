@@ -41,6 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="../Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,6 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="../Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -182,87 +184,115 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Any.h"
+				RelativePath="..\include\Any.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CallHandler.h"
+				RelativePath="..\include\CallHandler.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CheckOffsetFunc.h"
+				RelativePath="..\include\CheckOffsetFunc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Comparable.h"
+				RelativePath="..\include\Comparable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Config.h"
+				RelativePath="..\include\Config.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Destructor.h"
+				RelativePath="..\include\Destructor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DynamicFunction.h"
+				RelativePath="..\include\DynamicFunction.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DynamicObject.h"
+				RelativePath="..\include\DynamicObject.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ExpectsMaker.h"
+				RelativePath="..\include\ExceptionThrower.h"
 				>
 			</File>
 			<File
-				RelativePath=".\FunctionHolder.h"
+				RelativePath="..\include\ExpectsMaker.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Functor.h"
+				RelativePath="..\include\FastDelegate.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MockFunction.h"
+				RelativePath="..\include\FastDelegateBind.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MockFunctionImpl.h"
+				RelativePath="..\include\FunctionHolder.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MockObject.h"
+				RelativePath="..\include\Functor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MockObjectBase.h"
+				RelativePath="..\include\MacroCounter.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MockObjectException.h"
+				RelativePath="..\include\MacroMisc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectHolder.h"
+				RelativePath="..\include\MacroParams.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Policy.h"
+				RelativePath="..\include\MacroRepeat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ReturnMatchBuilder.h"
+				RelativePath="..\include\MockFunction.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Tuple.h"
+				RelativePath="..\include\MockFunctionImpl.h"
 				>
 			</File>
 			<File
-				RelativePath=".\VirtualTable.h"
+				RelativePath="..\include\MockObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\MockObjectBase.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\MockObjectException.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\ObjectHolder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\Policy.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\ReturnMatchBuilder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\Tuple.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\VirtualTable.h"
 				>
 			</File>
 			<Filter

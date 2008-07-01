@@ -2,10 +2,13 @@
 #define __AMOP_RETURNMATCHBUILDER_HH
 
 
-#include "ObjectHolder.h"
 #include "Functor.h"
 #include "Comparable.h"
 #include "Policy.h"
+#include "MockFunction.h"
+#include "ExceptionThrower.h"
+#include "ExpectsMaker.h"
+
 #include <utility>
 
 #ifdef __GNUC__
@@ -13,77 +16,174 @@
 #endif 
 
 namespace amop
-{
-
-//------------------------------------------------------------------
-template <typename F>
-class TReturnMatchBuilder
-{
-public:
-	TReturnMatchBuilder(Detail::TObjectHolder* objectHolder,
-		size_t offset) : mObjectHolder(objectHolder),
-			mOffset(offset)
-	{
-	}
-
-	template<class T>
-	TReturnMatchBuilder Will(T result)
-	{
-		typedef typename Detail::Functor<F>::ReturnType R;
-		typedef typename Detail::RemoveReference<R>::Type ToType;
-
-		//****************************************/
-		//** If you see this, that's mean your  **/
-		//** expect type is not convertiable to **/
-		//** actual type.						**/
-		//****************************************/
-		typedef int ItIsNotConvertible[
-			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-				
-            mObjectHolder->SetReturnDefault(mOffset, std::make_pair(false,(ToType)result));
-		return *this;
-	}
-
-	template<class T>
-	TReturnMatchBuilder Wills(T result)
-	{
-		typedef typename Detail::RemoveReference<typename Detail::Functor<F>::ReturnType>::Type ToType;
-
-		//****************************************/
-		//** If you see this, that's mean your  **/
-		//** expect type is not convertiable to **/
-		//** actual type.						**/
-		//****************************************/
-		typedef int ItIsNotConvertible[
-			Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-				
-            mObjectHolder->SetReturn(mOffset, std::make_pair(false,(ToType)result));
-            return *this;
-    }
-
-    template<class T>
-    TReturnMatchBuilder Throw(T exception)
+{    
+    namespace Detail
     {
-        //Can we verify that it is convertible to throw specifier.
-        mObjectHolder->SetReturnDefault(mOffset, std::make_pair(true,std::tr1::shared_ptr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
-        return *this;
-    }
+        class TCallPolicy{};
+        class TEveryCallPolicy{};
+        class TQueryPolicy{};
+        class TRedirectPolicy{};      
 
-    template<class T>
-    TReturnMatchBuilder Throws(T exception)
-    {
-        //Can we verify that it is convertible to throw specifier.
-        mObjectHolder->SetReturn(mOffset, std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))));
-		return *this;
-	}
+#define DETAIL_APPLY_ALL(Action, param) \
+    Action<0>(param.p0); \
+    Action<1>(param.p1); \
+    Action<2>(param.p2); \
+    Action<3>(param.p3); \
+    Action<4>(param.p4); \
+    Action<5>(param.p5); \
+    Action<6>(param.p6); \
+    Action<7>(param.p7); \
 
-    struct SetNormal
-    {
-        template<int I, class T, bool ReadOnly>
-        static Detail::TComparable Make(T result)
+    template <typename F, typename Policy>
+    class TReturnMatchBuilder;
+
+        template <class F>
+        struct SetNormal
         {
-            typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-            typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+            template<int I, class T, bool ReadOnly>
+            static Detail::TComparable Make(T result)
+            {
+                typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+                typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+
+                //****************************************/
+                //** If you see this, that's mean your  **/
+                //** expect type is not convertiable to **/
+                //** actual type.						**/
+                //****************************************/
+                typedef int ItIsNotConvertible[
+                    Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
+                    return Detail::TComparable::MakeCompare<ToType, ReadOnly>(result);
+            }
+        };
+
+        template <class P, class F>
+        struct SetPolicy
+        {
+            template<int I, class T, bool ReadOnly>
+            static Detail::TComparable Make(P policy)
+            {
+                typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
+                typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
+
+                return Detail::TComparable::MakeCompareByPolicy<ToType, ReadOnly>(policy);
+            }
+        };
+
+
+    //------------------------------------------------------------------
+    class TReturnMatchBuilderBase
+    {
+    public:
+        TReturnMatchBuilderBase(
+            Detail::IMockFunction* function
+            ) 
+            : mFunction(function)
+        {
+        }   	        
+
+
+    protected:
+        Detail::IMockFunction* mFunction;
+    };
+
+    //! The builder object for query mode
+    /*!
+        This template class defined the query mode return object from 
+        \ref TMockObject::Query
+    */
+    //------------------------------------------------------------------
+    template<typename F>
+    class TReturnMatchBuilder<F, Detail::TRedirectPolicy>
+        : public TReturnMatchBuilderBase
+    {
+    public:
+        typedef TReturnMatchBuilderBase TBase;
+
+    public:
+        TReturnMatchBuilder(
+            Detail::IMockFunction* function
+            ) 
+            : TReturnMatchBuilderBase(function)
+        {
+        }        
+        
+        template <typename T>
+        TReturnMatchBuilder<F,Detail::TRedirectPolicy> Do(T freeFunc)
+        {
+            typename Detail::Functor<F>::FunctorType functor(freeFunc);
+
+            TBase::mFunction->SetRedirect(functor);
+
+            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(TBase::mFunction);
+        }
+
+        template <typename C, typename T>
+        TReturnMatchBuilder<F,Detail::TRedirectPolicy> Do(C* pointer, T func)
+        {
+            typename Detail::Functor<F>::FunctorType functor(pointer, func);
+
+            TBase::mFunction->SetRedirect(functor);
+
+            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(TBase::mFunction);
+        }
+    };
+
+    /*!
+    */
+    //------------------------------------------------------------------
+    template<typename F>
+    class TReturnMatchBuilder<F, Detail::TQueryPolicy>
+        : public TReturnMatchBuilderBase
+    {
+    public:
+        typedef TReturnMatchBuilderBase TBase;
+
+
+    public:
+        TReturnMatchBuilder(
+            Detail::IMockFunction* function
+            ) 
+            : TBase(function)
+        {
+        }   	
+
+        size_t Count()
+        {
+            return TBase::mFunction->GetCallCounter();
+        }
+    };    
+    
+    /*!
+    */
+    //------------------------------------------------------------------
+    template <typename F>
+    class TReturnMatchBuilder<F, Detail::TCallPolicy>
+        : public TReturnMatchBuilderBase
+        , public Detail::TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value, 
+            TReturnMatchBuilder<F, Detail::TCallPolicy> 
+            >
+    {
+    public:
+        typedef TReturnMatchBuilderBase TBase;
+
+    public:
+        typedef TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
+            TReturnMatchBuilder<F, Detail::TCallPolicy> 
+            >
+        TExpectMakersType;                
+        
+        TReturnMatchBuilder(
+            Detail::IMockFunction* function
+            ) 
+            : TBase(function)            
+        {            
+        }   	
+
+        template<class T>
+        TReturnMatchBuilder Returns(T result)
+        {
+            typedef typename Detail::RemoveReference<typename Detail::Functor<F>::ReturnType>::Type ToType;
 
             //****************************************/
             //** If you see this, that's mean your  **/
@@ -92,111 +192,160 @@ public:
             //****************************************/
             typedef int ItIsNotConvertible[
                 Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
-                return Detail::TComparable::MakeCompare<ToType, ReadOnly>(result);
-        }
-    };
 
-    template <class P>
-    struct SetPolicy
-    {
-        template<int I, class T, bool ReadOnly>
-        static Detail::TComparable Make(P policy)
+                TBase::mFunction->SetReturn(std::make_pair(false,(ToType)result), false);
+                return *this;
+        }    
+
+        template<class T>
+        TReturnMatchBuilder Throws(T exception)
         {
-            typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I>::Type ToTypeRef;
-            typedef typename Detail::RemoveReference<ToTypeRef>::Type ToType;
-
-            return Detail::TComparable::MakeCompareByPolicy<ToType, ReadOnly>(policy);
+            //Can we verify that it is convertible to throw specifier.
+            TBase::mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), false);
+            return *this;
         }
+
+        template<int I, class T>
+        TReturnMatchBuilder ExpectOne(T expect)
+        {
+            typedef typename Detail::Selector<
+                Detail::IsConvertible<T, Policy::TPolicy>::Result
+                , SetPolicy<T, F>
+                , SetNormal<F>
+            >::Type Setter;
+
+            TBase::mFunction->SetExpect(I, Setter::template Make<I, T, true>(expect), false);
+            return *this;
+        }    
+
+        template<int I>
+        void ExpectOne(Detail::Empty)
+        {
+            TBase::mFunction->SetExpect(I, Detail::TComparable(), false);
+        };                
+        
+        template<int I, class T>
+        TReturnMatchBuilder Sets(T result)
+        {
+            typedef typename Detail::Selector<
+                Detail::IsConvertible<T, Policy::TPolicy>::Result
+                , SetPolicy<T, F>
+                , SetNormal<F>
+            >::Type Setter;
+
+            TBase::mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), false);
+            return *this;
+        }                        
+
+        template<DETAIL_TPARAMS(8)>
+        TReturnMatchBuilder _Expects(const Detail::TExpectsAll<DETAIL_ARGS(8)>& expect)
+        {
+            DETAIL_APPLY_ALL(ExpectOne, expect);
+            return *this;
+        }
+
     };
 
-	template<int I, class T>
-	TReturnMatchBuilder Expect(T expect)
-	{
-		typedef typename Detail::Selector<
-            Detail::IsConvertible<T, Policy::TPolicy>::Result
-            , SetPolicy<T>
-            , SetNormal
-        >::Type Setter;
-        
-        mObjectHolder->SetExpectDefault(mOffset, I, Setter::template Make<I, T, true>(expect));
-		return *this;
-	}
 
-	template<int I, class T>
-	TReturnMatchBuilder Expects(T expect)
-	{
-        typedef typename Detail::Selector<
-            Detail::IsConvertible<T, Policy::TPolicy>::Result
-            , SetPolicy<T>
-            , SetNormal
-        >::Type Setter;
-
-		mObjectHolder->SetExpect(mOffset, I, Setter::template Make<I, T, true>(expect));
-		return *this;
-	}
-
-    
-    template<int I, class T>
-	TReturnMatchBuilder Set(T result)
-	{
-        typedef typename Detail::Selector<
-            Detail::IsConvertible<T, Policy::TPolicy>::Result
-            , SetPolicy<T>
-            , SetNormal
-        >::Type Setter;
-        
-        mObjectHolder->SetSetterDefault(mOffset, I, Setter::template Make<I, T, false>(result));
-		return *this;
-	}
-
-    template<int I, class T>
-	TReturnMatchBuilder Sets(T result)
-	{
-		typedef typename Detail::Selector<
-            Detail::IsConvertible<T, Policy::TPolicy>::Result
-            , SetPolicy<T>
-            , SetNormal
-        >::Type Setter;
-        
-        mObjectHolder->SetSetter(mOffset, I, Setter::template Make<I, T, false>(result));
-		return *this;
-	}
-
-	template <typename T>
-	TReturnMatchBuilder Redirect(T freeFunc)
-	{
-		typename Detail::Functor<F>::FunctorType functor(freeFunc);
-
-		mObjectHolder->SetRedirect(mOffset, functor);
-
-		return *this;
-	}
-
-	template <typename C, typename T>
-	TReturnMatchBuilder Redirect(C* pointer, T func)
-	{
-		typename Detail::Functor<F>::FunctorType functor(pointer, func);
-
-		mObjectHolder->SetRedirect(mOffset, functor);
-
-		return *this;
-	}
-
-	size_t Count()
-	{
-		return mObjectHolder->GetCallCounter(mOffset);
-	}
-
-    void Count(size_t counter)
+    /*!
+    */
+    //------------------------------------------------------------------
+    template <typename F>
+    class TReturnMatchBuilder<F, Detail::TEveryCallPolicy>
+        : public TReturnMatchBuilderBase
+        , public Detail::TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value ,
+            TReturnMatchBuilder<F, Detail::TEveryCallPolicy> 
+            >
     {
-        return mObjectHolder->SetExpectCallCounter(mOffset, counter);
-    }
+    public:
+        typedef TReturnMatchBuilderBase TBase;
 
-private:
-	Detail::TObjectHolder* mObjectHolder;
-	size_t mOffset;
-};
 
+    public:
+        TReturnMatchBuilder(
+            Detail::IMockFunction* function
+            ) 
+            : TBase(function)
+
+        {
+        }   	
+
+        template<class T>
+        TReturnMatchBuilder Return(T result)
+        {
+            typedef typename Detail::Functor<F>::ReturnType R;
+            typedef typename Detail::RemoveReference<R>::Type ToType;
+
+            //****************************************/
+            //** If you see this, that's mean your  **/
+            //** expect type is not convertiable to **/
+            //** actual type.						**/
+            //****************************************/
+            typedef int ItIsNotConvertible[
+                Detail::IsConvertible<T, ToType>::Result ? 1 : -1];
+
+                TBase::mFunction->SetReturn(std::make_pair(false,(ToType)result), true);
+                return *this;
+        }
+
+        template<class T>
+        TReturnMatchBuilder Throw(T exception)
+        {
+            //Can we verify that it is convertible to throw specifier.
+            TBase::mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), true);
+            return *this;
+        }
+
+        template<int I, class T>
+        TReturnMatchBuilder ExpectOne(T expect)
+        {
+            typedef typename Detail::Selector<
+                Detail::IsConvertible<T, Policy::TPolicy>::Result
+                , SetPolicy<T, F>
+                , SetNormal<F>
+            >::Type Setter;
+
+            Detail::TComparable c = Setter::template Make<I, T, true>(expect);
+            
+            TBase::mFunction->SetExpect(I, c, true);
+            return *this;
+        }
+
+        template<int I>
+        void ExpectOne(Detail::Empty)
+        {
+            TBase::mFunction->SetExpect(I, Detail::TComparable() , true);
+        }
+
+        template<DETAIL_TPARAMS(8)>
+        TReturnMatchBuilder _Expects(const Detail::TExpectsAll<DETAIL_ARGS(8)>& expect)
+        {
+            DETAIL_APPLY_ALL(ExpectOne, expect);
+            return *this;
+        }
+
+        
+        template<int I, class T>
+        TReturnMatchBuilder Set(T result)
+        {
+            typedef typename Detail::Selector<
+                Detail::IsConvertible<T, Policy::TPolicy>::Result
+                , SetPolicy<T,F>
+                , SetNormal<F>
+            >::Type Setter;
+
+            TBase::mFunction->SetSetter(I, Setter::template Make<I, T, false>(result), true);
+            return *this;
+        }
+
+        void Count(size_t counter)
+        {
+            TBase::mFunction->SetExpectCallCounter(counter);
+        }    
+    };
+}
+
+    static Detail::Empty Ignore;
 }
 
 

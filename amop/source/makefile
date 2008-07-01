@@ -4,7 +4,7 @@ SRCS=MockObjectBase.cpp DynamicObject.cpp CheckOffsetFunc.cpp DynamicFunction.cp
 
 TESTSRCS=./Test/Main.cpp ./Test/TestMockObject.cpp ./Test/TestTemplateHelppers.cpp ./Test/TestVirtualFunctionRedirect.cpp 
 
-INCPATH=-I./UnitTest++/src -I../Include
+INCPATH=-I./UnitTest++/src -I../include
 
 LIBPATH=-L./ -L./UnitTest++/
 

@@ -1,5 +1,5 @@
 #include <UnitTest++.h>
-#include "../CheckOffsetFunc.h"
+#include "CheckOffsetFunc.h"
 
 using namespace amop;
 

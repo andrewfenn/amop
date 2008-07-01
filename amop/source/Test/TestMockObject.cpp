@@ -1,5 +1,5 @@
 #include <UnitTest++.h>
-#include "../MockObject.h"
+#include "MockObject.h"
 #include <string>
 
 using namespace amop;

@@ -1,7 +1,7 @@
 #include <UnitTest++.h>
-#include "../Any.h"
-#include "../Tuple.h"
-#include "../Functor.h"
+#include "Any.h"
+#include "Tuple.h"
+#include "Functor.h"
 
 using namespace amop;
 

@@ -163,7 +163,7 @@ namespace amop
     template <typename F>
     class TReturnMatchBuilder<F, Detail::TCallPolicy>
         : public TReturnMatchBuilderBase
-        , public Detail::TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value, 
+        , public Detail::TExpectMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value, 
             TReturnMatchBuilder<F, Detail::TCallPolicy> 
             >
     {
@@ -171,7 +171,7 @@ namespace amop
         typedef TReturnMatchBuilderBase TBase;
 
     public:
-        typedef TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
+        typedef TExpectMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value , 
             TReturnMatchBuilder<F, Detail::TCallPolicy> 
             >
         TExpectMakersType;                
@@ -184,7 +184,7 @@ namespace amop
         }   	
 
         template<class T>
-        TReturnMatchBuilder Returns(T result)
+        TReturnMatchBuilder Return(T result)
         {
             typedef typename Detail::RemoveReference<typename Detail::Functor<F>::ReturnType>::Type ToType;
 
@@ -201,7 +201,7 @@ namespace amop
         }    
 
         template<class T>
-        TReturnMatchBuilder Throws(T exception)
+        TReturnMatchBuilder Throw(T exception)
         {
             //Can we verify that it is convertible to throw specifier.
             TBase::mFunction->SetReturn(std::make_pair(true,AmopSharedPtr<Detail::ExceptionThrowerBase>(new Detail::ExceptionThrower<T>(exception))), false);
@@ -228,7 +228,7 @@ namespace amop
         };                
         
         template<int I, class T>
-        TReturnMatchBuilder Sets(T result)
+        TReturnMatchBuilder Set(T result)
         {
             typedef typename Detail::Selector<
                 Detail::IsConvertible<T, Policy::TPolicy>::Result
@@ -241,7 +241,7 @@ namespace amop
         }                        
 
         template<DETAIL_TPARAMS(8)>
-        TReturnMatchBuilder _Expects(const Detail::TExpectsAll<DETAIL_ARGS(8)>& expect)
+        TReturnMatchBuilder _Expect(const Detail::TExpectAll<DETAIL_ARGS(8)>& expect)
         {
             DETAIL_APPLY_ALL(ExpectOne, expect);
             return *this;
@@ -256,7 +256,7 @@ namespace amop
     template <typename F>
     class TReturnMatchBuilder<F, Detail::TEveryCallPolicy>
         : public TReturnMatchBuilderBase
-        , public Detail::TExpectsMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value ,
+        , public Detail::TExpectMaker<F, Detail::Length< typename Detail::Functor<F>::ParameterTypes >::Value ,
             TReturnMatchBuilder<F, Detail::TEveryCallPolicy> 
             >
     {
@@ -321,7 +321,7 @@ namespace amop
         }
 
         template<DETAIL_TPARAMS(8)>
-        TReturnMatchBuilder _Expects(const Detail::TExpectsAll<DETAIL_ARGS(8)>& expect)
+        TReturnMatchBuilder _Expect(const Detail::TExpectAll<DETAIL_ARGS(8)>& expect)
         {
             DETAIL_APPLY_ALL(ExpectOne, expect);
             return *this;

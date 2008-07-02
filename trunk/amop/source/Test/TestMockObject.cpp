@@ -135,10 +135,6 @@ struct SimpleException : public std::exception
   }
 };
 
-void ThisThrows(){
-  throw SimpleException(42);
-}
-
 //------------------------------------------------------------------
 TEST(MockObjectMethodSimpleWithThrow)
 {
@@ -184,11 +180,11 @@ TEST(MockObjectMethodSimpleWithManyThrow)
     TMockObject<IInterface> mock;
 
     mock.Call(&IInterface::SimpleFunctionWithReturn)
-      .Throws(SimpleException(22));
+      .Throw(SimpleException(22));
     mock.Call(&IInterface::SimpleFunctionWithReturn)
-      .Returns(42);
+      .Return(42);
     mock.Call(&IInterface::SimpleFunctionWithReturn)
-      .Throws(SimpleException(142));
+      .Throw(SimpleException(142));
     
     try{
         mock->SimpleFunctionWithReturn();
@@ -230,7 +226,7 @@ TEST(MockObjectMethodMultiWithReturn)
     TMockObject<IInterface> mock;
 
     mock.Call(&IInterface::SimpleFunctionWithReturn)
-        .Returns(22).Returns(11);
+        .Return(22).Return(11);
 
     CHECK_EQUAL(22, mock->SimpleFunctionWithReturn());
     CHECK_EQUAL(11, mock->SimpleFunctionWithReturn());
@@ -258,7 +254,7 @@ TEST(MockObjectMethodSimpleExpectAll)
     TMockObject<IInterface> mock;
 
     mock.EveryCall(&IInterface::SimpleFunctionWithParams)
-        .Expects(21.0f, "Hello World", "SomeText");
+        .Expect(21.0f, "Hello World", "SomeText");
 
     mock->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
 
@@ -272,7 +268,7 @@ TEST(MockObjectMethodSimpleExpectAllIgnore)
     TMockObject<IInterface> mock;
 
     mock.EveryCall(&IInterface::SimpleFunctionWithParams)
-        .Expects(21.0f, Ignore, "SomeText");
+        .Expect(21.0f, Ignore, "SomeText");
 
     mock->SimpleFunctionWithParams(21.0f, "Hello World", "SomeText");
 
@@ -306,7 +302,7 @@ TEST(MockObjectMethodSimpleExpectPolicyAll)
     TMockObject<IInterface> mock;
 
     mock.EveryCall(&IInterface::PolicyTestFunction)
-        .Expects("First", Policy::Pointer("Second"), Policy::Array("Third", strlen("Third") + 1) );
+        .Expect("First", Policy::Pointer("Second"), Policy::Array("Third", strlen("Third") + 1) );
 
     std::string first = "First";
     std::string second = "Second";
@@ -352,14 +348,14 @@ TEST(MockObjectMethodMultipleExpectOne)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodMultipleExpects)
+TEST(MockObjectMethodMultipleExpect)
 {
     TMockObject<IInterface> mock;
 
     mock.Call(&IInterface::SimpleFunctionWithParams)
-        .Expects(1.0f, "Hello 1", "SomeText1")
-        .Expects(2.0f, "Hello 2", "SomeText2")	
-        .Expects(3.0f, "Hello 3", "SomeText3");
+        .Expect(1.0f, "Hello 1", "SomeText1")
+        .Expect(2.0f, "Hello 2", "SomeText2")	
+        .Expect(3.0f, "Hello 3", "SomeText3");
 
     mock->SimpleFunctionWithParams(1.0f, "Hello 1", "SomeText1");
     mock->SimpleFunctionWithParams(2.0f, "Hello 2", "SomeText2");
@@ -370,14 +366,14 @@ TEST(MockObjectMethodMultipleExpects)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodMultipleExpectsgnoreMultiple)
+TEST(MockObjectMethodMultipleExpectgnoreMultiple)
 {
     TMockObject<IInterface> mock;
 
     mock.Call(&IInterface::SimpleFunctionWithParams)
-        .Expects(Ignore, Ignore, "SomeText")
-        .Expects(Ignore, "Hello World", Ignore)
-        .Expects(3.0f,  Ignore, Ignore);
+        .Expect(Ignore, Ignore, "SomeText")
+        .Expect(Ignore, "Hello World", Ignore)
+        .Expect(3.0f,  Ignore, Ignore);
 
     mock->SimpleFunctionWithParams(1.0f, "asfdlkjsf",  "SomeText");
     mock->SimpleFunctionWithParams(2.0f, "Hello World", "fsda");
@@ -558,7 +554,7 @@ TEST(MockObjectMethodSetMultiple)
     TMockObject<IInterface> mock;
 
     mock.Call(&IInterface::ComplexFunction)
-        .Sets<1>("C1").Sets<1>("C2").Sets<1>("C3");
+        .Set<1>("C1").Set<1>("C2").Set<1>("C3");
 
     mock.EveryCall(&IInterface::ComplexFunction)
         .Return("");        
@@ -635,7 +631,7 @@ TEST(MockObjectMethodVerifyCallCount)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodVerifyExpects)
+TEST(MockObjectMethodVerifyExpect)
 {		
     TMockObject<IInterface, ManualVerify> mock;
 
@@ -659,14 +655,14 @@ TEST(MockObjectMethodVerifyExpects)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodReturnsCallCountException)
+TEST(MockObjectMethodReturnCallCountException)
 {		
     TMockObject<IInterface, ManualVerify> mock;
 
     mock.Call(&IInterface::SimpleFunctionWithReturn)
-        .Returns(1)
-        .Returns(2)
-        .Returns(3);
+        .Return(1)
+        .Return(2)
+        .Return(3);
 
     mock->SimpleFunctionWithReturn();
     mock->SimpleFunctionWithReturn();
@@ -677,14 +673,14 @@ TEST(MockObjectMethodReturnsCallCountException)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodReturnsCallCountVerify)
+TEST(MockObjectMethodReturnCallCountVerify)
 {		
     TMockObject<IInterface, ManualVerify> mock;
 
     mock.Call(&IInterface::SimpleFunctionWithReturn)
-        .Returns(1)
-        .Returns(2)
-        .Returns(3);
+        .Return(1)
+        .Return(2)
+        .Return(3);
 
     CHECK_THROW(mock.Verify(), TCallCountException);
 }

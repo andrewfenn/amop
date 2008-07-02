@@ -6,9 +6,9 @@ namespace amop
     namespace Detail
     {
         template <DETAIL_TPARAMS_DEF(8, Empty)> 
-        struct TExpectsAll
+        struct TExpectAll
         {
-            TExpectsAll(DETAIL_ARGS_DEFAULT(8))
+            TExpectAll(DETAIL_ARGS_DEFAULT(8))
                 : p0(t1)
                 , p1(t2)
                 , p2(t3)
@@ -31,16 +31,16 @@ namespace amop
             T8 p7;
         };
 
-        Detail::TExpectsAll<> All()
+        Detail::TExpectAll<> All()
         {                                 
-            return Detail::TExpectsAll<>();
+            return Detail::TExpectAll<>();
         }
 
 #define DETAIL_ALL_MAKER_BUILD(i)       \
     template <DETAIL_TPARAMS(i)>                                            \
-    Detail::TExpectsAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
+    Detail::TExpectAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
     {                                                                       \
-        return Detail::TExpectsAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
+        return Detail::TExpectAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
     }
 
 DETAIL_ALL_MAKER_BUILD(1);
@@ -54,13 +54,13 @@ DETAIL_ALL_MAKER_BUILD(8);
 
 
         template <typename F, int L, typename S>
-        class TExpectsMaker;
+        class TExpectMaker;
 
         template <typename F, typename S>
-        class TExpectsMakerBase
+        class TExpectMakerBase
         {
         public:
-            TExpectsMakerBase()
+            TExpectMakerBase()
             {
             }
 
@@ -77,36 +77,36 @@ DETAIL_ALL_MAKER_BUILD(8);
         };
 
         template <typename F, typename S>
-        class TExpectsMaker<F, 0, S> : public TExpectsMakerBase<F,S>
+        class TExpectMaker<F, 0, S> : public TExpectMakerBase<F,S>
         {
         public:
-            S Expects()            
+            S Expect()            
             {
-                return TExpectsMakerBase<F,S>::GetSelf()->_Expects(All());
+                return TExpectMakerBase<F,S>::GetSelf()->_Expect(All());
             }        
         };
 
         // Marco Debug only 
         /*template <typename F, typename S>
-        class TExpectsMaker<F, 3, S> : public TExpectsMakerBase<F,S>
+        class TExpectMaker<F, 3, S> : public TExpectMakerBase<F,S>
         {                                                   
         public:                                             
             template<DETAIL_TPARAMS(3)>                     
-            S Expects(DETAIL_FUNC_PARAMS(3,t))               
+            S Expect(DETAIL_FUNC_PARAMS(3,t))               
             {                                               
-                return TExpectsMakerBase<F,S>::Self->_Expects(All(DETAIL_ARGS_P(3))); 
+                return TExpectMakerBase<F,S>::Self->_Expect(All(DETAIL_ARGS_P(3))); 
             }                                               
         };*/
 
     #define DETAIL_MAKE_EXPECT_MAKER(i)     \
         template <typename F, typename S>   \
-        class TExpectsMaker<F, i, S> : public TExpectsMakerBase<F,S>    \
+        class TExpectMaker<F, i, S> : public TExpectMakerBase<F,S>    \
         {                                                   \
         public:                                             \
             template<DETAIL_TPARAMS(i)>                     \
-            S Expects(DETAIL_FUNC_PARAMS(i,t))               \
+            S Expect(DETAIL_FUNC_PARAMS(i,t))               \
             {                                               \
-                return TExpectsMakerBase<F,S>::GetSelf()->_Expects(All(DETAIL_ARGS_P(i))); \
+                return TExpectMakerBase<F,S>::GetSelf()->_Expect(All(DETAIL_ARGS_P(i))); \
             }                                               \
         }
 

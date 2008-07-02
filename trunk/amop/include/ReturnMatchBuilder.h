@@ -129,7 +129,10 @@ namespace amop
         }
     };
 
+    //! The builder object for Query mode 
     /*!
+        This template class defined the query mode return object from 
+        \ref TMockObject::Call.
     */
     //------------------------------------------------------------------
     template<typename F>
@@ -250,7 +253,10 @@ namespace amop
     };
 
 
+    //! The builder object for EveryCall mode 
     /*!
+        This template class defined the query mode return object from 
+        \ref TMockObject::Call.
     */
     //------------------------------------------------------------------
     template <typename F>

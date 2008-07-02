@@ -81,7 +81,7 @@ namespace amop
         \code
             TMockObject<IInterface> mock;
             
-            mock.EveryCall(&IInterface::Foo2).Expects(10, "String");
+            mock.EveryCall(&IInterface::Foo2).Expect(10, "String");
             
             mock.Call(&IInterface::Foo3).Return(20);
             
@@ -102,8 +102,8 @@ namespace amop
             
             // The &IInterface::Foo4 expect 10, and then 20
             mock.Call(&IInterface::Foo4)
-                .Expects(10)
-                .Expects(20);          
+                .Expect(10)
+                .Expect(20);          
         \endcode        
         
         \subsection ss_call Call
@@ -116,8 +116,8 @@ namespace amop
         
         \code
             mock.Call(&IInterface::Foo4)
-                .Expects(10).Return(1)
-                .Expects(20).Return(2);          
+                .Expect(10).Return(1)
+                .Expect(20).Return(2);          
             
             // We use UnitTest++ here, but you can use any unit-test library with amop.
             CHECK(1, mock->Foo4(10));

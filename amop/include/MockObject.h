@@ -106,7 +106,7 @@ namespace amop
                 .Expect(20);          
         \endcode        
         
-        \subsection ss_call Call
+        \subsection ss_call Call Mode
 
         In this mode, your can verify the arguments, setting the return values
         of your function. <b>The number of calls must match exactly, 
@@ -134,17 +134,66 @@ namespace amop
         \sa TMockObject::Call
         \sa Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>                
        
-        \subsection ss_everycall EveryCall
+        \subsection ss_everycall EveryCall Mode
 
-        The Call function of TMockObject is used for 
+        The EveryCall mode is very similar to \ref ss_call , except
+        verify arguments an infinite number of times, 
+        and shall not care about number of calls:
 
-        \subsection ss_query Query
+        \code
+            mock.EveryCall(&Interface::Foo4)
+                .Expect(10).Return(1)
 
-        The Call function of TMockObject is used for 
+            CHECK(1, mock->Foo4(10);
+            CHECK(1, mock->Foo4(10);
+            CHECK(1, mock->Foo4(10);
+            CHECK(1, mock->Foo4(10);
+        \endcode
 
-        \subsection ss_redirect Redirect
+        The TMockObject::EveryCall method will return an object in EveryCall mode,
+        which you can setting the behaviors like TMockObject::Call return object does. Please
+        reference Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy> for its usage.
 
-        The Call function of TMockObject is used for            
+        \sa TMockObject::EveryCall
+        \sa Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>                
+
+        \subsection ss_query Query Mode
+
+        The Query Mode is used for getting the function's propeties for mocking
+        (Like the number of calls):
+
+        \code
+            mock.EveryCall(&Inteface::Foo4).Return(1)
+
+            mock->Foo4(10);
+            mock->Foo4(10);
+            mock->Foo4(10);
+            mock->Foo4(10);
+            mock->Foo4(10);
+
+            CHECK(5, mock.Query(&Interface::Foo4).Count())
+        \endcode
+
+        Please reference Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy> for its usage.
+
+        \sa TMockObject::Query
+        \sa Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
+
+        \subsection ss_redirect Redirect Mode
+
+        You can use \ss_redirect to redirect your function to given function:
+
+        \code
+            size_t some_other_func(size_t i);
+
+            mock.Redirect(&Interface::Foo4).Do(&some_other_function);
+        \end
+
+        Not only the free function, even a member function it can be redirected. 
+        Please reference Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy> for its usage.
+
+        \sa TMockObject::Redirect
+        \sa Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>                
 
         \subsection ss_destructor Binding to destructor
         
@@ -200,9 +249,9 @@ namespace amop
         //*****************************************
         //     Call Mode
         //*****************************************
-        //! Create the call mode binding        
+        //! Create the \ref ss_call binding        
         /*!
-            This function create the call mode binding. The call mode is used for
+            This function create the \ref ss_call binding. The \ref ss_call is used for
             verify and setting arguments for each calls, which the number of calls must match exactly.
 
             \param method
@@ -225,9 +274,9 @@ namespace amop
             return Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>(CreateMockFunction(function));
         }
 
-        //! Create the call mode binding for destructor        
+        //! Create the \ref ss_call binding for destructor        
         /*!
-            This function create the call mode binding for destructor. The call mode is used for
+            This function create the \ref ss_call binding for destructor. The \ref ss_call is used for
             verify and setting arguments for each calls, which the number of calls must match exactly.
             To binding a function to destructor, using the Destructor() trait object.
 
@@ -249,6 +298,19 @@ namespace amop
         //*****************************************
         //     EveryCall Mode
         //*****************************************
+        //! Create the \ref ss_everycall binding        
+        /*!
+            This function create the ss_everycall binding. The ss_everycall is used for
+            verify arguments an infinite number of times,  and shall not care about number of calls.
+
+            \param method
+                The method to be binding with
+
+            \return
+                The builder object for setting the behavior the given method.
+
+            \sa \ref ss_everycall, Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>                
+        */
         template <class F>
         Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy> EveryCall(F method)
         {
@@ -260,6 +322,17 @@ namespace amop
             return Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>(CreateMockFunction(function));
         }
 
+        //! Create the \ref ss_everycall binding for destructor        
+        /*!
+            This function create the ss_everycall binding for destructor. The ss_everycall is used for
+            verify and setting arguments for each calls, which the number of calls must match exactly.
+            To binding a function to destructor, using the Destructor() trait object.
+
+            \return
+                The builder object for setting the behavior the given method.
+
+            \sa \ref ss_everycall, \ref ss_destructor, Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>
+        */
         Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TEveryCallPolicy> EveryCall(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
@@ -271,12 +344,19 @@ namespace amop
 
         //*****************************************
         //     Query Mode
-        //*****************************************        
-
-
-        //! Binding the function to Query mode
+        //*****************************************                
+        //! Create the \ref ss_query binding        
         /*!
-            This function binds a function to query mode. After you 
+            This function create the \ref ss_query binding. The \ref ss_query is used for
+            getting the property of mocking function (Like the number calls)
+
+            \param method
+                The method to be binding with
+
+            \return
+                The builder object for getting the behavior the given method.
+
+            \sa \ref ss_query, Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
         */
         template <class F>
         Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy> Query(F method)
@@ -289,6 +369,17 @@ namespace amop
             return Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>(CreateMockFunction(function));
         }
 
+        //! Create the \ref ss_query binding for destructor
+        /*!
+            This function create the \ref ss_query binding for destructor. The \ref ss_query is used for
+            getting the property of mocking function (Like the number calls)
+            To binding a function to destructor, using the Destructor() trait object.
+
+            \return
+                The builder object for getting the behavior the given method.
+
+            \sa \ref ss_query, Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
+        */
         Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TQueryPolicy> Query(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
@@ -301,6 +392,19 @@ namespace amop
         //*****************************************
         //     Redirect Mode
         //*****************************************
+        //! Create the \ref ss_redirect binding        
+        /*!
+            This function create the \ref ss_redirect binding. The \ref ss_redirect is used for
+            redirect the mock function to given function.
+
+            \param method
+                The method to be binding with
+
+            \return
+                The builder object for getting the behavior the given method.
+
+            \sa \ref ss_redirect, Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>                
+        */
         template <class F>
         Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy> Redirect(F method)
         {
@@ -312,6 +416,17 @@ namespace amop
             return Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>(CreateMockFunction(function));
         }
 
+        //! Create the \ref ss_redirect binding for destructor
+        /*!
+            This function create the \ref ss_redirect binding. The \ref ss_redirect is used for
+            redirect the mock function to given function.
+            To binding a function to destructor, using the Destructor() trait object.
+
+            \return
+                The builder object for getting the behavior the given method.
+
+            \sa \ref ss_redirect, Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>                
+        */
         Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TRedirectPolicy> Redirect(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               

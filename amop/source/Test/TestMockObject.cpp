@@ -460,6 +460,51 @@ TEST(MockObjectMethodRedirectFreeFunc)
     CHECK_EQUAL("CHANGED", second.c_str());	
 }
 
+// TODO:
+//struct TTestRedirector
+//{
+//    std::string operator() (const std::string& crs,
+//        std::string& rs, std::string s)
+//    {
+//        firstRecv = crs;
+//        secondRecv = rs;
+//        thirdRecv = s;
+//
+//        rs = "CHANGED";
+//
+//        return "RESULT";
+//    }
+//
+//    std::string firstRecv;
+//    std::string secondRecv;
+//    std::string thirdRecv;
+//};
+//
+////------------------------------------------------------------------
+//TEST(MockObjectMethodRedirectObject)
+//{
+//    TTestRedirector rd;
+//
+//    TMockObject<IInterface> mock;
+//
+//    mock.Redirect(&IInterface::ComplexFunction)
+//        .Do(rd);
+//
+//    std::string second = "Second";
+//
+//    std::string result = 
+//        mock->ComplexFunction("First", second, "Third");
+//
+//    CHECK_EQUAL("RESULT", result.c_str());
+//
+//    CHECK_EQUAL("First", rd.firstRecv.c_str());
+//    CHECK_EQUAL("Second", rd.secondRecv.c_str());		
+//    CHECK_EQUAL("Third",  rd.thirdRecv.c_str());
+//
+//    CHECK_EQUAL("CHANGED", second.c_str());	
+//}
+//
+
 //------------------------------------------------------------------
 struct TestRedirectLocal
 {

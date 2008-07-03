@@ -31,14 +31,18 @@ namespace amop
             T8 p7;
         };
 
-        Detail::TExpectAll<> All()
-        {                                 
-            return Detail::TExpectAll<>();
-        }
+
+        namespace 
+        {
+
+            Detail::TExpectAll<> All()
+            {                                 
+                return Detail::TExpectAll<>();
+            }
 
 #define DETAIL_ALL_MAKER_BUILD(i)       \
     template <DETAIL_TPARAMS(i)>                                            \
-    Detail::TExpectAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
+    static Detail::TExpectAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
     {                                                                       \
         return Detail::TExpectAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
     }
@@ -52,6 +56,7 @@ DETAIL_ALL_MAKER_BUILD(6);
 DETAIL_ALL_MAKER_BUILD(7);
 DETAIL_ALL_MAKER_BUILD(8);
 
+        }
 
         template <typename F, int L, typename S>
         class TExpectMaker;

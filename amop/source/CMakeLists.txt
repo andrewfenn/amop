@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 # These are all of the important sources
 FILE(GLOB AMOP_SRCS *.cpp)
@@ -13,5 +13,5 @@ if (MSVC_IDE)
     LIST(APPEND AMOP_SRCS ${folder_header})
 endif(MSVC_IDE)
 
-add_library(amop STATIC ${AMOP_SRCS})
+add_library(Amop STATIC ${AMOP_SRCS})
 

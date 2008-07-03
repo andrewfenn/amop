@@ -1,5 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-project(amop)
+PROJECT(amop)
 
-add_subdirectory(source)
+ADD_SUBDIRECTORY(source)
+ADD_SUBDIRECTORY(source/Test)

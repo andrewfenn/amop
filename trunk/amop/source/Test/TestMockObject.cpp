@@ -420,7 +420,7 @@ TEST(MockObjectMethodSimpleExpectAndReturn)
 }
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodRedirectFreeFunc)
+TEST(MockObjectMethodDoFreeFunc)
 {
     static std::string firstRecv;
     static std::string secondRecv;
@@ -428,7 +428,7 @@ TEST(MockObjectMethodRedirectFreeFunc)
 
     struct Local
     {
-        static std::string HandleRedirect(const std::string& crs,
+        static std::string HandleDo(const std::string& crs,
             std::string& rs, std::string s)
         {
             firstRecv = crs;
@@ -443,8 +443,7 @@ TEST(MockObjectMethodRedirectFreeFunc)
 
     TMockObject<IInterface> mock;
 
-    mock.Redirect(&IInterface::ComplexFunction)
-        .Do(&Local::HandleRedirect);
+    mock.Call(&IInterface::ComplexFunction).Do(&Local::HandleDo);
 
     std::string second = "Second";
 
@@ -461,7 +460,7 @@ TEST(MockObjectMethodRedirectFreeFunc)
 }
 
 // TODO:
-//struct TTestRedirector
+//struct TTestDoor
 //{
 //    std::string operator() (const std::string& crs,
 //        std::string& rs, std::string s)
@@ -481,13 +480,13 @@ TEST(MockObjectMethodRedirectFreeFunc)
 //};
 //
 ////------------------------------------------------------------------
-//TEST(MockObjectMethodRedirectObject)
+//TEST(MockObjectMethodDoObject)
 //{
-//    TTestRedirector rd;
+//    TTestDoor rd;
 //
 //    TMockObject<IInterface> mock;
 //
-//    mock.Redirect(&IInterface::ComplexFunction)
+//    mock.Do(&IInterface::ComplexFunction)
 //        .Do(rd);
 //
 //    std::string second = "Second";
@@ -506,9 +505,9 @@ TEST(MockObjectMethodRedirectFreeFunc)
 //
 
 //------------------------------------------------------------------
-struct TestRedirectLocal
+struct TestDoLocal
 {
-    std::string HandleRedirect(const std::string& crs,
+    std::string HandleDo(const std::string& crs,
         std::string& rs, std::string s)
     {
         firstRecv = crs;
@@ -526,15 +525,14 @@ struct TestRedirectLocal
 };
 
 //------------------------------------------------------------------
-TEST(MockObjectMethodRedirectMethod)
+TEST(MockObjectMethodDoMethod)
 {	
-
-    TestRedirectLocal local;
+    TestDoLocal local;
 
     TMockObject<IInterface> mock;
 
-    mock.Redirect(&IInterface::ComplexFunction)
-        .Do(&local, &TestRedirectLocal::HandleRedirect);
+    mock.Call(&IInterface::ComplexFunction)
+        .Do(&local, &TestDoLocal::HandleDo);
 
     std::string second = "Second";
 
@@ -550,10 +548,40 @@ TEST(MockObjectMethodRedirectMethod)
     CHECK_EQUAL("CHANGED", second.c_str());	
 }
 
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodMixMethod)
+{	
+    TestDoLocal local;
+
+    TMockObject<IInterface> mock;
+
+    mock.Call(&IInterface::ComplexFunction)
+        .Do(&local, &TestDoLocal::HandleDo)
+        .Return("SECOND_RESULT")   
+        .Throw(SimpleException(22));
+
+    std::string second = "Second";
+
+    std::string dump;
+
+    CHECK_EQUAL("RESULT",  mock->ComplexFunction("First", second, "Third").c_str());
+    CHECK_EQUAL("SECOND_RESULT", mock->ComplexFunction("First", dump, "Third").c_str());
+    CHECK_THROW(mock->ComplexFunction("First", dump, "Third"), SimpleException);
+
+
+    CHECK_EQUAL("First", local.firstRecv.c_str());
+    CHECK_EQUAL("Second", local.secondRecv.c_str());		
+    CHECK_EQUAL("Third",  local.thirdRecv.c_str());
+
+    CHECK_EQUAL("CHANGED", second.c_str());	
+}
+
+
 //------------------------------------------------------------------
 TEST(MockObjectMethodSet)
 {	
-    TestRedirectLocal local;
+    TestDoLocal local;
 
     TMockObject<IInterface> mock;
 
@@ -594,8 +622,6 @@ TEST(MockObjectMethodSimpleSetPolicy)
 //------------------------------------------------------------------
 TEST(MockObjectMethodSetMultiple)
 {	
-    TestRedirectLocal local;
-
     TMockObject<IInterface> mock;
 
     mock.Call(&IInterface::ComplexFunction)

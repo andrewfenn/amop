@@ -26,9 +26,9 @@ namespace amop
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetRedirect(const any& result)
+        void TMockFunctionImpl::SetRedirect(const any& result, bool isDefault)
         {
-            mRedirect = result;                
+            _SetReturn(TReturnTypePair(DO, result), isDefault);
         }
 
         //------------------------------------------------------------------
@@ -78,21 +78,34 @@ namespace amop
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetReturn(const std::pair<bool, any>& result, bool isDefault)
+        void TMockFunctionImpl::_SetReturn(const TReturnTypePair& ret, bool isDefault)
         {
             if(isDefault)
             {
-                mReturnDefault.reset( new std::pair<bool, any>(result) );                    
+                mReturnDefault.reset( new TReturnTypePair(ret) );                    
             }
             else
             {
                 if( !mReturn.get() )
                 {
-                    mReturn.reset( new std::vector<std::pair<bool,any> >() );
+                    mReturn.reset( new std::vector< TReturnTypePair >() );
                 }
 
-                mReturn->push_back(result);
+                mReturn->push_back(ret);
             }               
+        }
+
+        //------------------------------------------------------------------
+        void TMockFunctionImpl::SetReturn(const std::pair<bool, any>& result, bool isDefault)
+        {
+            if( result.first )
+            {
+                _SetReturn(TReturnTypePair(THROW, result.second), isDefault);
+            }
+            else
+            {
+                _SetReturn(TReturnTypePair(RETURN, result.second), isDefault);
+            }
         }
 
         //------------------------------------------------------------------
@@ -104,7 +117,16 @@ namespace amop
         //------------------------------------------------------------------
         any& TMockFunctionImpl::GetRedirect()
         {
-            return mRedirect;
+            static any empty;
+            
+            TReturnTypePair* ret = _GetReturn(false);
+
+            if( !ret || ret->first != DO )
+            {
+                return empty;
+            }
+
+            return ret->second;            
         }
 
         //------------------------------------------------------------------
@@ -112,9 +134,9 @@ namespace amop
         {
             mCallCounter++;
 
-            std::pair<bool, any>* exitValue = _GetReturn(false);
+            TReturnTypePair* exitValue = _GetReturn(false);
 
-            if(exitValue && exitValue->first)
+            if(exitValue && exitValue->first == THROW)
             {
                 AmopSharedPtr<ExceptionThrowerBase> thrower;
                 try
@@ -197,13 +219,13 @@ namespace amop
         //------------------------------------------------------------------
         any& TMockFunctionImpl::GetReturn()
         {
-            std::pair<bool, any> * exitValue = _GetReturn(true);            
+            TReturnTypePair * exitValue = _GetReturn(true);            
 
             return exitValue->second;
         }
 
         //------------------------------------------------------------------
-        std::pair<bool, any>* TMockFunctionImpl::_GetReturn(
+        TMockFunctionImpl::TReturnTypePair* TMockFunctionImpl::_GetReturn(
             bool check
             ) const
         {

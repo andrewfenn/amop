@@ -21,8 +21,7 @@ namespace amop
     {
         class TCallPolicy{};
         class TEveryCallPolicy{};
-        class TQueryPolicy{};
-        class TRedirectPolicy{};      
+        class TQueryPolicy{};        
 
 #define DETAIL_APPLY_ALL(Action, param) \
     Action<0>(param.p0); \
@@ -86,48 +85,7 @@ namespace amop
     protected:
         Detail::IMockFunction* mFunction;
     };
-
-    //! The builder object for query mode
-    /*!
-        This template class defined the query mode return object from 
-        \ref TMockObject::Query.
-    */
-    //------------------------------------------------------------------
-    template<typename F>
-    class TReturnMatchBuilder<F, Detail::TRedirectPolicy>
-        : public TReturnMatchBuilderBase
-    {
-    public:
-        typedef TReturnMatchBuilderBase TBase;
-
-    public:
-        TReturnMatchBuilder(
-            Detail::IMockFunction* function
-            ) 
-            : TReturnMatchBuilderBase(function)
-        {
-        }        
-        
-        template <typename T>
-        TReturnMatchBuilder<F,Detail::TRedirectPolicy> Do(T freeFunc)
-        {
-            typename Detail::Functor<F>::FunctorType functor(freeFunc);
-
-            TBase::mFunction->SetRedirect(functor);
-
-            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(TBase::mFunction);
-        }
-
-        template <typename C, typename T>
-        TReturnMatchBuilder<F,Detail::TRedirectPolicy> Do(C* pointer, T func)
-        {
-            typename Detail::Functor<F>::FunctorType functor(pointer, func);
-
-            TBase::mFunction->SetRedirect(functor);
-
-            return TReturnMatchBuilder<F,Detail::TRedirectPolicy>(TBase::mFunction);
-        }
-    };
+    
 
     //! The builder object for Query mode 
     /*!
@@ -185,6 +143,26 @@ namespace amop
             : TBase(function)            
         {            
         }   	
+
+        template <typename T>
+        TReturnMatchBuilder Do(T freeFunc)
+        {
+            typename Detail::Functor<F>::FunctorType functor(freeFunc);
+
+            TBase::mFunction->SetRedirect(functor, false);
+
+            return *this;
+        }
+
+        template <typename C, typename T>
+        TReturnMatchBuilder Do(C* pointer, T func)
+        {
+            typename Detail::Functor<F>::FunctorType functor(pointer, func);
+
+            TBase::mFunction->SetRedirect(functor, false);
+
+            return *this;
+        }
 
         template<class T>
         TReturnMatchBuilder Return(T result)
@@ -278,6 +256,26 @@ namespace amop
 
         {
         }   	
+
+        template <typename T>
+        TReturnMatchBuilder Do(T freeFunc)
+        {
+            typename Detail::Functor<F>::FunctorType functor(freeFunc);
+
+            TBase::mFunction->SetRedirect(functor, true);
+
+            return *this;
+        }
+
+        template <typename C, typename T>
+        TReturnMatchBuilder Do(C* pointer, T func)
+        {
+            typename Detail::Functor<F>::FunctorType functor(pointer, func);
+
+            TBase::mFunction->SetRedirect(functor, true);
+
+            return *this;
+        }
 
         template<class T>
         TReturnMatchBuilder Return(T result)

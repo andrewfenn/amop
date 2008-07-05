@@ -18,7 +18,7 @@ namespace amop
 
             virtual void SetExpectCallCounter(size_t counter) = 0;
 
-            virtual void SetRedirect(const any& result) = 0;
+            virtual void SetRedirect(const any& result, bool isDefault) = 0;
 
             virtual void SetSetter(size_t paramId, const TComparable& param, bool isDefault) = 0;
 

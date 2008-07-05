@@ -74,18 +74,16 @@ namespace amop
 
         \section Bindings
 
-        TMockObject support 4 types of function binding modes:
-        \ref ss_call, \ref ss_everycall, \ref ss_query, 
-        \ref ss_redirect. But all the usage of this modes are the same:        
+        TMockObject support 3 types of function binding modes:
+        \ref ss_call, \ref ss_everycall and \ref ss_query.
+        But all the usage of this modes are the same:        
 
         \code
             TMockObject<IInterface> mock;
             
             mock.EveryCall(&IInterface::Foo2).Expect(10, "String");
             
-            mock.Call(&IInterface::Foo3).Return(20);
-            
-            mock.Redirect(&IInterface::Foo4).Do(&SomeOtherFunction);          
+            mock.Call(&IInterface::Foo3).Return(20);                       
             
             size_t numberOfCalls = mock.Query(&IInterface::Foo4).Count();            
         \endcode
@@ -178,23 +176,7 @@ namespace amop
 
         \sa TMockObject::Query
         \sa Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
-
-        \subsection ss_redirect Redirect Mode
-
-        You can use \ss_redirect to redirect your function to given function:
-
-        \code
-            size_t some_other_func(size_t i);
-
-            mock.Redirect(&Interface::Foo4).Do(&some_other_function);
-        \end
-
-        Not only the free function, even a member function it can be redirected. 
-        Please reference Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy> for its usage.
-
-        \sa TMockObject::Redirect
-        \sa Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>                
-
+        
         \subsection ss_destructor Binding to destructor
         
         In some case, your will want to mock the destructor of a interface,
@@ -388,54 +370,7 @@ namespace amop
             
             return Detail::TReturnMatchBuilder<TDestructorType, Detail::TQueryPolicy>(CreateMockFunction(function));            
         }
-
-        //*****************************************
-        //     Redirect Mode
-        //*****************************************
-        //! Create the \ref ss_redirect binding        
-        /*!
-            This function create the \ref ss_redirect binding. The \ref ss_redirect is used for
-            redirect the mock function to given function.
-
-            \param method
-                The method to be binding with
-
-            \return
-                The builder object for getting the behavior the given method.
-
-            \sa \ref ss_redirect, Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>                
-        */
-        template <class F>
-        Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy> Redirect(F method)
-        {
-            typedef int ItIsNotPointerToMemberMethod[
-                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
-
-            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
-
-            return Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>(CreateMockFunction(function));
-        }
-
-        //! Create the \ref ss_redirect binding for destructor
-        /*!
-            This function create the \ref ss_redirect binding. The \ref ss_redirect is used for
-            redirect the mock function to given function.
-            To binding a function to destructor, using the Destructor() trait object.
-
-            \return
-                The builder object for getting the behavior the given method.
-
-            \sa \ref ss_redirect, Detail::TReturnMatchBuilder<F, Detail::TRedirectPolicy>                
-        */
-        Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TRedirectPolicy> Redirect(const Destructor&)
-        {
-            typedef void (T::*TDestructorType)(void*);               
-            
-            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
-            
-            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TRedirectPolicy>(CreateMockFunction(function));            
-        }
-
+        
     private:
 
 

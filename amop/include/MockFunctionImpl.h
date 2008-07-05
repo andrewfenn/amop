@@ -22,7 +22,7 @@ namespace amop
             // IMockFunction Interface
             void SetExpectCallCounter(size_t counter);            
 
-            void SetRedirect(const any& result);
+            void SetRedirect(const any& result, bool isDefault);
 
             void SetSetter(size_t paramId, const TComparable& param, bool isDefault);
 
@@ -45,6 +45,10 @@ namespace amop
             void Verify();
 
         protected:              
+            enum TReturnType { RETURN, THROW, DO };
+
+            typedef std::pair<TReturnType, any> TReturnTypePair;
+            
             void VerifyCallCounter();
 
             void VerifyReturn();
@@ -53,9 +57,10 @@ namespace amop
 
             void ApplySetter(size_t paramId, const any& param);
 
-            std::pair<bool, any>* _GetReturn(bool check) const;
+            TReturnTypePair* _GetReturn(bool check) const;
 
-            any mRedirect;
+            void _SetReturn(const TReturnTypePair& ret, bool isDefault);
+            
             size_t mCallCounter;
             std::auto_ptr<size_t> mExpectCallCounter;
 
@@ -63,8 +68,8 @@ namespace amop
 		    typedef std::map<size_t, TComparableList> TParamMap;
 		    typedef std::map<size_t, TComparable> TParamDefaultMap;
             
-            std::auto_ptr< std::vector<std::pair<bool,any> > > mReturn;	
-            std::auto_ptr< std::pair<bool,any> > mReturnDefault;
+            std::auto_ptr< std::vector< TReturnTypePair > > mReturn;	
+            std::auto_ptr< TReturnTypePair > mReturnDefault;
 
             std::auto_ptr<TParamMap> mExpect;
 		    std::auto_ptr<TParamDefaultMap> mExpectDefault;

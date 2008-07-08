@@ -21,5 +21,5 @@ if (MSVC_IDE)
 endif(MSVC_IDE)
 
 add_executable(UnitTestAmop ${AMOP_TEST_SRCS}) 
-target_link_libraries(UnitTestAmop amop UnitTest++)
+target_link_libraries(UnitTestAmop Amop UnitTest++)
 

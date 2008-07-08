@@ -29,7 +29,9 @@ Getting Started With GCC
 
 - Go into the directory created above (e.g. /amp/trunk/build)
 
-- Type the command     cmake -i ../amop      to generate makefiles
+- Type either the command     ccmake ../amop  or  cmake -i ../amop      
+  to generate makefiles. I find ccmake easier to use, other people prefer
+  cmake -i.
   Note: The directory ../amop will have a file called CMakeLists.txt
   Note: The normal way is to have one directory tree for the sources
         and a second, parallel directory tree for the binaries.
@@ -37,15 +39,20 @@ Getting Started With GCC
 - Answer the questions. Normally just hit enter to accept the default
   values. The hard question will be for the directory path to the unit 
   test framework. We used UnitTest++ to test that AMOP functions as
-  we intended.
+  we intended. This question is asking for the path to the file
+  UnitTest++.h.
   You can omit this answer and the only problem will be that the 
   unit tests OF the AMOP framework will NOT be built. AMOP itself
   will build just fine.
   
-- Type the command    make     to make the binaries
+- Type the command    make     to make the binaries, or   make help 
+  to get a list of the targets available
 
 Look at the file source/Test/TestMockObject.cpp for examples of the Amop API
 
+Note: If you are having problems compiling, try generating a verbose makefile
+by changing the ccmake  'advanced' setting CMAKE_VERBOSE_MAKEFILE to on, or by
+doing cmake -DCMAKE_VERBOSE_MAKEFILE=ON -i ../amop.
 
 
 ========================================================================
@@ -73,6 +80,8 @@ Getting Started With Microsoft Dev Studio
     or do not want to have it listed, just enter in some valid path. This
     directory is only used for building the UnitTest of AMOP. It is not needed
     to be able to use AMOP.
+    On the other hand, if you do have the UnitTest++ framework installed, please
+    enter the path to the 
   
 - Open the project (e.g. c:\amop\trunk\build\amop.sln), and then build the binaries.
 

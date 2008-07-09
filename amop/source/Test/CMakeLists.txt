@@ -4,13 +4,14 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 FILE(GLOB AMOP_TEST_SRCS *.cpp)
 
 # This seems to work
-find_path(UNITTEST_INCLUDE_DIR src/UnitTest++.h)
+find_path(UNITTEST_INCLUDE_DIR UnitTest++.h)
 
 # This doesn't seem to work
-#find_library(UNITTEST_LIB_DIR NAMES UnitTest++)
+find_library(UNITTEST_LIB_DIR UnitTest++)
 
 
 include_directories(../../include ${UNITTEST_INCLUDE_DIR})
+link_directories(${UNITTEST_LIB_DIR})
 
 if (MSVC_IDE)
     # These are the header files. Listed to make a group in Visual Studio IDE
@@ -23,3 +24,12 @@ endif(MSVC_IDE)
 add_executable(UnitTestAmop ${AMOP_TEST_SRCS}) 
 target_link_libraries(UnitTestAmop Amop UnitTest++)
 
+
+
+#Add a target called  test  that will run the unit test
+get_target_property(unit_test_exe UnitTestAmop LOCATION)
+add_custom_target (
+  test
+  COMMAND ${unit_test_exe}
+  DEPENDS UnitTestAmop
+)

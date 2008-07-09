@@ -27,9 +27,11 @@ target_link_libraries(UnitTestAmop Amop UnitTest++)
 
 
 #Add a target called  test  that will run the unit test
+# the ALL adds this to the 'ALL' choices. The DEPENDS
+# does not seem to be working
 get_target_property(unit_test_exe UnitTestAmop LOCATION)
 add_custom_target (
-  test
+  test ALL
   COMMAND ${unit_test_exe}
-  DEPENDS UnitTestAmop
+  DEPENDS 'UnitTestAmop'
 )

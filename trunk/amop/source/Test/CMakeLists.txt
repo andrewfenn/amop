@@ -8,10 +8,8 @@ endif(COMMAND cmake_policy)
 # These are all of the important sources
 FILE(GLOB AMOP_TEST_SRCS *.cpp)
 
-# This seems to work
+# Paths to the UnitTest++ libraries
 find_path(UNITTEST_INCLUDE_DIR UnitTest++.h)
-
-# This doesn't seem to work
 find_library(UNITTEST_LIB_DIR UnitTest++)
 
 

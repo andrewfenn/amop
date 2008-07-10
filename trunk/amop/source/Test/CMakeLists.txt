@@ -1,4 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+cmake_policy(SET CMP0003 NEW)
 
 # These are all of the important sources
 FILE(GLOB AMOP_TEST_SRCS *.cpp)

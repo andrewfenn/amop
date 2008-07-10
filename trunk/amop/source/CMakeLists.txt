@@ -7,10 +7,10 @@ include_directories(../include)
 
 if (MSVC_IDE)
     # These are the header files. Listed to make a group in Visual Studio IDE
-    FILE(GLOB folder_header ../include/*.h)
-    SOURCE_GROUP("Header Files" FILES ${folder_header})
+    FILE(GLOB AMOP_HDRS ../include/*.h)
+    SOURCE_GROUP("Header Files" FILES ${AMOP_HDRS})
     
-    LIST(APPEND AMOP_SRCS ${folder_header})
+    LIST(APPEND AMOP_SRCS ${AMOP_HDRS})
 endif(MSVC_IDE)
 
 add_library(Amop STATIC ${AMOP_SRCS})

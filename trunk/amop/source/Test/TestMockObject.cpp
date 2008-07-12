@@ -9,9 +9,9 @@ class IInterface
 {
 public:
     virtual void SimpleFunction() = 0;
-    virtual void SimpleFunctionWithParams(float, std::string, const char*) = 0;
+    virtual void SimpleFunctionWithParams(float, std::string, const std::string&) = 0;
 
-    virtual int SimpleFunctionWithParamsAndReturn(float, std::string, const char*) = 0;
+    virtual int SimpleFunctionWithParamsAndReturn(float, std::string, const std::string&) = 0;
 
     virtual void SimpleFunctionWithAlotParams(float, int, float, int, std::string) = 0;
 

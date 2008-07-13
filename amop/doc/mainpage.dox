@@ -8,7 +8,7 @@
     our mock object in only one statement:
 
     \code
-    TMockObject<YourInterface> mock;
+    MockObject<YourInterface> mock;
     \endcode
         
     And then we can create our test and set the expect values into it, without writing 

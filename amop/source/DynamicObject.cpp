@@ -4,21 +4,21 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {        
         //------------------------------------------------------------------
-        TDynamicObject::TDynamicObject()            
+        DynamicObject::DynamicObject()            
         {
-            mVirtualTable = Detail::TVirtualTable::CreateVirtualTable(this);
+            m_virtualTable = detail::VirtualTable::createVirtualTable(this);
         }
 
         //------------------------------------------------------------------
-        TDynamicObject::~TDynamicObject()
+        DynamicObject::~DynamicObject()
         {
-            delete mVirtualTable;
+            delete m_virtualTable;
 
-            for( TDynamicFunctionMap::iterator iter = mFunctions.begin()
-                ; iter != mFunctions.end()
+            for( DynamicFunctionMap::iterator iter = m_functions.begin()
+                ; iter != m_functions.end()
                 ; ++iter )
             {
                 delete iter->second;
@@ -26,61 +26,61 @@ namespace amop
         }
 
         //------------------------------------------------------------------
-        void* TDynamicObject::GetVptr()
+        void* DynamicObject::getVptr()
         {
-            return &mVirtualTable->mVtpr;
+            return &m_virtualTable->m_vtpr;
         }            
 
         //------------------------------------------------------------------
-        TDynamicFunction* TDynamicObject::_BindFunction(
+        DynamicFunction* DynamicObject::bindFunction(
             size_t offset
-            , TFunctionAddress data            
+            , FunctionAddress data            
             )
         {
             assert(offset < MAX_NUM_VIRTUAL_FUNCTIONS);
-            mVirtualTable->mVtable[offset] = data;
+            m_virtualTable->m_vtable[offset] = data;
 
-            if( mFunctions.count(offset) )
+            if( m_functions.count(offset) )
             {
-                return mFunctions[offset];
+                return m_functions[offset];
             }
 
-            TDynamicFunction* p = new TDynamicFunction();
-            mFunctions[offset] = p;
+            DynamicFunction* p = new DynamicFunction();
+            m_functions[offset] = p;
             
             return p;
         }          
 
         //------------------------------------------------------------------
-        any& TDynamicObject::GetRedirect(size_t idx)
+        any& DynamicObject::getRedirect(size_t idx)
         {
-            assert(mFunctions.count(idx));
+            assert(m_functions.count(idx));
             
-            return mFunctions[idx]->GetRedirect();
+            return m_functions[idx]->getRedirect();
         }
 
         //------------------------------------------------------------------
-        any& TDynamicObject::GetReturn(size_t idx)
+        any& DynamicObject::getReturn(size_t idx)
         {
-            assert(mFunctions.count(idx));
+            assert(m_functions.count(idx));
             
-            return mFunctions[idx]->GetReturn();
+            return m_functions[idx]->getReturn();
         }
 
         //------------------------------------------------------------------
-        void TDynamicObject::SetActual(size_t idx, size_t paramId, const any& param)
+        void DynamicObject::setActual(size_t idx, size_t paramId, const any& param)
         {
-            assert(mFunctions.count(idx));
+            assert(m_functions.count(idx));
             
-            mFunctions[idx]->SetActual(paramId, param);
+            m_functions[idx]->setActual(paramId, param);
         }
 
         //------------------------------------------------------------------
-        void TDynamicObject::AddCallCounter(size_t idx)
+        void DynamicObject::addCallCounter(size_t idx)
         {
-            assert(mFunctions.count(idx));
+            assert(m_functions.count(idx));
             
-            mFunctions[idx]->AddCallCounter();
+            m_functions[idx]->addCallCounter();
         }
     }
 }

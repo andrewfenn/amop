@@ -6,24 +6,24 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {
-        class TObjectHolder;
+        class ObjectHolder;
         
         //------------------------------------------------------------------
-        class TVirtualTable
+        class VirtualTable
         {
         public:
-            void* mVtable[MAX_NUM_VIRTUAL_FUNCTIONS];
-            void* mVtpr;
-            TObjectHolder* mThis;            
+            void* m_vtable[MAX_NUM_VIRTUAL_FUNCTIONS];
+            void* m_vtpr;
+            ObjectHolder* m_this;            
 
-            static TObjectHolder* GetThis(void* callerThisAddres);
+            static ObjectHolder* getThis(void* callerThisAddres);
 
-            static TVirtualTable* CreateVirtualTable(TObjectHolder* object);
+            static VirtualTable* createVirtualTable(ObjectHolder* object);
 
         private:
-            TVirtualTable(TObjectHolder* object);
+            VirtualTable(ObjectHolder* object);
         };
 
     }

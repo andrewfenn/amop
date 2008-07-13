@@ -7,62 +7,62 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {
         //------------------------------------------------------------------
-        TObjectHolder* GetHolderFromThis(void* pointer)
+        ObjectHolder* getHolderFromThis(void* pointer)
         {
-            return TVirtualTable::GetThis(pointer);
+            return VirtualTable::getThis(pointer);
         }
 
         //------------------------------------------------------------------
-        class TNotImplemented
+        class NotImplemented
         {
         public:
-            void Func()
+            void func()
             {
-                throw TNotImplementedException();
+                throw NotImplementedException();
             }
         };
 
         //------------------------------------------------------------------
-        static TFunctionAddress GetNotImplementedFunc()
+        static FunctionAddress getNotImplementedFunc()
         {
-            typedef void (TNotImplemented::*TNotImplementedFuncPtr)();
+            typedef void (NotImplemented::*NotImplementedFuncPtr)();
 
-            TNotImplementedFuncPtr _ptr = &TNotImplemented::Func;
-            TFunctionAddress p = HorribleCast<TFunctionAddress>(_ptr);
+            NotImplementedFuncPtr ptr = &NotImplemented::func;
+            FunctionAddress p = HorribleCast<FunctionAddress>(ptr);
 
             return p; 
         }
 
         //------------------------------------------------------------------
-        TVirtualTable::TVirtualTable(TObjectHolder* object)
+        VirtualTable::VirtualTable(ObjectHolder* object)
         {
-            mVtpr = &mVtable[0];
-            mThis = object;
+            m_vtpr = &m_vtable[0];
+            m_this = object;
         }
 
         //------------------------------------------------------------------
-        TObjectHolder* TVirtualTable::GetThis(void* callerThisAddres)
+        ObjectHolder* VirtualTable::getThis(void* callerThisAddres)
         {
             void* callerThis = *((void**)callerThisAddres);
 
             // _this pointer should point to &mVtable[0]
-            TVirtualTable* _this = (TVirtualTable*)callerThis;
+            VirtualTable* this_ = (VirtualTable*)callerThis;
 
-            assert(callerThis == &_this->mVtable[0]);
+            assert(callerThis == &this_->m_vtable[0]);
 
-            return _this->mThis;        
+            return this_->m_this;        
         }
 
         //------------------------------------------------------------------
-        TVirtualTable* TVirtualTable::CreateVirtualTable(TObjectHolder* object)
+        VirtualTable* VirtualTable::createVirtualTable(ObjectHolder* object)
         {
-            TVirtualTable* vtable = new TVirtualTable(object);
+            VirtualTable* vtable = new VirtualTable(object);
 
             for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
-                vtable->mVtable[i] = GetNotImplementedFunc();
+                vtable->m_vtable[i] = getNotImplementedFunc();
 
             return vtable;
         }

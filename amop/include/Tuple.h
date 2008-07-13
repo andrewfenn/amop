@@ -7,7 +7,7 @@
 namespace amop
 {
 
-namespace Detail
+namespace detail
 {
 	template <DETAIL_TPARAMS_DEF(15, Empty)> 
 	struct Tuple;

@@ -8,66 +8,66 @@ namespace amop
 {
 
     //------------------------------------------------------------------
-    class TNotImplementedException : public std::runtime_error        
+    class NotImplementedException : public std::runtime_error        
     {
     public:
-        TNotImplementedException()
+        NotImplementedException()
             : std::runtime_error("Not Implemented")
         {
         }
     };
 
     //------------------------------------------------------------------
-    class TNotPureVirtualException : public std::runtime_error        
+    class NotPureVirtualException : public std::runtime_error        
     {
     public:        
-        TNotPureVirtualException()
+        NotPureVirtualException()
             : std::runtime_error("It is not a pure virtual function")
         {
         }
     };
 
     //------------------------------------------------------------------
-    class TNotEqualException : public std::runtime_error
+    class NotEqualException : public std::runtime_error
     {
     public:
-        TNotEqualException(size_t param, const any& expect, const any& actual) 
+        NotEqualException(size_t param, const any& expect, const any& actual) 
             : std::runtime_error("Not Equal")
-            , mParam(param)
-            , mExpect(expect)
-            , mActual(actual)
+            , m_param(param)
+            , m_expect(expect)
+            , m_actual(actual)
           {
           }
 
-          any& GetExpect() { return mExpect; }
-          any& GetActual() { return mActual; }
+          any& GetExpect() { return m_expect; }
+          any& GetActual() { return m_actual; }
 
-          size_t GetParam() { return mParam; }
+          size_t GetParam() { return m_param; }
 
     protected:
-        size_t mParam;
-        any mExpect;
-        any mActual;
+        size_t m_param;
+        any m_expect;
+        any m_actual;
 
     };
 
     //------------------------------------------------------------------
-    class TCallCountException : public std::runtime_error
+    class CallCountException : public std::runtime_error
     {
     public:
-        TCallCountException(size_t expect, size_t actual) 
+        CallCountException(size_t expect, size_t actual) 
             : std::runtime_error("Call Count Fail")
-            , mExpect(expect)
-            , mActual(actual)
+            , m_expect(expect)
+            , m_actual(actual)
           {
           };
 
-          size_t GetExpect() { return mExpect; }
-          size_t GetActual() { return mActual; }
+          size_t GetExpect() { return m_expect; }
+          size_t GetActual() { return m_actual; }
 
     protected:
-        size_t mExpect;
-        size_t mActual;
+        size_t m_expect;
+        size_t m_actual;
     };
 
 }

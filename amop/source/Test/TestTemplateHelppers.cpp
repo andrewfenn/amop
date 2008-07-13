@@ -20,20 +20,20 @@ struct Equal<T,T>
 //------------------------------------------------------------------
 TEST(TestTuple)
 {
-	typedef Detail::Tuple<float , int , double > TestTuple;
-	typedef Detail::Tuple<> EmptyTuple;
+	typedef detail::Tuple<float , int , double > TestTuple;
+	typedef detail::Tuple<> EmptyTuple;
 
 	int len = TestTuple::Length;
 	CHECK_EQUAL(len, 3);
 	
-	bool result = Equal< Detail::Get<TestTuple, 1>::Type, int >::Result;
+	bool result = Equal< detail::Get<TestTuple, 1>::Type, int >::Result;
 	CHECK( result );
 }
 
 template <class T>
 static void MakeFunctor(T /*t*/)
 {
-	Detail::Functor<T>();
+	detail::Functor<T>();
 }
 
 struct TestFunctorClass
@@ -45,11 +45,11 @@ struct TestFunctorClass
 //------------------------------------------------------------------
 TEST(TestFunctorParams)
 {
-	using namespace Detail;
+	using namespace detail;
 	
 	
-	typedef Detail::Functor<void (TestFunctorClass::*)()> F1; //(&TestFunctorClass::Foo1); 
-	typedef Detail::Functor<int (TestFunctorClass::*)(float, int, double) > F2; //(&TestFunctorClass::Foo2); 
+	typedef detail::Functor<void (TestFunctorClass::*)()> F1; //(&TestFunctorClass::Foo1); 
+	typedef detail::Functor<int (TestFunctorClass::*)(float, int, double) > F2; //(&TestFunctorClass::Foo2); 
 
 	MakeFunctor(&TestFunctorClass::Foo1);
 	MakeFunctor(&TestFunctorClass::Foo2);

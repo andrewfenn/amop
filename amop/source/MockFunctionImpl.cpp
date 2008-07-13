@@ -11,115 +11,115 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {        
         //------------------------------------------------------------------
-        TMockFunctionImpl::TMockFunctionImpl()
-            : mCallCounter(0)
+        MockFunctionImpl::MockFunctionImpl()
+            : m_callCounter(0)
         {
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetExpectCallCounter(size_t counter)
+        void MockFunctionImpl::setExpectCallCounter(size_t counter)
         {
-            mExpectCallCounter.reset(new size_t(counter));
+            m_expectCallCounter.reset(new size_t(counter));
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetRedirect(const any& result, bool isDefault)
+        void MockFunctionImpl::setRedirect(const any& result, bool isDefault)
         {
-            _SetReturn(TReturnTypePair(DO, result), isDefault);
+            setReturnInternal(ReturnTypePair(DO, result), isDefault);
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetSetter(size_t paramId, const TComparable& param, bool isDefault)
+        void MockFunctionImpl::setSetter(size_t paramId, const Comparable& param, bool isDefault)
         {
             if (isDefault)
             {
-                if( !mSetterDefault.get() )
+                if( !m_setterDefault.get() )
                 {
-                    mSetterDefault.reset(new TParamDefaultMap() );
+                    m_setterDefault.reset(new ParamDefaultMap() );
                 }
 
-                (*mSetterDefault)[paramId] = param;
+                (*m_setterDefault)[paramId] = param;
             }
             else
             {
-                if( !mSetter.get() )
+                if( !m_setter.get() )
                 {
-                    mSetter.reset(new TParamMap());
+                    m_setter.reset(new ParamMap());
                 }
 
-                (*mSetter)[paramId].push_back(param);
+                (*m_setter)[paramId].push_back(param);
             }
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetExpect(size_t paramId, const TComparable& param, bool isDefault)
+        void MockFunctionImpl::setExpect(size_t paramId, const Comparable& param, bool isDefault)
         {
             if(isDefault)
             {
-                if( !mExpectDefault.get() )
+                if( !m_expectDefault.get() )
                 {
-                    mExpectDefault.reset(new TParamDefaultMap());
+                    m_expectDefault.reset(new ParamDefaultMap());
                 }
 
-                (*mExpectDefault)[paramId] = param;
+                (*m_expectDefault)[paramId] = param;
             }
             else
             {
-                if( !mExpect.get() )
+                if( !m_expect.get() )
                 {
-                    mExpect.reset(new TParamMap());
+                    m_expect.reset(new ParamMap());
                 }
 
-                (*mExpect)[paramId].push_back(param);
+                (*m_expect)[paramId].push_back(param);
             }
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::_SetReturn(const TReturnTypePair& ret, bool isDefault)
+        void MockFunctionImpl::setReturnInternal(const ReturnTypePair& ret, bool isDefault)
         {
             if(isDefault)
             {
-                mReturnDefault.reset( new TReturnTypePair(ret) );                    
+                m_returnDefault.reset( new ReturnTypePair(ret) );                    
             }
             else
             {
-                if( !mReturn.get() )
+                if( !m_return.get() )
                 {
-                    mReturn.reset( new std::vector< TReturnTypePair >() );
+                    m_return.reset( new std::vector< ReturnTypePair >() );
                 }
 
-                mReturn->push_back(ret);
+                m_return->push_back(ret);
             }               
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetReturn(const std::pair<bool, any>& result, bool isDefault)
+        void MockFunctionImpl::setReturn(const std::pair<bool, any>& result, bool isDefault)
         {
             if( result.first )
             {
-                _SetReturn(TReturnTypePair(THROW, result.second), isDefault);
+                setReturnInternal(ReturnTypePair(THROW, result.second), isDefault);
             }
             else
             {
-                _SetReturn(TReturnTypePair(RETURN, result.second), isDefault);
+                setReturnInternal(ReturnTypePair(RETURN, result.second), isDefault);
             }
         }
 
         //------------------------------------------------------------------
-        size_t TMockFunctionImpl::GetCallCounter()
+        size_t MockFunctionImpl::getCallCounter()
         {
-            return mCallCounter;
+            return m_callCounter;
         }
 
         //------------------------------------------------------------------
-        any& TMockFunctionImpl::GetRedirect()
+        any& MockFunctionImpl::getRedirect()
         {
             static any empty;
             
-            TReturnTypePair* ret = _GetReturn(false);
+            ReturnTypePair* ret = getReturn(false);
 
             if( !ret || ret->first != DO )
             {
@@ -130,11 +130,11 @@ namespace amop
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::AddCallCounter()
+        void MockFunctionImpl::addCallCounter()
         {
-            mCallCounter++;
+            m_callCounter++;
 
-            TReturnTypePair* exitValue = _GetReturn(false);
+            ReturnTypePair* exitValue = getReturn(false);
 
             if(exitValue && exitValue->first == THROW)
             {
@@ -153,56 +153,56 @@ namespace amop
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::Verify()
+        void MockFunctionImpl::verify()
         {
-            VerifyCallCounter();                
-            VerifyReturn();                                
-            VerifyExpect();
+            verifyCallCounter();                
+            verifyReturn();                                
+            verifyExpect();
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::VerifyCallCounter()
+        void MockFunctionImpl::verifyCallCounter()
         {
-            if( !mExpectCallCounter.get() )
+            if( !m_expectCallCounter.get() )
             {
                 return ;
             }
 
-            if( *mExpectCallCounter != mCallCounter )
+            if( *m_expectCallCounter != m_callCounter )
             {
-                throw TCallCountException(*mExpectCallCounter, mCallCounter);
+                throw CallCountException(*m_expectCallCounter, m_callCounter);
             }
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::VerifyReturn()
+        void MockFunctionImpl::verifyReturn()
         {
-            if( mReturnDefault.get() || !mReturn.get() )
+            if( m_returnDefault.get() || !m_return.get() )
             {
                 return ;
             }
 
-            if( mReturn->size() != mCallCounter )
+            if( m_return->size() != m_callCounter )
             {
-                throw TCallCountException(mReturn->size(), mCallCounter);
+                throw CallCountException(m_return->size(), m_callCounter);
             }
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::VerifyExpect()
+        void MockFunctionImpl::verifyExpect()
         {
-            if( !mExpect.get() )
+            if( !m_expect.get() )
             {
                 return;
             }
 
             size_t maxCount = 0;                
 
-            for( TParamMap::iterator iterator = mExpect->begin()
-                ; iterator != mExpect->end()
+            for( ParamMap::iterator iterator = m_expect->begin()
+                ; iterator != m_expect->end()
                 ; ++iterator )
             {
-                if(mExpectDefault.get() && mExpectDefault->count(iterator->first))
+                if(m_expectDefault.get() && m_expectDefault->count(iterator->first))
                 {
                     continue;
                 }
@@ -210,128 +210,128 @@ namespace amop
                 maxCount = std::max(maxCount, iterator->second.size());
             }                
 
-            if(maxCount != 0 && maxCount != mCallCounter)
+            if(maxCount != 0 && maxCount != m_callCounter)
             {
-                throw TCallCountException(maxCount, mCallCounter);
+                throw CallCountException(maxCount, m_callCounter);
             }
         }
 
         //------------------------------------------------------------------
-        any& TMockFunctionImpl::GetReturn()
+        any& MockFunctionImpl::getReturn()
         {
-            TReturnTypePair * exitValue = _GetReturn(true);            
+            ReturnTypePair * exitValue = getReturn(true);            
 
             return exitValue->second;
         }
 
         //------------------------------------------------------------------
-        TMockFunctionImpl::TReturnTypePair* TMockFunctionImpl::_GetReturn(
+        MockFunctionImpl::ReturnTypePair* MockFunctionImpl::getReturn(
             bool check
             ) const
         {
-            size_t callCounter = mCallCounter - 1;
+            size_t callCounter = m_callCounter - 1;
 
-            if( mReturn.get() && callCounter < mReturn->size())
+            if( m_return.get() && callCounter < m_return->size())
             {
-                return &(*mReturn)[callCounter];
+                return &(*m_return)[callCounter];
             }	            
 
-            if(!mReturnDefault.get())
+            if(!m_returnDefault.get())
             {
                 if( !check )
                 {
                     return NULL;
                 }
                 
-                size_t expect = mReturn.get() ? mReturn->size() : 0;
+                size_t expect = m_return.get() ? m_return->size() : 0;
 
-                throw TCallCountException(expect, callCounter);
+                throw CallCountException(expect, callCounter);
             }
 
-            return mReturnDefault.get();
+            return m_returnDefault.get();
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::SetActual(size_t paramId, const any& param)
+        void MockFunctionImpl::setActual(size_t paramId, const any& param)
         {
-            ApplySetter(paramId, param);
+            applySetter(paramId, param);
 
-            if( !mExpect.get() || !mExpect->count(paramId))
+            if( !m_expect.get() || !m_expect->count(paramId))
             {
-                if( !mExpectDefault.get() || !mExpectDefault->count(paramId) )
+                if( !m_expectDefault.get() || !m_expectDefault->count(paramId) )
                 {
                     return ;
                 }
                 else
                 {
-                    if( (*mExpectDefault)[paramId].IsEmpty() )
+                    if( (*m_expectDefault)[paramId].IsEmpty() )
                     {
                         return ;
                     }
                     
-                    if( (*mExpectDefault)[paramId] == param )
+                    if( (*m_expectDefault)[paramId] == param )
                     {
                         return ;
                     }
 
-                    throw TNotEqualException(paramId, (*mExpectDefault)[paramId], param);
+                    throw NotEqualException(paramId, (*m_expectDefault)[paramId], param);
                 }
             }
 
             // Must have expect
-            TComparableList& clist = (*mExpect)[paramId] ;
+            ComparableList& clist = (*m_expect)[paramId] ;
 
-            if( clist.size() <= mCallCounter )
+            if( clist.size() <= m_callCounter )
             {
-                if(! mExpectDefault.get() ) return ;
+                if(! m_expectDefault.get() ) return ;
 
-                TParamDefaultMap& paramDefaultMap = (*mExpectDefault);
+                ParamDefaultMap& paramDefaultMap = (*m_expectDefault);
 
                 if( !paramDefaultMap.count(paramId) ) return ;
 
                 if( paramDefaultMap[paramId] != param )
-                    throw TNotEqualException(paramId, paramDefaultMap[paramId], param);
+                    throw NotEqualException(paramId, paramDefaultMap[paramId], param);
             }
 
-            if( !clist[mCallCounter].IsEmpty() )
+            if( !clist[m_callCounter].IsEmpty() )
             {
-                if( clist[mCallCounter] != param )
-                    throw TNotEqualException(paramId, clist[mCallCounter], param);
+                if( clist[m_callCounter] != param )
+                    throw NotEqualException(paramId, clist[m_callCounter], param);
             }
         }
 
         //------------------------------------------------------------------
-        void TMockFunctionImpl::ApplySetter(size_t paramId, const any& param)
+        void MockFunctionImpl::applySetter(size_t paramId, const any& param)
         {
-            if(!mSetter.get() || !mSetter->count(paramId))
+            if(!m_setter.get() || !m_setter->count(paramId))
             { 
-                if( !mSetterDefault.get() || !mSetterDefault->count(paramId))
+                if( !m_setterDefault.get() || !m_setterDefault->count(paramId))
                 {
                     return ;
                 }
                 else
                 {
-                    (*mSetterDefault)[paramId].Assign(param);
+                    (*m_setterDefault)[paramId].assign(param);
                     return ;
                 }
             }
 
             // Must have expect
-            TComparableList& clist = (*mSetter)[paramId] ;                
+            ComparableList& clist = (*m_setter)[paramId] ;                
 
-            if( clist.size() <= mCallCounter )
+            if( clist.size() <= m_callCounter )
             {
-                if(!mSetterDefault.get()) return ;
+                if(!m_setterDefault.get()) return ;
 
-                TParamDefaultMap& paramDefaultMap = *mSetterDefault;
+                ParamDefaultMap& paramDefaultMap = *m_setterDefault;
 
                 if( !paramDefaultMap.count(paramId) ) return ;
 
-                paramDefaultMap[paramId].Assign(param);
+                paramDefaultMap[paramId].assign(param);
                 return ;
             }	
 
-            clist[mCallCounter].Assign( param );
+            clist[m_callCounter].assign( param );
         }
     }
 }

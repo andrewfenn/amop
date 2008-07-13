@@ -3,67 +3,67 @@
 
 namespace amop
 {
-    namespace Policy
+    namespace policy
     {
         //------------------------------------------------------------------
-        class TPolicy
+        class Policy
         {
         };
 
         //------------------------------------------------------------------
         template<class T>
-        class TPointer : public TPolicy
+        class PointerPolicy : public Policy
         {
         public:
             typedef T Type;
 
-            TPointer(T value)
-                : mValue(value)
+            PointerPolicy(T value)
+                : m_value(value)
             {
             }
 
             template <class P>
-            bool Compare(P* pointer) const
+            bool compare(P* pointer) const
             {
-                return *pointer == mValue;
+                return *pointer == m_value;
             }
 
             template <class P>
-            void Assign(P& pointer) const
+            void assign(P& pointer) const
             {
-                *pointer = mValue;
+                *pointer = m_value;
             }
 
         protected:
-            T mValue;
+            T m_value;
         };
 
         //------------------------------------------------------------------
         template <class T>
-        TPointer<T> Pointer(T value)
+        PointerPolicy<T> pointer(T value)
         {
-            return TPointer<T>(value);
+            return PointerPolicy<T>(value);
         }
 
         //------------------------------------------------------------------
         template<class T>
-        class TArray : public TPolicy
+        class ArrayPolicy : public Policy
         {
         public:
             typedef T* Type;
 
-            TArray(T* value, size_t len)
-                : mValue(value)
-                , mLen(len)
+            ArrayPolicy(T* value, size_t len)
+                : m_value(value)
+                , m_len(len)
             {
             }
 
             template <class P>
-            bool Compare(P in) const
+            bool compare(P in) const
             {
-                for( size_t i = 0; i < mLen; ++ i)
+                for( size_t i = 0; i < m_len; ++ i)
                 {
-                    if( *(in+i) != *(mValue+i) )
+                    if( *(in+i) != *(m_value+i) )
                     {
                         return false;
                     }
@@ -73,24 +73,24 @@ namespace amop
             }
 
             template <class P>
-            void Assign(P& in) const
+            void assign(P& in) const
             {
-                for( size_t i = 0; i < mLen; ++ i )
+                for( size_t i = 0; i < m_len; ++ i )
                 {
-                    in[i] = mValue[i];
+                    in[i] = m_value[i];
                 }
             }
 
         protected:
-            T* mValue;
-            size_t mLen;
+            T* m_value;
+            size_t m_len;
         };
 
         //------------------------------------------------------------------
         template <class T>
-        TArray<T> Array(T* value, size_t len)
+        ArrayPolicy<T> array(T* value, size_t len)
         {
-            return TArray<T>(value, len);
+            return ArrayPolicy<T>(value, len);
         }
     }
 }

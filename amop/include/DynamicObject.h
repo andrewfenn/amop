@@ -11,51 +11,51 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {        
-        class TVirtualTable;
-        class TDynamicFunction;        
+        class VirtualTable;
+        class DynamicFunction;        
         
         //------------------------------------------------------------------
-        class TDynamicObject : public Detail::TObjectHolder
+        class DynamicObject : public detail::ObjectHolder
         {
         public:
-            TDynamicObject();
-            ~TDynamicObject();
+            DynamicObject();
+            ~DynamicObject();
 
-            void* GetVptr();
+            void* getVptr();
             
             template <class F>
-            TDynamicFunction* Bind(F method)
+            DynamicFunction* bind(F method)
             {
-                size_t offset = Detail::Inner::TCheckOffset::GetOffset(method);
+                size_t offset = detail::inner::offset::getOffset(method);
 
-                return _BindFunction(offset, Detail::CallHandler::Create<F>(offset));
+                return bindFunction(offset, detail::CallHandler::create<F>(offset));
             }
 
             template <class T>
-            TDynamicFunction*  BindDestructor()
+            DynamicFunction*  bindDestructor()
             {
                 typedef void (T::*TDestructorType)(void*);
                 
-                size_t offset = Detail::Inner::TCheckOffset::GetOffsetDestructor<T>();
+                size_t offset = detail::inner::offset::getOffsetDestructor<T>();
 
-                return _BindFunction(offset, Detail::CallHandler::Create<TDestructorType>(offset));
+                return bindFunction(offset, detail::CallHandler::create<TDestructorType>(offset));
             }            
 
         public:
-            // Inheritent from TObjectHolder        
-            any& GetRedirect(size_t idx);
-            any& GetReturn(size_t idx);
-            void SetActual(size_t idx, size_t paramId, const any& param);
-            void AddCallCounter(size_t idx);
+            // Inheritent from ObjectHolder        
+            any& getRedirect(size_t idx);
+            any& getReturn(size_t idx);
+            void setActual(size_t idx, size_t paramId, const any& param);
+            void addCallCounter(size_t idx);
 
-            TDynamicFunction* _BindFunction(size_t offset, TFunctionAddress data);
+            DynamicFunction* bindFunction(size_t offset, FunctionAddress data);
             
-            typedef std::map<size_t, TDynamicFunction*> TDynamicFunctionMap;
+            typedef std::map<size_t, DynamicFunction*> DynamicFunctionMap;
 
-            Detail::TVirtualTable* mVirtualTable;	
-            TDynamicFunctionMap mFunctions;            
+            detail::VirtualTable* m_virtualTable;	
+            DynamicFunctionMap m_functions;            
         };
     }
 }

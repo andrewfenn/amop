@@ -6,71 +6,71 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {        
         //------------------------------------------------------------------
-        TMockObjectBase::TMockObjectBase()
+        MockObjectBase::MockObjectBase()
         {
-            mDynamicObject.reset(new TDynamicObject());
+            m_dynamicObject.reset(new DynamicObject());
         }
 
         //------------------------------------------------------------------
-        TMockObjectBase::~TMockObjectBase()
+        MockObjectBase::~MockObjectBase()
         {
-            Clear();
+            clear();
         }		
 
         //------------------------------------------------------------------
-        IMockFunction* TMockObjectBase::CreateMockFunction(TDynamicFunction* function)
+        MockFunction* MockObjectBase::createMockFunction(DynamicFunction* function)
         {
             if( function->GetHandler() )
             {
-                std::vector<TMockFunctionImpl*>::iterator iter = 
-                    std::find(mFunctions.begin(), mFunctions.end(), function->GetHandler() );
+                std::vector<MockFunctionImpl*>::iterator iter = 
+                    std::find(m_functions.begin(), m_functions.end(), function->GetHandler() );
                 
-                if( iter != mFunctions.end() )
+                if( iter != m_functions.end() )
                 {
                     return *iter;
                 }
             }
             
-            TMockFunctionImpl* func = new TMockFunctionImpl();
-            mFunctions.push_back(func);
-            function->SetHandler( func );
+            MockFunctionImpl* func = new MockFunctionImpl();
+            m_functions.push_back(func);
+            function->setHandler( func );
             return func;
         }
 
         //------------------------------------------------------------------
-        void TMockObjectBase::Clear()
+        void MockObjectBase::clear()
         {
-            mDynamicObject.reset(new TDynamicObject()) ;
+            m_dynamicObject.reset(new DynamicObject()) ;
 
-            for( std::vector<TMockFunctionImpl*>::iterator iter = mFunctions.begin()
-                ; iter != mFunctions.end()
+            for( std::vector<MockFunctionImpl*>::iterator iter = m_functions.begin()
+                ; iter != m_functions.end()
                 ; ++iter )
             {
                 delete *iter;
             }
 
-            mFunctions.clear();
+            m_functions.clear();
         }
 
         //------------------------------------------------------------------
-        void TMockObjectBase::Verify()
+        void MockObjectBase::verify()
         {
             // Check the expect call counter first.
-            for( std::vector<TMockFunctionImpl*>::iterator iter = mFunctions.begin()
-                ; iter != mFunctions.end()
+            for( std::vector<MockFunctionImpl*>::iterator iter = m_functions.begin()
+                ; iter != m_functions.end()
                 ; ++iter )
             {
-                (*iter)->Verify();
+                (*iter)->verify();
             }            
         }
 
         //------------------------------------------------------------------
-        void* TMockObjectBase::GetVptr()
+        void* MockObjectBase::getVptr()
         {
-            return mDynamicObject->GetVptr();
+            return m_dynamicObject->getVptr();
         }
 
     }

@@ -11,47 +11,47 @@
 namespace amop
 {
 
-namespace Detail
+namespace detail
 {
-    class TDynamicFunction;
-    class IMockFunction;
-    class TMockFunctionImpl;
+    class DynamicFunction;
+    class MockFunction;
+    class MockFunctionImpl;
 
     //------------------------------------------------------------------
-    class TMockObjectBase         
+    class MockObjectBase         
 	{
 	public:
-		TMockObjectBase();
-		virtual ~TMockObjectBase();
+		MockObjectBase();
+		virtual ~MockObjectBase();
 
-		void Clear();
-        void Verify();
+		void clear();
+        void verify();
 
     protected:
-        void* GetVptr();
+        void* getVptr();
 
-        TDynamicObject* GetDynamicObject()
+        DynamicObject* getDynamicObject()
         {
-            return mDynamicObject.get();
+            return m_dynamicObject.get();
         }		
 
-        IMockFunction* CreateMockFunction(TDynamicFunction* function);        
+        MockFunction* createMockFunction(DynamicFunction* function);        
 
 	private:       
         // Inheritent from IDynamicObjectHandler
-        any& GetRedirect(TDynamicFunction* dynamicFunction);
+        any& getRedirect(DynamicFunction* dynamicFunction);
 
-        std::pair<bool, any>& GetReturn(TDynamicFunction* dynamicFunction);
-        void SetActual(TDynamicFunction* dynamicFunction, size_t paramId, const any& param);
-        void AddCallCounter(TDynamicFunction* dynamicFunction);
+        std::pair<bool, any>& getReturn(DynamicFunction* dynamicFunction);
+        void setActual(DynamicFunction* dynamicFunction, size_t paramId, const any& param);
+        void addCallCounter(DynamicFunction* dynamicFunction);
 
-        friend class TMockFunctionImpl;        
-        std::vector<TMockFunctionImpl*> mFunctions;
+        friend class MockFunctionImpl;        
+        std::vector<MockFunctionImpl*> m_functions;
 
-        std::auto_ptr<TDynamicObject> mDynamicObject;              
+        std::auto_ptr<DynamicObject> m_dynamicObject;              
 		    
-        TMockObjectBase( const TMockObjectBase& );
-        TMockObjectBase& operator=(const TMockObjectBase& );
+        MockObjectBase( const MockObjectBase& );
+        MockObjectBase& operator=(const MockObjectBase& );
 	};
 }
 

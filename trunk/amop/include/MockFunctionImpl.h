@@ -9,73 +9,73 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {        
         //------------------------------------------------------------------
-        class TMockFunctionImpl 
-            : public IMockFunction
-            , public IDynamicFunctionHandler
+        class MockFunctionImpl 
+            : public MockFunction
+            , public DynamicFunctionHandler
         {
         public:
-            TMockFunctionImpl();            
+            MockFunctionImpl();            
 
-            // IMockFunction Interface
-            void SetExpectCallCounter(size_t counter);            
+            // MockFunction Interface
+            void setExpectCallCounter(size_t counter);            
 
-            void SetRedirect(const any& result, bool isDefault);
+            void setRedirect(const any& result, bool isDefault);
 
-            void SetSetter(size_t paramId, const TComparable& param, bool isDefault);
+            void setSetter(size_t paramId, const Comparable& param, bool isDefault);
 
-            void SetExpect(size_t paramId, const TComparable& param, bool isDefault);
+            void setExpect(size_t paramId, const Comparable& param, bool isDefault);
 
-            void SetReturn(const std::pair<bool, any>& result, bool isDefault);
+            void setReturn(const std::pair<bool, any>& result, bool isDefault);
 
-            virtual size_t GetCallCounter();
+            virtual size_t getCallCounter();
 
-            // IDynamicFunctionHandler Interface         
-            any& GetRedirect();
+            // DynamicFunctionHandler Interface         
+            any& getRedirect();
 
-            void AddCallCounter();
+            void addCallCounter();
 
-            any& GetReturn();
+            any& getReturn();
 
-            void SetActual(size_t paramId, const any& param);
+            void setActual(size_t paramId, const any& param);
 
             // Its own public interface
-            void Verify();
+            void verify();
 
         protected:              
-            enum TReturnType { RETURN, THROW, DO };
+            enum ReturnType { RETURN, THROW, DO };
 
-            typedef std::pair<TReturnType, any> TReturnTypePair;
+            typedef std::pair<ReturnType, any> ReturnTypePair;
             
-            void VerifyCallCounter();
+            void verifyCallCounter();
 
-            void VerifyReturn();
+            void verifyReturn();
 
-            void VerifyExpect();
+            void verifyExpect();
 
-            void ApplySetter(size_t paramId, const any& param);
+            void applySetter(size_t paramId, const any& param);
 
-            TReturnTypePair* _GetReturn(bool check) const;
+            ReturnTypePair* getReturn(bool check) const;
 
-            void _SetReturn(const TReturnTypePair& ret, bool isDefault);
+            void setReturnInternal(const ReturnTypePair& ret, bool isDefault);
             
-            size_t mCallCounter;
-            std::auto_ptr<size_t> mExpectCallCounter;
+            size_t m_callCounter;
+            std::auto_ptr<size_t> m_expectCallCounter;
 
-            typedef std::vector<TComparable> TComparableList;
-		    typedef std::map<size_t, TComparableList> TParamMap;
-		    typedef std::map<size_t, TComparable> TParamDefaultMap;
+            typedef std::vector<Comparable> ComparableList;
+		    typedef std::map<size_t, ComparableList> ParamMap;
+		    typedef std::map<size_t, Comparable> ParamDefaultMap;
             
-            std::auto_ptr< std::vector< TReturnTypePair > > mReturn;	
-            std::auto_ptr< TReturnTypePair > mReturnDefault;
+            std::auto_ptr< std::vector< ReturnTypePair > > m_return;	
+            std::auto_ptr< ReturnTypePair > m_returnDefault;
 
-            std::auto_ptr<TParamMap> mExpect;
-		    std::auto_ptr<TParamDefaultMap> mExpectDefault;
+            std::auto_ptr<ParamMap> m_expect;
+		    std::auto_ptr<ParamDefaultMap> m_expectDefault;
 
-            std::auto_ptr<TParamMap> mSetter;
-            std::auto_ptr<TParamDefaultMap > mSetterDefault;
+            std::auto_ptr<ParamMap> m_setter;
+            std::auto_ptr<ParamDefaultMap > m_setterDefault;
         };        
     }
 }

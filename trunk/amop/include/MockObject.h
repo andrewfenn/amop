@@ -13,47 +13,47 @@ namespace amop
     struct AutoVerify
     {
         template <class T>
-        static void Verify(T& o)
+        static void verify(T& o)
         {
-            o.Verify();
+            o.verify();
         }
     };
 
     struct ManualVerify
     {
         template <class T>
-        static void Verify(T&)
+        static void verify(T&)
         {
         }
     };
     
     //! The main mock object class
     /*!
-        TMockObject is a template class for mocking your interface.
+        MockObject is a template class for mocking your interface.
 
         \section sec_creation Initialization
 
         Let's say your want to mock a interface:
 
         \code
-            class IInterface
+            class Interface
             {
             public:                
                 
-                virtual void Foo1() = 0;
-                virtual void Foo2(size_t i, const std::string& s) = 0;
-                virtual size_t Foo3() = 0;
-                virtual size_t Foo4(size_t i) = 0;
+                virtual void foo1() = 0;
+                virtual void foo2(size_t i, const std::string& s) = 0;
+                virtual size_t foo3() = 0;
+                virtual size_t foo4(size_t i) = 0;
             };  
 
         \endcode
 
         To create your mock object:              
         \code
-            TMockObject<IInterface> mock;
+            MockObject<Interface> mock;
         \endcode
 
-        The \c IInterface is what interface you want to mock with and
+        The \c Interface is what interface you want to mock with and
         it should be a pure virtual class
         (No member variables, No non-virtual member functions).
         
@@ -64,8 +64,8 @@ namespace amop
 
         \code
             // The functions to test
-            void functionToTest(IInterface*);           
-            void functionToTestByRef(IInterface&);
+            void functionToTest(Interface*);           
+            void functionToTestByRef(Interface&);
             
             // In your test:          
             functionToTest(mock);
@@ -74,18 +74,18 @@ namespace amop
 
         \section Bindings
 
-        TMockObject support 3 types of function binding modes:
+        MockObject support 3 types of function binding modes:
         \ref ss_call, \ref ss_everycall and \ref ss_query.
         But all the usage of this modes are the same:        
 
         \code
-            TMockObject<IInterface> mock;
+            MockObject<Interface> mock;
             
-            mock.EveryCall(&IInterface::Foo2).Expect(10, "String");
+            mock.everyCall(&Interface::foo2).expect(10, "String");
             
-            mock.Call(&IInterface::Foo3).Return(20);                       
+            mock.call(&Interface::foo3).returning(20);                       
             
-            size_t numberOfCalls = mock.Query(&IInterface::Foo4).Count();            
+            size_t numberOfCalls = mock.query(&Interface::foo4).count();            
         \endcode
 
         After you binded your functions to the mock object, you can
@@ -95,16 +95,16 @@ namespace amop
         And you can mix these modes together by calling it twice:
 
         \code
-            // The IInterface::Foo4 will return 10 every times
-            mock.EveryCall(&IInterface::Foo4).Return(10);
+            // The Interface::foo4 will return 10 every times
+            mock.everyCall(&Interface::foo4).returning(10);
             
-            // The &IInterface::Foo4 expect 10, and then 20
-            mock.Call(&IInterface::Foo4)
-                .Expect(10)
-                .Expect(20);          
+            // The &Interface::foo4 expect 10, and then 20
+            mock.call(&Interface::foo4)
+                .expect(10)
+                .expect(20);          
         \endcode        
         
-        \subsection ss_call Call Mode
+        \subsection ss_call call Mode
 
         In this mode, your can verify the arguments, setting the return values
         of your function. <b>The number of calls must match exactly, 
@@ -113,69 +113,69 @@ namespace amop
         an exception will be thrown:
         
         \code
-            mock.Call(&IInterface::Foo4)
-                .Expect(10).Return(1)
-                .Expect(20).Return(2);          
+            mock.call(&Interface::foo4)
+                .expect(10).Return(1)
+                .expect(20).Return(2);          
             
             // We use UnitTest++ here, but you can use any unit-test library with amop.
-            CHECK(1, mock->Foo4(10));
-            CHECK(2, mock->Foo4(20));
+            CHECK(1, mock->foo4(10));
+            CHECK(2, mock->foo4(20));
 
-            CHECK_THROW(mock->Foo4(30), TCallCountException);            
+            CHECK_THROW(mock->foo4(30), CallCountException);            
         \endcode
 
-        The TMockObject::Call method will bind your given method to Call mode, 
+        The MockObject::call method will bind your given method to call mode, 
         and it will return an object, which you can call its method to setting the
         behaviors of given function when it is mocked. Please 
-        reference Detail::TReturnMatchBuilder<F, Detail::TCallPolicy> for its usage.
+        reference detail::ReturnMatchBuilder<F, detail::CallPolicy> for its usage.
 
-        \sa TMockObject::Call
-        \sa Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>                
+        \sa MockObject::call
+        \sa detail::ReturnMatchBuilder<F, detail::CallPolicy>                
        
-        \subsection ss_everycall EveryCall Mode
+        \subsection ss_everycall everyCall Mode
 
-        The EveryCall mode is very similar to \ref ss_call , except
+        The everyCall mode is very similar to \ref ss_call , except
         verify arguments an infinite number of times, 
         and shall not care about number of calls:
 
         \code
-            mock.EveryCall(&Interface::Foo4)
-                .Expect(10).Return(1)
+            mock.everyCall(&Interface::foo4)
+                .expect(10).Return(1)
 
-            CHECK(1, mock->Foo4(10);
-            CHECK(1, mock->Foo4(10);
-            CHECK(1, mock->Foo4(10);
-            CHECK(1, mock->Foo4(10);
+            CHECK(1, mock->foo4(10);
+            CHECK(1, mock->foo4(10);
+            CHECK(1, mock->foo4(10);
+            CHECK(1, mock->foo4(10);
         \endcode
 
-        The TMockObject::EveryCall method will return an object in EveryCall mode,
-        which you can setting the behaviors like TMockObject::Call return object does. Please
-        reference Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy> for its usage.
+        The MockObject::everyCall method will return an object in everyCall mode,
+        which you can setting the behaviors like MockObject::call return object does. Please
+        reference detail::ReturnMatchBuilder<F, detail::EveryCallPolicy> for its usage.
 
-        \sa TMockObject::EveryCall
-        \sa Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>                
+        \sa MockObject::everyCall
+        \sa detail::ReturnMatchBuilder<F, detail::EveryCallPolicy>                
 
-        \subsection ss_query Query Mode
+        \subsection ss_query query Mode
 
-        The Query Mode is used for getting the function's propeties for mocking
+        The query Mode is used for getting the function's propeties for mocking
         (Like the number of calls):
 
         \code
-            mock.EveryCall(&Inteface::Foo4).Return(1)
+            mock.everyCall(&Inteface::foo4).Return(1)
 
-            mock->Foo4(10);
-            mock->Foo4(10);
-            mock->Foo4(10);
-            mock->Foo4(10);
-            mock->Foo4(10);
+            mock->foo4(10);
+            mock->foo4(10);
+            mock->foo4(10);
+            mock->foo4(10);
+            mock->foo4(10);
 
-            CHECK(5, mock.Query(&Interface::Foo4).Count())
+            CHECK(5, mock.query(&Interface::foo4).Count())
         \endcode
 
-        Please reference Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy> for its usage.
+        Please reference detail::ReturnMatchBuilder<F, detail::QueryPolicy> for its usage.
 
-        \sa TMockObject::Query
-        \sa Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
+        \sa MockObject::query
+        \sa detail::ReturnMatchBuilder<F, detail::QueryPolicy>                
         
         \subsection ss_destructor Binding to destructor
         
@@ -183,7 +183,7 @@ namespace amop
         your can use the trait object Destructor:
 
         \code
-            mock.Call(Destructor());
+            mock.call(Destructor());
         \endcode
 
         \remarks
@@ -192,44 +192,44 @@ namespace amop
             However, because it is a pure virutal class, 
             there are only 2 way to call the destructor, 
             one is delete it by using the delete operator, 
-            another one is call it directly ( mock->~IInterface() ). 
+            another one is call it directly ( mock->~Interface() ). 
             Normally latter method is rarely happened.
 
     */
     //------------------------------------------------------------------
     template <class T, typename VerifyPolicy = AutoVerify >
-    class TMockObject : public Detail::TMockObjectBase
+    class MockObject : public detail::MockObjectBase
     {
     public:        
         //! Destructor        
         /*!
-            The destructor of TMockObject, 
+            The destructor of MockObject, 
         */        
-        ~TMockObject()
+        ~MockObject()
         {
-            VerifyPolicy::Verify(*this);
+            VerifyPolicy::verify(*this);
         }        
         
         operator T*()
         { 
-            return (T*)GetVptr();
+            return (T*)getVptr();
         }	
 
         T& operator *()
         {
-            return *((T*)GetVptr());
+            return *((T*)getVptr());
         }
 
         T* operator ->()
         {
-            return (T*)GetVptr();
+            return (T*)getVptr();
         }
 
-        void Clear() { Detail::TMockObjectBase::Clear(); }
-        void Verify() { Detail::TMockObjectBase::Verify(); }
+        void clear() { detail::MockObjectBase::clear(); }
+        void verify() { detail::MockObjectBase::verify(); }
 
         //*****************************************
-        //     Call Mode
+        //     call Mode
         //*****************************************
         //! Create the \ref ss_call binding        
         /*!
@@ -242,18 +242,18 @@ namespace amop
             \return
                 The builder object for setting the behavior the given method.
 
-            \sa \ref ss_call, Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>                
+            \sa \ref ss_call, detail::ReturnMatchBuilder<F, detail::CallPolicy>                
         */
         
         template <class F>
-        Detail::TReturnMatchBuilder<F, typename Detail::TCallPolicy> Call(F method)
+        detail::ReturnMatchBuilder<F, typename detail::CallPolicy> call(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
-                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
+                detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
-            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
+            detail::DynamicFunction* function = getDynamicObject()->bind(method);
 
-            return Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>(CreateMockFunction(function));
+            return detail::ReturnMatchBuilder<F, detail::CallPolicy>(createMockFunction(function));
         }
 
         //! Create the \ref ss_call binding for destructor        
@@ -265,20 +265,20 @@ namespace amop
             \return
                 The builder object for setting the behavior the given method.
 
-            \sa \ref ss_call, \ref ss_destructor, Detail::TReturnMatchBuilder<F, Detail::TCallPolicy>
+            \sa \ref ss_call, \ref ss_destructor, detail::ReturnMatchBuilder<F, detail::CallPolicy>
         */
-        Detail::TReturnMatchBuilder<void (T::*)(void*), typename Detail::TCallPolicy> Call(const Destructor&)
+        detail::ReturnMatchBuilder<void (T::*)(void*), typename detail::CallPolicy> call(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
+            detail::DynamicFunction* function = getDynamicObject()->template bindDestructor<T>();
             
-            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TCallPolicy>(CreateMockFunction(function));            
+            return detail::ReturnMatchBuilder<TDestructorType, detail::CallPolicy>(createMockFunction(function));            
         }
 
 
         //*****************************************
-        //     EveryCall Mode
+        //     everyCall Mode
         //*****************************************
         //! Create the \ref ss_everycall binding        
         /*!
@@ -291,17 +291,17 @@ namespace amop
             \return
                 The builder object for setting the behavior the given method.
 
-            \sa \ref ss_everycall, Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>                
+            \sa \ref ss_everycall, detail::ReturnMatchBuilder<F, detail::EveryCallPolicy>                
         */
         template <class F>
-        Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy> EveryCall(F method)
+        detail::ReturnMatchBuilder<F, detail::EveryCallPolicy> everyCall(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
-                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
+                detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
-            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
+            detail::DynamicFunction* function = getDynamicObject()->bind(method);
 
-            return Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>(CreateMockFunction(function));
+            return detail::ReturnMatchBuilder<F, detail::EveryCallPolicy>(createMockFunction(function));
         }
 
         //! Create the \ref ss_everycall binding for destructor        
@@ -313,19 +313,19 @@ namespace amop
             \return
                 The builder object for setting the behavior the given method.
 
-            \sa \ref ss_everycall, \ref ss_destructor, Detail::TReturnMatchBuilder<F, Detail::TEveryCallPolicy>
+            \sa \ref ss_everycall, \ref ss_destructor, detail::ReturnMatchBuilder<F, detail::EveryCallPolicy>
         */
-        Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TEveryCallPolicy> EveryCall(const Destructor&)
+        detail::ReturnMatchBuilder<void (T::*)(void*), detail::EveryCallPolicy> everyCall(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
+            detail::DynamicFunction* function = getDynamicObject()->template bindDestructor<T>();
             
-            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TEveryCallPolicy>(CreateMockFunction(function));            
+            return detail::ReturnMatchBuilder<TDestructorType, detail::EveryCallPolicy>(createMockFunction(function));            
         }
 
         //*****************************************
-        //     Query Mode
+        //     query Mode
         //*****************************************                
         //! Create the \ref ss_query binding        
         /*!
@@ -338,17 +338,17 @@ namespace amop
             \return
                 The builder object for getting the behavior the given method.
 
-            \sa \ref ss_query, Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
+            \sa \ref ss_query, detail::ReturnMatchBuilder<F, detail::QueryPolicy>                
         */
         template <class F>
-        Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy> Query(F method)
+        detail::ReturnMatchBuilder<F, detail::QueryPolicy> query(F method)
         {
             typedef int ItIsNotPointerToMemberMethod[
-                Detail::IsPointerToMethod<F>::Result ? 1 : -1];
+                detail::IsPointerToMethod<F>::Result ? 1 : -1];
 
-            Detail::TDynamicFunction* function = GetDynamicObject()->Bind(method);
+            detail::DynamicFunction* function = getDynamicObject()->bind(method);
 
-            return Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>(CreateMockFunction(function));
+            return detail::ReturnMatchBuilder<F, detail::QueryPolicy>(createMockFunction(function));
         }
 
         //! Create the \ref ss_query binding for destructor
@@ -360,15 +360,15 @@ namespace amop
             \return
                 The builder object for getting the behavior the given method.
 
-            \sa \ref ss_query, Detail::TReturnMatchBuilder<F, Detail::TQueryPolicy>                
+            \sa \ref ss_query, detail::ReturnMatchBuilder<F, detail::QueryPolicy>                
         */
-        Detail::TReturnMatchBuilder<void (T::*)(void*), Detail::TQueryPolicy> Query(const Destructor&)
+        detail::ReturnMatchBuilder<void (T::*)(void*), detail::QueryPolicy> query(const Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
-            Detail::TDynamicFunction* function = GetDynamicObject()->template BindDestructor<T>();
+            detail::DynamicFunction* function = getDynamicObject()->template bindDestructor<T>();
             
-            return Detail::TReturnMatchBuilder<TDestructorType, Detail::TQueryPolicy>(CreateMockFunction(function));            
+            return detail::ReturnMatchBuilder<TDestructorType, detail::QueryPolicy>(createMockFunction(function));            
         }
         
     private:

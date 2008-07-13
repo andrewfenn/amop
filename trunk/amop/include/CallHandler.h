@@ -9,18 +9,18 @@
 namespace amop
 {
 
-namespace Detail
+namespace detail
 {
 
 struct CallHandler
 {
 	template <class T>
-	static TFunctionAddress Select(size_t offset)
+	static FunctionAddress select(size_t offset)
 	{
-        std::vector<TFunctionAddress> funcs;
+        std::vector<FunctionAddress> funcs;
 
 #define DETAIL_FUNC_ITEM(n, t) funcs.push_back(     \
-    HorribleCast<TFunctionAddress>(&FunctionHolder<n-1,T>::Func) );    
+    HorribleCast<FunctionAddress>(&FunctionHolder<n-1,T>::func) );    
 #define DETAIL_FUNC_ITEMS(n) DETAIL_REPEAT(n,DETAIL_FUNC_ITEM,DETAIL_FUNC_ITEM,t)
         DETAIL_FUNC_ITEMS(MAX_NUM_VIRTUAL_FUNCTIONS);
 
@@ -28,9 +28,9 @@ struct CallHandler
 	}
 
 	template<class T>
-	static TFunctionAddress Create(size_t offset)
+	static FunctionAddress create(size_t offset)
 	{
-		TFunctionAddress result = Select<T>(offset);
+		FunctionAddress result = select<T>(offset);
 		assert(result);
 		
 		return result;

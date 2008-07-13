@@ -8,7 +8,7 @@
 
 namespace amop
 {
-namespace Detail
+namespace detail
 {
 
 template< typename T>

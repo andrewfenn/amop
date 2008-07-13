@@ -4,33 +4,37 @@
 #include "Config.h"
 
 namespace amop{
-  
-    namespace Detail{
+
+    namespace detail{
         class ExceptionThrowerBase{
         public:
             virtual void ThrowTypedException() = 0;
             virtual ~ExceptionThrowerBase(){}
         };
-        
+
         template<class E>
-        class ExceptionThrower : public ExceptionThrowerBase{
+        class ExceptionThrower : public ExceptionThrowerBase
+        {
         private:
-            E const _exception;
+            E const m_exception;
 
             ExceptionThrower& operator=(const ExceptionThrower&);
-            
+
         public:
             ExceptionThrower(E const & exception)
                 : ExceptionThrowerBase()
-                , _exception(exception)
+                , m_exception(exception)
             {
             }
+            
             virtual ~ExceptionThrower(){}
-            virtual void ThrowTypedException(){
-                throw _exception;
+            
+            virtual void ThrowTypedException()
+            {
+                throw m_exception;
             }
         };
- 
+
     }
 }
 

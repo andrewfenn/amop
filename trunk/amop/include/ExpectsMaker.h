@@ -3,12 +3,12 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {
         template <DETAIL_TPARAMS_DEF(8, Empty)> 
-        struct TExpectAll
+        struct ExpectAll
         {
-            TExpectAll(DETAIL_ARGS_DEFAULT(8))
+            ExpectAll(DETAIL_ARGS_DEFAULT(8))
                 : p0(t1)
                 , p1(t2)
                 , p2(t3)
@@ -35,16 +35,16 @@ namespace amop
         namespace 
         {
 
-            Detail::TExpectAll<> All()
+            detail::ExpectAll<> all()
             {                                 
-                return Detail::TExpectAll<>();
+                return detail::ExpectAll<>();
             }
 
 #define DETAIL_ALL_MAKER_BUILD(i)       \
     template <DETAIL_TPARAMS(i)>                                            \
-    static Detail::TExpectAll< DETAIL_ARGS(i) > All( DETAIL_FUNC_PARAMS(i,t) )           \
+    static detail::ExpectAll< DETAIL_ARGS(i) > all( DETAIL_FUNC_PARAMS(i,t) )           \
     {                                                                       \
-        return Detail::TExpectAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
+        return detail::ExpectAll<DETAIL_ARGS(i)>(DETAIL_ARGS_P(i));              \
     }
 
 DETAIL_ALL_MAKER_BUILD(1);
@@ -59,59 +59,59 @@ DETAIL_ALL_MAKER_BUILD(8);
         }
 
         template <typename F, int L, typename S>
-        class TExpectMaker;
+        class ExpectMaker;
 
         template <typename F, typename S>
-        class TExpectMakerBase
+        class ExpectMakerBase
         {
         public:
-            TExpectMakerBase()
+            ExpectMakerBase()
             {
             }
 
             template <int I>
             struct P
             {
-                typedef typename Detail::Get< typename Detail::Functor<F>::ParameterTypes, I >::Type Type;
+                typedef typename detail::Get< typename detail::Functor<F>::ParameterTypes, I >::Type Type;
             };            
 
-            S* GetSelf()
+            S* getSelf()
             {
                 return ((S*)this);
             }
         };
 
         template <typename F, typename S>
-        class TExpectMaker<F, 0, S> : public TExpectMakerBase<F,S>
+        class ExpectMaker<F, 0, S> : public ExpectMakerBase<F,S>
         {
         public:
-            S Expect()            
+            S expect()            
             {
-                return TExpectMakerBase<F,S>::GetSelf()->_Expect(All());
+                return ExpectMakerBase<F,S>::getSelf()->expectInternal(All());
             }        
         };
 
         // Marco Debug only 
         /*template <typename F, typename S>
-        class TExpectMaker<F, 3, S> : public TExpectMakerBase<F,S>
+        class ExpectMaker<F, 3, S> : public ExpectMakerBase<F,S>
         {                                                   
         public:                                             
             template<DETAIL_TPARAMS(3)>                     
             S Expect(DETAIL_FUNC_PARAMS(3,t))               
             {                                               
-                return TExpectMakerBase<F,S>::Self->_Expect(All(DETAIL_ARGS_P(3))); 
+                return ExpectMakerBase<F,S>::Self->_Expect(all(DETAIL_ARGS_P(3))); 
             }                                               
         };*/
 
     #define DETAIL_MAKE_EXPECT_MAKER(i)     \
         template <typename F, typename S>   \
-        class TExpectMaker<F, i, S> : public TExpectMakerBase<F,S>    \
+        class ExpectMaker<F, i, S> : public ExpectMakerBase<F,S>    \
         {                                                   \
         public:                                             \
             template<DETAIL_TPARAMS(i)>                     \
-            S Expect(DETAIL_FUNC_PARAMS(i,t))               \
+            S expect(DETAIL_FUNC_PARAMS(i,t))               \
             {                                               \
-                return TExpectMakerBase<F,S>::GetSelf()->_Expect(All(DETAIL_ARGS_P(i))); \
+                return ExpectMakerBase<F,S>::getSelf()->expectInternal(all(DETAIL_ARGS_P(i))); \
             }                                               \
         }
 

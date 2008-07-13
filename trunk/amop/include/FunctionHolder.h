@@ -6,11 +6,11 @@
 
 namespace amop
 {
-namespace Detail
+namespace detail
 {
-	class TObjectHolder;
+	class ObjectHolder;
     
-    TObjectHolder* GetHolderFromThis(void* pointer);    
+    ObjectHolder* getHolderFromThis(void* pointer);    
     
     //------------------------------------------------------------------
 	template <int I, class T, bool>
@@ -24,15 +24,15 @@ namespace Detail
 	};
 	
 #ifndef VT_THIS 
-#define VT_THIS GetHolderFromThis(this)
+#define VT_THIS getHolderFromThis(this)
 #endif
 
 
 #ifndef HANDLE_REDIRECT_R
 #define HANDLE_REDIRECT_R			\
 	do { \
-	if(VT_THIS->template Redirector<FunctorType>(I)){ \
-		return VT_THIS->template Redirector<FunctorType>(I)(DETAIL_FUNC_PARAMS(n, t));	\
+	if(VT_THIS->template redirector<FunctorType>(I)){ \
+		return VT_THIS->template redirector<FunctorType>(I)(DETAIL_FUNC_PARAMS(n, t));	\
 		}	\
 	}while(false)
 #endif
@@ -40,8 +40,8 @@ namespace Detail
 #ifndef HANDLE_REDIRECT
 #define HANDLE_REDIRECT			\
 	do { \
-	if(VT_THIS->template Redirector(I)){ \
-		VT_THIS->template Redirector<FunctorType>(I)(DETAIL_FUNC_PARAMS(n, t));	\
+	if(VT_THIS->template redirector(I)){ \
+		VT_THIS->template redirector<FunctorType>(I)(DETAIL_FUNC_PARAMS(n, t));	\
 		}	\
 	}while(false)
 #endif
@@ -51,10 +51,10 @@ namespace Detail
 	{			
 		typedef void (C::*FunctorType)();
         
-        void Func() { 
-			VT_THIS->AddCallCounter(I); 
-			if(VT_THIS->template Redirector<FunctorType>(I))
-				VT_THIS->template Redirector<FunctorType>(I)();
+        void func() { 
+			VT_THIS->addCallCounter(I); 
+			if(VT_THIS->template redirector<FunctorType>(I))
+				VT_THIS->template redirector<FunctorType>(I)();
 		}
 	};
 
@@ -62,13 +62,13 @@ namespace Detail
 	struct FunctionHolderBase<I, void (C::*)() const, false>
 	{			
 		typedef void (C::*FunctorType)();
-		void Func() 
+		void func() 
 		{ 
-			VT_THIS->AddCallCounter(I); 
+			VT_THIS->addCallCounter(I); 
 			
-			if(VT_THIS->template Redirector<FunctorType>(I))
+			if(VT_THIS->template redirector<FunctorType>(I))
 			{
-				VT_THIS->template Redirector<FunctorType>(I)();
+				VT_THIS->template redirector<FunctorType>(I)();
 			}
 		}
 	};
@@ -78,16 +78,16 @@ namespace Detail
 	struct FunctionHolderBase<I, R (C::*)(), true>
 	{			
 		typedef R (C::*FunctorType)();
-		R Func() 
+		R func() 
 		{ 
-			VT_THIS->AddCallCounter(I);
+			VT_THIS->addCallCounter(I);
 
-			if(VT_THIS->template Redirector<FunctorType>(I))
+			if(VT_THIS->template redirector<FunctorType>(I))
 			{
-				return VT_THIS->template Redirector<FunctorType>(I)();
+				return VT_THIS->template redirector<FunctorType>(I)();
 			}
 
-			return VT_THIS->template Return<R>(I);
+			return VT_THIS->template returning<R>(I);
 		}
 	};
 
@@ -96,21 +96,21 @@ namespace Detail
 	struct FunctionHolderBase<I, R (C::*)() const, true>
 	{			
 		typedef R (C::*FunctorType)();
-		R Func() 
+		R func() 
 		{ 
-			VT_THIS->AddCallCounter(I);
+			VT_THIS->addCallCounter(I);
 
-			if(VT_THIS->template Redirector<FunctorType>(I))
+			if(VT_THIS->template redirector<FunctorType>(I))
 			{
-				return VT_THIS->template Redirector<FunctorType>(I)();
+				return VT_THIS->template redirector<FunctorType>(I)();
 			}
 
-			return VT_THIS->template Return<R>(I);
+			return VT_THIS->template returning<R>(I);
 		}
 	};
 
-#define DETAIL_ACTUALCALL_ITEM(n, t)		VT_THIS->template Actual<T##n>(I,DETAIL_DEC(n),t##n);
-#define DETAIL_ACTUALCALL_ITEM_END(n, t)	VT_THIS->template Actual<T##n>(I,DETAIL_DEC(n),t##n);
+#define DETAIL_ACTUALCALL_ITEM(n, t)		VT_THIS->template actual<T##n>(I,DETAIL_DEC(n),t##n);
+#define DETAIL_ACTUALCALL_ITEM_END(n, t)	VT_THIS->template actual<T##n>(I,DETAIL_DEC(n),t##n);
 
 
 	//------------------------------------------------------------------
@@ -119,24 +119,24 @@ namespace Detail
 	struct FunctionHolderBase<I, void (C::*)(DETAIL_ARGS(n)), false>   \
 	{																  \
 		typedef void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		void Func(DETAIL_FUNC_PARAMS(n, t))								  \
+		void func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
-			VT_THIS->AddCallCounter(I);								  \
-			if(VT_THIS->template Redirector<FunctorType>(I))					\
-				VT_THIS->template Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
+			VT_THIS->addCallCounter(I);								  \
+			if(VT_THIS->template redirector<FunctorType>(I))					\
+				VT_THIS->template redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
 		}															  \
 	};																\
 	template <int I, class C, DETAIL_TPARAMS(n)>						\
 	struct FunctionHolderBase<I, void (C::*)(DETAIL_ARGS(n)) const, false>   \
 	{																  \
 		typedef void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		void Func(DETAIL_FUNC_PARAMS(n, t))								  \
+		void func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
-			VT_THIS->AddCallCounter(I);								  \
-			if(VT_THIS->template Redirector<FunctorType>(I))					\
-				VT_THIS->template Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
+			VT_THIS->addCallCounter(I);								  \
+			if(VT_THIS->template redirector<FunctorType>(I))					\
+				VT_THIS->template redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
 		}															  \
 	};																	
 
@@ -145,26 +145,26 @@ namespace Detail
 	struct FunctionHolderBase<I, R (C::*)(DETAIL_ARGS(n)), true>		\
 	{																	\
 		typedef R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		R Func(DETAIL_FUNC_PARAMS(n,t))									\
+		R func(DETAIL_FUNC_PARAMS(n,t))									\
 		{																\
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
-			VT_THIS->AddCallCounter(I);									\
-			if(VT_THIS->template Redirector<FunctorType>(I))					\
-				return VT_THIS->template Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
-			return VT_THIS->template Return<R>(I);								\
+			VT_THIS->addCallCounter(I);									\
+			if(VT_THIS->template redirector<FunctorType>(I))					\
+				return VT_THIS->template redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
+			return VT_THIS->template returning<R>(I);								\
 		}																\
 	};			\
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
 	struct FunctionHolderBase<I, R (C::*)(DETAIL_ARGS(n)) const, true>		\
 	{																	\
 		typedef R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		R Func(DETAIL_FUNC_PARAMS(n,t))									\
+		R func(DETAIL_FUNC_PARAMS(n,t))									\
 		{																\
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
-			VT_THIS->AddCallCounter(I);									\
-			if(VT_THIS->template Redirector<FunctorType>(I))					\
-				return VT_THIS->template Redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
-			return VT_THIS->template Return<R>(I);								\
+			VT_THIS->addCallCounter(I);									\
+			if(VT_THIS->template redirector<FunctorType>(I))					\
+				return VT_THIS->template redirector<FunctorType>(I)(DETAIL_ARGS_P(n));	\
+			return VT_THIS->template returning<R>(I);								\
 		}																\
 	};
 

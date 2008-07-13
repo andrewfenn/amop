@@ -2,35 +2,35 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {                
         //------------------------------------------------------------------
-        TDynamicFunction::TDynamicFunction()                
+        DynamicFunction::DynamicFunction()                
         {
         }
         
         //------------------------------------------------------------------
-        any& TDynamicFunction::GetRedirect()
+        any& DynamicFunction::getRedirect()
         {
-            return GetHandler()->GetRedirect();
+            return GetHandler()->getRedirect();
         }
             
         //------------------------------------------------------------------
-        any& TDynamicFunction::GetReturn()
+        any& DynamicFunction::getReturn()
         {
-            return GetHandler()->GetReturn();
+            return GetHandler()->getReturn();
         }
             
         //------------------------------------------------------------------
-        void TDynamicFunction::SetActual(size_t paramId, const any& param)
+        void DynamicFunction::setActual(size_t paramId, const any& param)
         {
-            return GetHandler()->SetActual(paramId, param);
+            return GetHandler()->setActual(paramId, param);
         }
             
         //------------------------------------------------------------------
-        void TDynamicFunction::AddCallCounter()
+        void DynamicFunction::addCallCounter()
         {
-            return GetHandler()->AddCallCounter();
+            return GetHandler()->addCallCounter();
         }
     }
 }

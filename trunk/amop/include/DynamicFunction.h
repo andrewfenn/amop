@@ -6,49 +6,49 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {        
         //------------------------------------------------------------------
-        class IDynamicFunctionHandler
+        class DynamicFunctionHandler
         {
         public:
-            virtual ~IDynamicFunctionHandler(){}
+            virtual ~DynamicFunctionHandler(){}
 
-            virtual any& GetRedirect() = 0;
+            virtual any& getRedirect() = 0;
             
-            virtual any& GetReturn() = 0;
+            virtual any& getReturn() = 0;
             
-            virtual void SetActual(size_t paramId, const any& param) = 0;
+            virtual void setActual(size_t paramId, const any& param) = 0;
             
-            virtual void AddCallCounter() = 0;
+            virtual void addCallCounter() = 0;
         };        
         
         //------------------------------------------------------------------
-        class TDynamicFunction
+        class DynamicFunction
         {
         public:
-            TDynamicFunction();               
+            DynamicFunction();               
 
-            IDynamicFunctionHandler* GetHandler()
+            DynamicFunctionHandler* GetHandler()
             {
-                return mHandler;
+                return m_handler;
             }
 
-            void SetHandler(IDynamicFunctionHandler* handler)
+            void setHandler(DynamicFunctionHandler* handler)
             {
-                mHandler = handler;
+                m_handler = handler;
             }
 
-            any& GetRedirect();
+            any& getRedirect();
             
-            any& GetReturn();
+            any& getReturn();
             
-            void SetActual(size_t paramId, const any& param);
+            void setActual(size_t paramId, const any& param);
             
-            void AddCallCounter();
+            void addCallCounter();
 
         protected:
-            IDynamicFunctionHandler* mHandler;
+            DynamicFunctionHandler* m_handler;
         };
     }
 }

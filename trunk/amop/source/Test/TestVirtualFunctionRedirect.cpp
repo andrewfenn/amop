@@ -21,12 +21,12 @@ public:
 //------------------------------------------------------------------
 TEST(TestGetOffset)
 {
-  CHECK_EQUAL(1u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo2));
-  CHECK_EQUAL(0u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo1));
+  CHECK_EQUAL(1u, detail::inner::offset::getOffset(&IInterface::foo2));
+  CHECK_EQUAL(0u, detail::inner::offset::getOffset(&IInterface::foo1));
   
-  CHECK_EQUAL(4u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo5));
-  CHECK_EQUAL(5u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo6));
-  CHECK_EQUAL(6u, Detail::Inner::TCheckOffset::GetOffset(&IInterface::foo7));	
+  CHECK_EQUAL(4u, detail::inner::offset::getOffset(&IInterface::foo5));
+  CHECK_EQUAL(5u, detail::inner::offset::getOffset(&IInterface::foo6));
+  CHECK_EQUAL(6u, detail::inner::offset::getOffset(&IInterface::foo7));	
 }
 
 //------------------------------------------------------------------

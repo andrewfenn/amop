@@ -5,7 +5,7 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {
 
         template <class From, class To>
@@ -33,165 +33,165 @@ namespace amop
             typedef T2 Type;
         };
 
-        class TComparable;
+        class Comparable;
 
         //------------------------------------------------------------------
-        class TComparableBase
+        class ComparableBase
         {
         public:
-            virtual ~TComparableBase(){}
+            virtual ~ComparableBase(){}
 
-            virtual bool Compare(const any& other) const = 0;	
-            virtual void Assign(const any& other) = 0;
-            virtual TComparableBase* Clone() = 0;
+            virtual bool compare(const any& other) const = 0;	
+            virtual void assign(const any& other) = 0;
+            virtual ComparableBase* clone() = 0;
         };
 
         //------------------------------------------------------------------
         template<class From, class To, bool ReadOnly>
-        class TComparableImp;
+        class ComparableImp;
 
         //------------------------------------------------------------------
         template<class From, class To>
-        class TComparableImp<From, To, true> : public TComparableBase
+        class ComparableImp<From, To, true> : public ComparableBase
         {
         public:
-            TComparableImp(const any& data) : mData(data) {}
+            ComparableImp(const any& data) : m_data(data) {}
 
-            virtual bool Compare(const any& other) const
+            virtual bool compare(const any& other) const
             {
-                return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(mData));
+                return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(m_data));
             }
 
-            virtual void Assign(const any& /*other*/) 
+            virtual void assign(const any& /*other*/) 
             {
             }
 
-            virtual TComparableBase* Clone() { return new TComparableImp<From, To, true>(mData); }
+            virtual ComparableBase* clone() { return new ComparableImp<From, To, true>(m_data); }
 
         protected:
-            any mData;
+            any m_data;
         };
 
         //------------------------------------------------------------------
         template<class From, class To>
-        class TComparableImp<From, To, false> : public TComparableBase
+        class ComparableImp<From, To, false> : public ComparableBase
         {
         public:
-            TComparableImp(const any& data) : mData(data) {}
+            ComparableImp(const any& data) : m_data(data) {}
 
-            virtual bool Compare(const any& other) const
+            virtual bool compare(const any& other) const
             {
-                return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(mData));
+                return (*(any_cast<const To*>(other))) == (To)(any_cast<From>(m_data));
             }
 
-            virtual void Assign(const any& other) 
+            virtual void assign(const any& other) 
             {
-                *const_cast<To*>(any_cast<const To*>(other)) = (To)any_cast<From>(mData);
+                *const_cast<To*>(any_cast<const To*>(other)) = (To)any_cast<From>(m_data);
             }
 
-            virtual TComparableBase* Clone() { return new TComparableImp<From, To, false>(mData); }
+            virtual ComparableBase* clone() { return new ComparableImp<From, To, false>(m_data); }
 
         protected:
-            any mData;
+            any m_data;
         };
 
         template<class P, class To, bool ReadOnly>
-        class TComparablePolicyImp;
+        class ComparablePolicyImp;
 
         //------------------------------------------------------------------
         template<class P, class To>
-        class TComparablePolicyImp<P, To, true> : public TComparableBase
+        class ComparablePolicyImp<P, To, true> : public ComparableBase
         {
         public:
-            TComparablePolicyImp(P& policy) : mPolicy(policy) {}
+            ComparablePolicyImp(P& policy) : m_policy(policy) {}
 
-            virtual bool Compare(const any& other) const
+            virtual bool compare(const any& other) const
             {
-                return mPolicy.Compare((*(any_cast<const To*>(other))));
+                return m_policy.compare((*(any_cast<const To*>(other))));
             }
 
-            virtual void Assign(const any&) 
+            virtual void assign(const any&) 
             {
             }
 
-            virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To, true>(mPolicy); }
+            virtual ComparableBase* clone() { return new ComparablePolicyImp<P, To, true>(m_policy); }
 
         protected:
-            P mPolicy;
+            P m_policy;
         };
 
         //------------------------------------------------------------------
         template<class P, class To>
-        class TComparablePolicyImp<P, To, false> : public TComparableBase
+        class ComparablePolicyImp<P, To, false> : public ComparableBase
         {
         public:
-            TComparablePolicyImp(P& policy) : mPolicy(policy) {}
+            ComparablePolicyImp(P& policy) : m_policy(policy) {}
 
-            virtual bool Compare(const any& other) const
+            virtual bool compare(const any& other) const
             {
-                return mPolicy.Compare((*(any_cast<const To*>(other))));
+                return m_policy.compare((*(any_cast<const To*>(other))));
             }
 
-            virtual void Assign(const any& other) 
+            virtual void assign(const any& other) 
             {
-                mPolicy.Assign(*const_cast<To*>(any_cast<const To*>(other)));
+                m_policy.assign(*const_cast<To*>(any_cast<const To*>(other)));
             }
 
-            virtual TComparableBase* Clone() { return new TComparablePolicyImp<P, To, false>(mPolicy); }
+            virtual ComparableBase* clone() { return new ComparablePolicyImp<P, To, false>(m_policy); }
 
         protected:
-            P mPolicy;
+            P m_policy;
         };
 
 
         //------------------------------------------------------------------
-        class TComparable
+        class Comparable
         {
         public:
-            TComparable() : mHolder(NULL) {}
+            Comparable() : m_holder(NULL) {}
 
             bool IsEmpty()
             {
-                return mHolder == NULL;
+                return m_holder == NULL;
             }
 
             template<class To, bool ReadOnly, class From>
-            static TComparable MakeCompare(From value)
+            static Comparable makeCompare(From value)
             {
-                TComparable compare;
-                compare.mHolder = new TComparableImp<From, To, ReadOnly>(value);
+                Comparable compare;
+                compare.m_holder = new ComparableImp<From, To, ReadOnly>(value);
                 return compare;
             }
 
             template<class To, bool ReadOnly, class P >
-            static TComparable MakeCompareByPolicy(P& policy)
+            static Comparable makeCompareByPolicy(P& policy)
             {
-                TComparable compare;
-                compare.mHolder = new TComparablePolicyImp<P, To, ReadOnly>(policy);
+                Comparable compare;
+                compare.m_holder = new ComparablePolicyImp<P, To, ReadOnly>(policy);
                 return compare;
             }
 
-            TComparable(const TComparable& other)
+            Comparable(const Comparable& other)
             {
-                mHolder = other.mHolder ? other.mHolder->Clone() : NULL;
+                m_holder = other.m_holder ? other.m_holder->clone() : NULL;
             }
 
-            ~TComparable()
+            ~Comparable()
             {
-                delete mHolder;
+                delete m_holder;
             }
 
-            TComparable& operator= (const TComparable& other)
+            Comparable& operator= (const Comparable& other)
             {
-                delete mHolder;
-                mHolder = other.mHolder ? other.mHolder->Clone() : NULL;
+                delete m_holder;
+                m_holder = other.m_holder ? other.m_holder->clone() : NULL;
 
                 return *this;
             }	
 
             bool operator == (const any& other) const
             {
-                return mHolder->Compare(other);
+                return m_holder->compare(other);
             }	
 
             bool operator != (const any& other) const
@@ -199,14 +199,14 @@ namespace amop
                 return !(*this == other);
             }
 
-            TComparable& Assign (const any& other)
+            Comparable& assign (const any& other)
             {
-                mHolder->Assign(other);
+                m_holder->assign(other);
 
                 return *this;
             }
 
-            TComparableBase* mHolder;
+            ComparableBase* m_holder;
         };
 
     }

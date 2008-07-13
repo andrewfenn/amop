@@ -11,68 +11,65 @@
 namespace amop
 {
 
-namespace Detail
+namespace detail
 {
 
 //------------------------------------------------------------------
-namespace Inner
+namespace inner
 {
-    class TCheck 
+    class Check 
     {
     public:
-        static bool mIsCheckCall;
-        static size_t mDestructorOffset;
+        static bool m_isCheckCall;
+        static size_t m_destructorOffset;
 
-        typedef bool* TCheckType;        
+        typedef bool* CheckType;        
     };
 
-    namespace TCheckOffset
+    namespace offset
     {
         //------------------------------------------------------------------
-        typedef int (TCheck::*TCheckFuncPtr) (TCheck::TCheckType&);
-
-
-        
+        typedef int (Check::*CheckFuncPtr) (Check::CheckType&);        
 
         //------------------------------------------------------------------
         template<int I>
-        class TCheckIdx
+        class CheckIdx
         {
         public:
-            int Func( TCheck::TCheckType& checkCode) 
+            int func( Check::CheckType& checkCode) 
             { 
-                checkCode = &TCheck::mIsCheckCall; 
+                checkCode = &Check::m_isCheckCall; 
                 return I; 
             }
 
-            void Destructor( void* )
+            void destructor( void* )
             {
-                TCheck::mDestructorOffset = I;
+                Check::m_destructorOffset = I;
             }
         };
 
         //------------------------------------------------------------------
-        TCheck* CreateCheckObject();
+        Check* createCheckObject();
 
         //------------------------------------------------------------------
-        TCheck* CreateCheckDestroyObject();        
+        Check* createCheckDestroyObject();        
 
         //------------------------------------------------------------------
         template <class T>
-        static size_t GetOffset(T memFuncPtr)
+        static size_t getOffset(T memFuncPtr)
         {
-            Inner::TCheckOffset::TCheckFuncPtr check = 
-                reinterpret_cast<Inner::TCheckOffset::TCheckFuncPtr>(memFuncPtr);
+            inner::offset::CheckFuncPtr check = 
+                reinterpret_cast<inner::offset::CheckFuncPtr>(memFuncPtr);
 
-            TCheck::mIsCheckCall = false; 
-            TCheck* checkObject = CreateCheckObject();
+            Check::m_isCheckCall = false; 
+            Check* checkObject = createCheckObject();
 
-            TCheck::TCheckType checkCode = 0;
+            Check::CheckType checkCode = 0;
             size_t offset = (checkObject->*check)(checkCode);	
 
-            if(&TCheck::mIsCheckCall != checkCode)
+            if(&Check::m_isCheckCall != checkCode)
             {
-                throw TNotPureVirtualException();
+                throw NotPureVirtualException();
             }
 
             return offset;
@@ -80,21 +77,21 @@ namespace Inner
 
         //------------------------------------------------------------------
         template <class T>
-        static size_t GetOffsetDestructor()
+        static size_t getOffsetDestructor()
         {
-            TCheck::mDestructorOffset = 0xFFFFFFFF;
+            Check::m_destructorOffset = 0xFFFFFFFF;
             
-            TCheck* checkObject = CreateCheckDestroyObject();
+            Check* checkObject = createCheckDestroyObject();
 
             // Force delete it..
             delete (T*)checkObject;
 
-            if(0xFFFFFFFF == TCheck::mDestructorOffset)
+            if(0xFFFFFFFF == Check::m_destructorOffset)
             {
-                throw TNotPureVirtualException();
+                throw NotPureVirtualException();
             }
 
-            return TCheck::mDestructorOffset;
+            return Check::m_destructorOffset;
         }
             
 

@@ -26,7 +26,7 @@ namespace amop
     Empty
 
 
-    namespace Detail
+    namespace detail
     {
 
         struct Empty {};
@@ -67,7 +67,7 @@ namespace amop
         // This union is declared outside the horrible_cast because BCC 5.5.1
         // can't inline a function with a nested class, and gives a warning.
         template <class OutputClass, class InputClass>
-        union THorribleUnion{
+        union HorribleUnion{
             OutputClass out;
             InputClass in;
         };
@@ -76,7 +76,7 @@ namespace amop
 
         template <class OutputClass, class InputClass>
         inline OutputClass HorribleCast(const InputClass input){
-            THorribleUnion<OutputClass, InputClass> u;
+            HorribleUnion<OutputClass, InputClass> u;
             // Cause a compile-time error if in, out and u are not the same size.
             // If the compile fails here, it means the compiler has peculiar
             // unions which would prevent the cast from working.
@@ -95,28 +95,28 @@ namespace amop
             // Constructors
             SmartPtr()
             {
-                ptr = NULL;
-                count = new int;
-                *count = 1;
+                m_ptr = NULL;
+                m_count = new int;
+                *m_count = 1;
             }
 
             SmartPtr(const SmartPtr<T> &original)
             {
-                ptr = original.ptr;
-                count = original.count;
-                (*count)++;
+                m_ptr = original.m_ptr;
+                m_count = original.m_count;
+                (*m_count)++;
             }
 
             SmartPtr(T* original)
             {
-                ptr = original;
-                count = new int;
-                *count = 1;
+                m_ptr = original;
+                m_count = new int;
+                *m_count = 1;
             }
 
             ~SmartPtr()
             {
-                Release();
+                release();
             }
 
 
@@ -126,10 +126,10 @@ namespace amop
                 if (this == &rhs)
                     return *this;
 
-                Release();
-                ptr = rhs.ptr;
-                count = rhs.count;
-                Acquire();
+                release();
+                m_ptr = rhs.m_ptr;
+                m_count = rhs.m_count;
+                acquire();
 
                 return *this;
             }
@@ -139,37 +139,37 @@ namespace amop
                 if (ptr == rhs)
                     return *this;
 
-                Release();
-                ptr = rhs;
-                count = new int;
-                *count = 1;
+                release();
+                m_ptr = m_rhs;
+                m_count = new int;
+                *m_count = 1;
             }
             //Use
             T* operator->()
             {
-                return ptr;
+                return m_ptr;
             }
 
         private:
-            T* ptr;
-            int* count;
+            T* m_ptr;
+            int* m_count;
 
-            void Acquire()
+            void acquire()
             {
-                (*count)++;
+                (*m_count)++;
             }
 
-            void Release()
+            void release()
             {
-                (*count)--;
-                if (!(*count))
+                (*m_count)--;
+                if (!(*m_count))
                 {
-                    delete count;
+                    delete m_count;
 
-                    if (ptr)
-                        delete ptr;
+                    if (m_ptr)
+                        delete m_ptr;
 
-                    ptr = NULL;
+                    m_ptr = NULL;
                 }
 
             }
@@ -180,7 +180,7 @@ namespace amop
             }
         };
 
-#define AmopSharedPtr Detail::SmartPtr
+#define AmopSharedPtr detail::SmartPtr
 #endif
 
 
@@ -199,7 +199,7 @@ namespace amop
 
         template <class OutputClass, class InputClass>
         inline OutputClass HorribleCast(const InputClass input){
-            THorribleUnion<GnuMFP, InputClass> u;
+            HorribleUnion<GnuMFP, InputClass> u;
             // Cause a compile-time error if in, out and u are not the same size.
             // If the compile fails here, it means the compiler has peculiar
             // unions which would prevent the cast from working.
@@ -211,7 +211,7 @@ namespace amop
 
 #define AmopSharedPtr std::tr1::shared_ptr
 #endif
-        typedef void* TFunctionAddress;
+        typedef void* FunctionAddress;
 
         }        
 }

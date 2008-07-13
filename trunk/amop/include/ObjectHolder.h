@@ -11,39 +11,39 @@
 
 namespace amop
 {
-    namespace Detail
+    namespace detail
     {
 
-        class TComparable;
+        class Comparable;
 
         //------------------------------------------------------------------
-        class TObjectHolder
+        class ObjectHolder
         {
         public:
-            TObjectHolder()
+            ObjectHolder()
             {
             }
 
-            virtual ~TObjectHolder(){}
+            virtual ~ObjectHolder(){}
 
             template <class R>
-            R Return(size_t idx)
+            R returning(size_t idx)
             {                                                
-                return any_cast<R>(GetReturn(idx));
+                return any_cast<R>(getReturn(idx));
             }
 
             template <class T>
-            void Actual(size_t funcIdx, size_t idx
-                , typename Detail::RemoveReference<T>::ConstType & t)
+            void actual(size_t funcIdx, size_t idx
+                , typename detail::RemoveReference<T>::ConstType & t)
             {
-                SetActual(funcIdx, idx, &t);
+                setActual(funcIdx, idx, &t);
             }
 
             template <class F>
-            typename Detail::Functor<F>::FunctorType Redirector(size_t i)
+            typename detail::Functor<F>::FunctorType redirector(size_t i)
             {
-                any& redirector = GetRedirect(i);
-                typedef typename Detail::Functor<F>::FunctorType FunctorType;
+                any& redirector = getRedirect(i);
+                typedef typename detail::Functor<F>::FunctorType FunctorType;
 
                 if(!redirector.empty())
                 {
@@ -53,12 +53,12 @@ namespace amop
                 return FunctorType();
             }
 
-            virtual any& GetRedirect(size_t idx) = 0;
+            virtual any& getRedirect(size_t idx) = 0;
             
-            virtual any& GetReturn(size_t idx) = 0;
-            virtual void SetActual(size_t idx, size_t paramId, const any& param) = 0;	
+            virtual any& getReturn(size_t idx) = 0;
+            virtual void setActual(size_t idx, size_t paramId, const any& param) = 0;	
 
-            virtual void AddCallCounter(size_t idx) = 0;	
+            virtual void addCallCounter(size_t idx) = 0;	
         };
 
     }

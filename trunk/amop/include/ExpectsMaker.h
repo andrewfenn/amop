@@ -87,7 +87,7 @@ DETAIL_ALL_MAKER_BUILD(8);
         public:
             S expect()            
             {
-                return ExpectMakerBase<F,S>::getSelf()->expectInternal(All());
+                return ExpectMakerBase<F,S>::getSelf()->expectInternal(all());
             }        
         };
 

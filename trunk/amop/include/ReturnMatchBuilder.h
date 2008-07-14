@@ -209,7 +209,7 @@ namespace amop
         };                
         
         template<int I, class T>
-        ReturnMatchBuilder set(T result)
+        ReturnMatchBuilder setOne(T result)
         {
             typedef typename detail::Selector<
                 detail::IsConvertible<T, policy::Policy>::Result
@@ -333,7 +333,7 @@ namespace amop
 
         
         template<int I, class T>
-        ReturnMatchBuilder set(T result)
+        ReturnMatchBuilder setOne(T result)
         {
             typedef typename detail::Selector<
                 detail::IsConvertible<T, policy::Policy>::Result
@@ -352,7 +352,11 @@ namespace amop
     };
 }
 
-    static detail::Empty Ignore;
+    static detail::Empty ignore()
+    {
+        return detail::Empty();
+    }
+
 }
 
 

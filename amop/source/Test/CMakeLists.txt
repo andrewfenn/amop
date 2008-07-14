@@ -36,5 +36,6 @@ get_target_property(unit_test_exe UnitTestAmop LOCATION)
 add_custom_target (
   test ALL
   COMMAND ${unit_test_exe}
-  DEPENDS UnitTestAmop
 )
+
+ADD_DEPENDENCIES(test UnitTestAmop)

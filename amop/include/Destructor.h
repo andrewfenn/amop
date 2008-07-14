@@ -8,7 +8,7 @@ namespace amop
         This trait class is used for binding destructor to your mock object:
 
         \code
-            mock.Call(Destructor());
+            mock.call(Destructor());
         \endcode
 
         \remarks
@@ -16,7 +16,7 @@ namespace amop
             but it is binding to the delete operator of your interface. 
             However, because it is a pure virutal class, there are only 2 way to call the destructor, 
             one is delete it by using the delete operator, 
-            another one is call it directly ( mock->~IInterface() ). 
+            another one is call it directly ( mock->~YourInterface() ). 
             Normally latter method is rarely happened. 
     */
     class Destructor

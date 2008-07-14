@@ -90,7 +90,7 @@ namespace amop
     //! The builder object for Query mode 
     /*!
         This template class defined the query mode return object from 
-        \ref MockObject::Call.
+        \ref MockObject::query.
     */
     //------------------------------------------------------------------
     template<typename F>
@@ -115,10 +115,10 @@ namespace amop
         }
     };    
     
-    //! The builder object for Call mode 
+    //! The builder object for call mode 
     /*!
         This template class defined the query mode return object from 
-        \ref MockObject::Call.
+        \ref MockObject::call.
     */
     //------------------------------------------------------------------
     template <typename F>
@@ -233,8 +233,8 @@ namespace amop
 
     //! The builder object for EveryCall mode 
     /*!
-        This template class defined the query mode return object from 
-        \ref MockObject::Call.
+        This template class defined the every call mode return object from 
+        \ref MockObject::everyCall.
     */
     //------------------------------------------------------------------
     template <typename F>

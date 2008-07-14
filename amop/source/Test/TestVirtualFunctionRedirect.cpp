@@ -4,10 +4,10 @@
 using namespace amop;
 
 //------------------------------------------------------------------
-class IInterface
+class Interface
 {
 public:
-	~IInterface(){};
+	~Interface(){};
 
 	virtual int foo1() = 0;
 	virtual void foo2() = 0;
@@ -21,38 +21,11 @@ public:
 //------------------------------------------------------------------
 TEST(TestGetOffset)
 {
-  CHECK_EQUAL(1u, detail::inner::offset::getOffset(&IInterface::foo2));
-  CHECK_EQUAL(0u, detail::inner::offset::getOffset(&IInterface::foo1));
+  CHECK_EQUAL(1u, detail::inner::offset::getOffset(&Interface::foo2));
+  CHECK_EQUAL(0u, detail::inner::offset::getOffset(&Interface::foo1));
   
-  CHECK_EQUAL(4u, detail::inner::offset::getOffset(&IInterface::foo5));
-  CHECK_EQUAL(5u, detail::inner::offset::getOffset(&IInterface::foo6));
-  CHECK_EQUAL(6u, detail::inner::offset::getOffset(&IInterface::foo7));	
+  CHECK_EQUAL(4u, detail::inner::offset::getOffset(&Interface::foo5));
+  CHECK_EQUAL(5u, detail::inner::offset::getOffset(&Interface::foo6));
+  CHECK_EQUAL(6u, detail::inner::offset::getOffset(&Interface::foo7));	
 }
-
-//------------------------------------------------------------------
-class A {
- public:
-       virtual float Afunc() { return 2.0f; };
-};
-
-//------------------------------------------------------------------
-class B {
- public: 
-      int Bfunc() { return 3; };
-};
-
-//------------------------------------------------------------------
-// C is a single inheritance class, derives only from A
-class C: public A {
- public: 
-     int Cfunc() { return 40; };
-};
-
-//------------------------------------------------------------------
-// D uses multiple inheritance
-class D: public A, public B {
- public: 
-    virtual int Dfunc() { return 5; };
-};
-
 

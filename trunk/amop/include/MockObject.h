@@ -192,7 +192,7 @@ namespace amop
             However, because it is a pure virutal class, 
             there are only 2 way to call the destructor, 
             one is delete it by using the delete operator, 
-            another one is call it directly ( mock->~Interface() ). 
+            another one is call it directly ( mock->~YourInterface() ). 
             Normally latter method is rarely happened.
 
     */

@@ -3,12 +3,19 @@
 
 namespace amop
 {
-    //! Trait class for binding to destructor
+    namespace detail
+    {    
+        class Destructor
+        {
+        };
+    }
+    
+    //! Trait function for binding to destructor
     /*!
-        This trait class is used for binding destructor to your mock object:
+        This trait function is used for binding destructor to your mock object:
 
         \code
-            mock.call(Destructor());
+            mock.call(destructor());
         \endcode
 
         \remarks
@@ -19,9 +26,10 @@ namespace amop
             another one is call it directly ( mock->~YourInterface() ). 
             Normally latter method is rarely happened. 
     */
-    class Destructor
+    static detail::Destructor destructor()
     {
-    };
+        return detail::Destructor();
+    }    
 }
 
 #endif

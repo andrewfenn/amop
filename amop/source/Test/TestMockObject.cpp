@@ -268,7 +268,7 @@ TEST(MockObjectMethodSimpleExpectAllIgnore)
     MockObject<Interface> mock;
 
     mock.everyCall(&Interface::simpleFunctionWithParams)
-        .expect(21.0f, Ignore, "SomeText");
+        .expect(21.0f, ignore(), "SomeText");
 
     mock->simpleFunctionWithParams(21.0f, "Hello World", "SomeText");
 
@@ -385,9 +385,9 @@ TEST(MockObjectMethodMultipleExpectgnoreMultiple)
     MockObject<Interface> mock;
 
     mock.call(&Interface::simpleFunctionWithParams)
-        .expect(Ignore, Ignore, "SomeText")
-        .expect(Ignore, "Hello World", Ignore)
-        .expect(3.0f,  Ignore, Ignore);
+        .expect(ignore(), ignore(), "SomeText")
+        .expect(ignore(), "Hello World", ignore())
+        .expect(3.0f,  ignore(), ignore());
 
     mock->simpleFunctionWithParams(1.0f, "asfdlkjsf",  "SomeText");
     mock->simpleFunctionWithParams(2.0f, "Hello World", "fsda");
@@ -600,7 +600,7 @@ TEST(MockObjectMethodSet)
     MockObject<Interface> mock;
 
     mock.everyCall(&Interface::complexFunction)
-        .set<1>("CHANGED")
+        .setOne<1>("CHANGED")
         .returning("");        
 
     std::string second = "Second";
@@ -617,9 +617,9 @@ TEST(MockObjectMethodSimpleSetPolicy)
     MockObject<Interface> mock;
 
     mock.everyCall(&Interface::PolicyTestFunction)
-        .set<0>("First")
-        .set<1>(policy::pointer("Second"))
-        .set<2>(policy::array("Third", strlen("Third") + 1) );
+        .setOne<0>("First")
+        .setOne<1>(policy::pointer("Second"))
+        .setOne<2>(policy::array("Third", strlen("Third") + 1) );
 
     std::string first;
     std::string second;
@@ -639,7 +639,7 @@ TEST(MockObjectMethodSetMultiple)
     MockObject<Interface> mock;
 
     mock.call(&Interface::complexFunction)
-        .set<1>("C1").set<1>("C2").set<1>("C3");
+        .setOne<1>("C1").setOne<1>("C2").setOne<1>("C3");
 
     mock.everyCall(&Interface::complexFunction)
         .returning("");        
@@ -688,7 +688,7 @@ TEST(MockObjectMethodDestructor)
 {		
     MockObject<Interface> mock;
 
-    mock.everyCall(Destructor());
+    mock.everyCall(destructor());
 
     delete ((Interface*)mock);
 

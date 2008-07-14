@@ -180,10 +180,10 @@ namespace amop
         \subsection ss_destructor Binding to destructor
         
         In some case, your will want to mock the destructor of a interface,
-        your can use the trait object Destructor:
+        your can use the trait function destructor():
 
         \code
-            mock.call(Destructor());
+            mock.call(destructor());
         \endcode
 
         \remarks
@@ -260,14 +260,14 @@ namespace amop
         /*!
             This function create the \ref ss_call binding for destructor. The \ref ss_call is used for
             verify and setting arguments for each calls, which the number of calls must match exactly.
-            To binding a function to destructor, using the Destructor() trait object.
+            To binding a function to destructor, using the destructor() trait function.
 
             \return
                 The builder object for setting the behavior the given method.
 
             \sa \ref ss_call, \ref ss_destructor, detail::ReturnMatchBuilder<F, detail::CallPolicy>
         */
-        detail::ReturnMatchBuilder<void (T::*)(void*), typename detail::CallPolicy> call(const Destructor&)
+        detail::ReturnMatchBuilder<void (T::*)(void*), typename detail::CallPolicy> call(const detail::Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
@@ -308,14 +308,14 @@ namespace amop
         /*!
             This function create the ss_everycall binding for destructor. The ss_everycall is used for
             verify and setting arguments for each calls, which the number of calls must match exactly.
-            To binding a function to destructor, using the Destructor() trait object.
+            To binding a function to destructor, using the destructor() trait function.
 
             \return
                 The builder object for setting the behavior the given method.
 
             \sa \ref ss_everycall, \ref ss_destructor, detail::ReturnMatchBuilder<F, detail::EveryCallPolicy>
         */
-        detail::ReturnMatchBuilder<void (T::*)(void*), detail::EveryCallPolicy> everyCall(const Destructor&)
+        detail::ReturnMatchBuilder<void (T::*)(void*), detail::EveryCallPolicy> everyCall(const detail::Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             
@@ -355,14 +355,14 @@ namespace amop
         /*!
             This function create the \ref ss_query binding for destructor. The \ref ss_query is used for
             getting the property of mocking function (Like the number calls)
-            To binding a function to destructor, using the Destructor() trait object.
+            To binding a function to destructor, using the destructor() trait function.
 
             \return
                 The builder object for getting the behavior the given method.
 
             \sa \ref ss_query, detail::ReturnMatchBuilder<F, detail::QueryPolicy>                
         */
-        detail::ReturnMatchBuilder<void (T::*)(void*), detail::QueryPolicy> query(const Destructor&)
+        detail::ReturnMatchBuilder<void (T::*)(void*), detail::QueryPolicy> query(const detail::Destructor&)
         {
             typedef void (T::*TDestructorType)(void*);               
             

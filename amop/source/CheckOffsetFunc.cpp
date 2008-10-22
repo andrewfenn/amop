@@ -11,17 +11,32 @@ namespace detail
         {
             //------------------------------------------------------------------
             template<int I>
-            static FunctionAddress getIndexFuncRecur(size_t i)
+            static FunctionAddress getIndexFuncRecur(size_t i, AmopCallingConventionType type)
             {
-                typedef int (CheckIdx<I>::*CheckFuncPtr)(Check::CheckType&);
+                FunctionAddress p;
+                
+                if( type == AMOP_CDECL )
+                {
+                    typedef int (DETAIL_CDECL CheckIdx<I>::*CheckFuncPtr)(Check::CheckType&);
+                    
+                    CheckFuncPtr ptr = &CheckIdx<I>::funcCDecl;
+                    p = HorribleCast<void*>(ptr);
+                }
+#ifdef DETAIL_HAVE_THIS_CALL
+                else
+                {
+                    typedef int (__thiscall CheckIdx<I>::*CheckFuncPtr)(Check::CheckType&);
 
-                CheckFuncPtr ptr = &CheckIdx<I>::func;
-                FunctionAddress p = HorribleCast<void*>(ptr);
+                    CheckFuncPtr ptr = &CheckIdx<I>::funcThisCall;
+                    p = HorribleCast<void*>(ptr);
+                }
+
+#endif
 
                 if(i == I)
                     return p;
                 else
-                    return getIndexFuncRecur<I+1>(i);
+                    return getIndexFuncRecur<I+1>(i, type);
             }
 
             //------------------------------------------------------------------
@@ -40,9 +55,9 @@ namespace detail
             }
 
             //------------------------------------------------------------------
-            static FunctionAddress getIndexFunc(size_t i)
+            static FunctionAddress getIndexFunc(size_t i, AmopCallingConventionType type)
             {
-                return getIndexFuncRecur<0>(i);
+                return getIndexFuncRecur<0>(i, type);
             }
 
             //------------------------------------------------------------------
@@ -52,13 +67,15 @@ namespace detail
             }
 
             //------------------------------------------------------------------
-            Check* createCheckObject()
+            Check* createCheckObject(AmopCallingConventionType type)
             {
                 static FunctionAddress vtable[MAX_NUM_VIRTUAL_FUNCTIONS];
                 static FunctionAddress vtbl = &vtable[0];
 
                 for(size_t i = 0 ; i < MAX_NUM_VIRTUAL_FUNCTIONS; ++i)
-                    vtable[i] = inner::offset::getIndexFunc(i);
+                {
+                    vtable[i] = inner::offset::getIndexFunc(i, type);
+                }
 
                 return (Check*)&vtbl;
             }
@@ -77,7 +94,10 @@ namespace detail
 
             //------------------------------------------------------------------
     	    template<>
-    	    inline FunctionAddress getIndexFuncRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(size_t)
+    	    inline FunctionAddress getIndexFuncRecur<MAX_NUM_VIRTUAL_FUNCTIONS>(
+                size_t
+                , AmopCallingConventionType 
+                )
     	    {
         	    return 0;
     	    }

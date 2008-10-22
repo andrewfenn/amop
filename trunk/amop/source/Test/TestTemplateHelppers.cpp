@@ -48,7 +48,7 @@ TEST(TestFunctorParams)
 {
 	using namespace detail;
 	
-	typedef detail::Functor<void (__cdecl TestFunctorClass::*)()> F0; //(&TestFunctorClass::Foo1); 
+	typedef detail::Functor<void (DETAIL_CDECL TestFunctorClass::*)()> F0; //(&TestFunctorClass::Foo1); 
 	typedef detail::Functor<void (TestFunctorClass::*)()> F1; //(&TestFunctorClass::Foo1); 
 	typedef detail::Functor<int (TestFunctorClass::*)(float, int, double) > F2; //(&TestFunctorClass::Foo2); 
 

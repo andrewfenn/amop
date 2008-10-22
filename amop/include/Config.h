@@ -74,6 +74,7 @@ namespace amop
 
 #ifdef _MSC_VER
 #define DETAIL_HAVE_THIS_CALL 1
+#define DETAIL_CDECL __cdecl
 
         template <class OutputClass, class InputClass>
         inline OutputClass HorribleCast(const InputClass input){
@@ -187,6 +188,7 @@ namespace amop
 
 
 #ifdef __GNUC__
+#define DETAIL_CDECL 
 
         struct GnuMFP
         {

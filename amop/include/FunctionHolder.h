@@ -47,7 +47,7 @@ namespace detail
 #endif
 	
 	template <int I, class C>
-	struct FunctionHolderBase<I, void (__cdecl C::*)(), false>
+	struct FunctionHolderBase<I, void (DETAIL_CDECL C::*)(), false>
 	{			
 		typedef void (C::*FunctorType)();
         
@@ -59,7 +59,7 @@ namespace detail
 	};
 
 	template <int I, class C>
-	struct FunctionHolderBase<I, void (__cdecl C::*)() const, false>
+	struct FunctionHolderBase<I, void (DETAIL_CDECL C::*)() const, false>
 	{			
 		typedef void (C::*FunctorType)();
 		void func() 
@@ -75,7 +75,7 @@ namespace detail
 
 	//------------------------------------------------------------------
 	template <int I, class R, class C>
-	struct FunctionHolderBase<I, R (__cdecl C::*)(), true>
+	struct FunctionHolderBase<I, R (DETAIL_CDECL C::*)(), true>
 	{			
 		typedef R (C::*FunctorType)();
 		R func() 
@@ -93,7 +93,7 @@ namespace detail
 
 	//------------------------------------------------------------------
 	template <int I, class R, class C>
-	struct FunctionHolderBase<I, R (__cdecl C::*)() const, true>
+	struct FunctionHolderBase<I, R (DETAIL_CDECL C::*)() const, true>
 	{			
 		typedef R (C::*FunctorType)();
 		R func() 
@@ -243,7 +243,7 @@ namespace detail
 #define DETAIL_FUNCTIONHOLDER_BUILD(n) DETAIL_FUNCTIONHOLDER_BUILD_O(n) \
 	DETAIL_FUNCTIONHOLDER_BUILD_R(n)
 
-#define DETAIL_CALLING_CONVENTION __cdecl
+#define DETAIL_CALLING_CONVENTION DETAIL_CDECL
 
 DETAIL_FUNCTIONHOLDER_BUILD(1);
 DETAIL_FUNCTIONHOLDER_BUILD(2);

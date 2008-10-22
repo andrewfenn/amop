@@ -38,7 +38,7 @@ static void MakeFunctor(T /*t*/)
 
 struct TestFunctorClass
 {
-    void __cdecl Foo0() {};
+    void DETAIL_CDECL Foo0() {};
     void Foo1() {};
 	int Foo2(float, int, double) { return 0; }
 };

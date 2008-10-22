@@ -33,7 +33,7 @@ struct Functor< R (__thiscall C::*)() const>
 #endif 
 
 template< typename R, typename C >
-struct Functor< R (__cdecl C::*)()>
+struct Functor< R (DETAIL_CDECL C::*)()>
 {
 	typedef R ReturnType;
 	typedef Tuple<> ParameterTypes;
@@ -41,7 +41,7 @@ struct Functor< R (__cdecl C::*)()>
 };
 
 template< typename R, typename C >
-struct Functor< R (__cdecl C::*)() const>
+struct Functor< R (DETAIL_CDECL C::*)() const>
 {
 	typedef R ReturnType;
 	typedef Tuple<> ParameterTypes;
@@ -66,7 +66,7 @@ struct Functor< R (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)) const>			\
 	typedef fastdelegate::FastDelegate##n<DETAIL_ARGS(n), R> FunctorType; \
 };
 
-#define DETAIL_CALLING_CONVENTION __cdecl
+#define DETAIL_CALLING_CONVENTION DETAIL_CDECL
 
 DETAIL_FUNCTION_BUILD(1);
 DETAIL_FUNCTION_BUILD(2);

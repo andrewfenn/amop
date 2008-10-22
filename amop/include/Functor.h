@@ -11,7 +11,7 @@ namespace amop
 namespace detail
 {
 
-    enum AmopCallingConventionType { AMOP_CDECL, AMOP_THISCALL };
+    enum AmopCallingConventionType { AMOP_CDECL = 0, AMOP_THISCALL = 1 };
 
 template< typename T>
 struct Functor;

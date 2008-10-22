@@ -72,7 +72,8 @@ namespace amop
             InputClass in;
         };
 
-#ifdef WIN32
+#ifdef _MSC_VER
+#define DETAIL_HAVE_THIS_CALL 1
 
         template <class OutputClass, class InputClass>
         inline OutputClass HorribleCast(const InputClass input){

@@ -8,7 +8,7 @@ using namespace amop;
 class Interface
 {
 public:
-    virtual void simpleFunction() = 0;
+    virtual void __cdecl simpleFunction() = 0;
     virtual void simpleFunctionWithParams(float, std::string, const std::string&) = 0;
 
     virtual int simpleFunctionWithParamsAndReturn(float, std::string, const std::string&) = 0;

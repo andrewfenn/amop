@@ -49,9 +49,9 @@ namespace detail
 	template <int I, class C>
 	struct FunctionHolderBase<I, void (DETAIL_CDECL C::*)(), false>
 	{			
-		typedef void (C::*FunctorType)();
+		typedef void (DETAIL_CDECL C::*FunctorType)();
         
-        void func() { 
+        void DETAIL_CDECL func() { 
 			VT_THIS->addCallCounter(I); 
 			if(VT_THIS->template redirector<FunctorType>(I))
 				VT_THIS->template redirector<FunctorType>(I)();
@@ -61,8 +61,8 @@ namespace detail
 	template <int I, class C>
 	struct FunctionHolderBase<I, void (DETAIL_CDECL C::*)() const, false>
 	{			
-		typedef void (C::*FunctorType)();
-		void func() 
+		typedef void (DETAIL_CDECL C::*FunctorType)();
+		void DETAIL_CDECL func() 
 		{ 
 			VT_THIS->addCallCounter(I); 
 			
@@ -77,8 +77,8 @@ namespace detail
 	template <int I, class R, class C>
 	struct FunctionHolderBase<I, R (DETAIL_CDECL C::*)(), true>
 	{			
-		typedef R (C::*FunctorType)();
-		R func() 
+		typedef R (DETAIL_CDECL C::*FunctorType)();
+		R DETAIL_CDECL func() 
 		{ 
 			VT_THIS->addCallCounter(I);
 
@@ -95,8 +95,8 @@ namespace detail
 	template <int I, class R, class C>
 	struct FunctionHolderBase<I, R (DETAIL_CDECL C::*)() const, true>
 	{			
-		typedef R (C::*FunctorType)();
-		R func() 
+		typedef R (DETAIL_CDECL C::*FunctorType)();
+		R DETAIL_CDECL func() 
 		{ 
 			VT_THIS->addCallCounter(I);
 
@@ -119,9 +119,9 @@ namespace detail
     template <int I, class C>
 	struct FunctionHolderBase<I, void (__thiscall C::*)(), false>
 	{			
-		typedef void (C::*FunctorType)();
+		typedef void (__thiscall C::*FunctorType)();
         
-        void func() { 
+        void __thiscall func() { 
 			VT_THIS->addCallCounter(I); 
 			if(VT_THIS->template redirector<FunctorType>(I))
 				VT_THIS->template redirector<FunctorType>(I)();
@@ -131,8 +131,8 @@ namespace detail
 	template <int I, class C>
 	struct FunctionHolderBase<I, void (__thiscall C::*)() const, false>
 	{			
-		typedef void (C::*FunctorType)();
-		void func() 
+		typedef void (__thiscall C::*FunctorType)();
+		void __thiscall func() 
 		{ 
 			VT_THIS->addCallCounter(I); 
 			
@@ -147,8 +147,8 @@ namespace detail
 	template <int I, class R, class C>
 	struct FunctionHolderBase<I, R (__thiscall C::*)(), true>
 	{			
-		typedef R (C::*FunctorType)();
-		R func() 
+		typedef R (__thiscall C::*FunctorType)();
+		R __thiscall func() 
 		{ 
 			VT_THIS->addCallCounter(I);
 
@@ -165,8 +165,8 @@ namespace detail
 	template <int I, class R, class C>
 	struct FunctionHolderBase<I, R (__thiscall C::*)() const, true>
 	{			
-		typedef R (C::*FunctorType)();
-		R func() 
+		typedef R (__thiscall C::*FunctorType)();
+		R __thiscall func() 
 		{ 
 			VT_THIS->addCallCounter(I);
 
@@ -190,7 +190,7 @@ namespace detail
 	template <int I, class C, DETAIL_TPARAMS(n)>	\
 	struct FunctionHolderBase<I, void (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)), false>   \
 	{																  \
-		typedef void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
+		typedef void (DETAIL_CALLING_CONVENTION C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		void func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
@@ -202,8 +202,8 @@ namespace detail
 	template <int I, class C, DETAIL_TPARAMS(n)>						\
 	struct FunctionHolderBase<I, void (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)) const, false>   \
 	{																  \
-		typedef void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		void func(DETAIL_FUNC_PARAMS(n, t))								  \
+		typedef void (DETAIL_CALLING_CONVENTION C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
+		void DETAIL_CALLING_CONVENTION func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->addCallCounter(I);								  \
@@ -216,8 +216,8 @@ namespace detail
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
 	struct FunctionHolderBase<I, R (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)), true>		\
 	{																	\
-		typedef R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		R func(DETAIL_FUNC_PARAMS(n,t))									\
+		typedef R (DETAIL_CALLING_CONVENTION C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
+		R DETAIL_CALLING_CONVENTION func(DETAIL_FUNC_PARAMS(n,t))									\
 		{																\
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->addCallCounter(I);									\
@@ -229,8 +229,8 @@ namespace detail
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
 	struct FunctionHolderBase<I, R (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)) const, true>		\
 	{																	\
-		typedef R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		R func(DETAIL_FUNC_PARAMS(n,t))									\
+		typedef R (DETAIL_CALLING_CONVENTION C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
+		R DETAIL_CALLING_CONVENTION func(DETAIL_FUNC_PARAMS(n,t))									\
 		{																\
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->addCallCounter(I);									\

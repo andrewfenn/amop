@@ -77,7 +77,7 @@ namespace inner
             
             
 
-            if (Functor<T>::CallingConvention == AMOP_CDECL)
+            if (Functor<T>::CallingConvention == (int)AMOP_CDECL)
             {
                 Check* checkObject = createCheckObject(AMOP_CDECL);
                 

@@ -38,7 +38,8 @@ static void MakeFunctor(T /*t*/)
 
 struct TestFunctorClass
 {
-	void Foo1() {};
+    void __cdecl Foo0() {};
+    void Foo1() {};
 	int Foo2(float, int, double) { return 0; }
 };
 
@@ -47,10 +48,11 @@ TEST(TestFunctorParams)
 {
 	using namespace detail;
 	
-	
+	typedef detail::Functor<void (__cdecl TestFunctorClass::*)()> F0; //(&TestFunctorClass::Foo1); 
 	typedef detail::Functor<void (TestFunctorClass::*)()> F1; //(&TestFunctorClass::Foo1); 
 	typedef detail::Functor<int (TestFunctorClass::*)(float, int, double) > F2; //(&TestFunctorClass::Foo2); 
 
+    MakeFunctor(&TestFunctorClass::Foo0);
 	MakeFunctor(&TestFunctorClass::Foo1);
 	MakeFunctor(&TestFunctorClass::Foo2);
 

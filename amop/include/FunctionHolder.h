@@ -47,7 +47,7 @@ namespace detail
 #endif
 	
 	template <int I, class C>
-	struct FunctionHolderBase<I, void (C::*)(), false>
+	struct FunctionHolderBase<I, void (__cdecl C::*)(), false>
 	{			
 		typedef void (C::*FunctorType)();
         
@@ -59,7 +59,7 @@ namespace detail
 	};
 
 	template <int I, class C>
-	struct FunctionHolderBase<I, void (C::*)() const, false>
+	struct FunctionHolderBase<I, void (__cdecl C::*)() const, false>
 	{			
 		typedef void (C::*FunctorType)();
 		void func() 
@@ -75,7 +75,7 @@ namespace detail
 
 	//------------------------------------------------------------------
 	template <int I, class R, class C>
-	struct FunctionHolderBase<I, R (C::*)(), true>
+	struct FunctionHolderBase<I, R (__cdecl C::*)(), true>
 	{			
 		typedef R (C::*FunctorType)();
 		R func() 
@@ -93,7 +93,7 @@ namespace detail
 
 	//------------------------------------------------------------------
 	template <int I, class R, class C>
-	struct FunctionHolderBase<I, R (C::*)() const, true>
+	struct FunctionHolderBase<I, R (__cdecl C::*)() const, true>
 	{			
 		typedef R (C::*FunctorType)();
 		R func() 
@@ -109,6 +109,78 @@ namespace detail
 		}
 	};
 
+#ifdef DETAIL_HAVE_THIS_CALL
+    //---------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------
+    // THIS CALL VERSIONS
+    //---------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------
+
+    template <int I, class C>
+	struct FunctionHolderBase<I, void (__thiscall C::*)(), false>
+	{			
+		typedef void (C::*FunctorType)();
+        
+        void func() { 
+			VT_THIS->addCallCounter(I); 
+			if(VT_THIS->template redirector<FunctorType>(I))
+				VT_THIS->template redirector<FunctorType>(I)();
+		}
+	};
+
+	template <int I, class C>
+	struct FunctionHolderBase<I, void (__thiscall C::*)() const, false>
+	{			
+		typedef void (C::*FunctorType)();
+		void func() 
+		{ 
+			VT_THIS->addCallCounter(I); 
+			
+			if(VT_THIS->template redirector<FunctorType>(I))
+			{
+				VT_THIS->template redirector<FunctorType>(I)();
+			}
+		}
+	};
+
+	//------------------------------------------------------------------
+	template <int I, class R, class C>
+	struct FunctionHolderBase<I, R (__thiscall C::*)(), true>
+	{			
+		typedef R (C::*FunctorType)();
+		R func() 
+		{ 
+			VT_THIS->addCallCounter(I);
+
+			if(VT_THIS->template redirector<FunctorType>(I))
+			{
+				return VT_THIS->template redirector<FunctorType>(I)();
+			}
+
+			return VT_THIS->template returning<R>(I);
+		}
+	};
+
+	//------------------------------------------------------------------
+	template <int I, class R, class C>
+	struct FunctionHolderBase<I, R (__thiscall C::*)() const, true>
+	{			
+		typedef R (C::*FunctorType)();
+		R func() 
+		{ 
+			VT_THIS->addCallCounter(I);
+
+			if(VT_THIS->template redirector<FunctorType>(I))
+			{
+				return VT_THIS->template redirector<FunctorType>(I)();
+			}
+
+			return VT_THIS->template returning<R>(I);
+		}
+	};
+#endif 
+
+
 #define DETAIL_ACTUALCALL_ITEM(n, t)		VT_THIS->template actual<T##n>(I,DETAIL_DEC(n),t##n);
 #define DETAIL_ACTUALCALL_ITEM_END(n, t)	VT_THIS->template actual<T##n>(I,DETAIL_DEC(n),t##n);
 
@@ -116,7 +188,7 @@ namespace detail
 	//------------------------------------------------------------------
 #define	DETAIL_FUNCTIONHOLDER_BUILD_O(n)				\
 	template <int I, class C, DETAIL_TPARAMS(n)>	\
-	struct FunctionHolderBase<I, void (C::*)(DETAIL_ARGS(n)), false>   \
+	struct FunctionHolderBase<I, void (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)), false>   \
 	{																  \
 		typedef void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		void func(DETAIL_FUNC_PARAMS(n, t))								  \
@@ -128,7 +200,7 @@ namespace detail
 		}															  \
 	};																\
 	template <int I, class C, DETAIL_TPARAMS(n)>						\
-	struct FunctionHolderBase<I, void (C::*)(DETAIL_ARGS(n)) const, false>   \
+	struct FunctionHolderBase<I, void (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)) const, false>   \
 	{																  \
 		typedef void (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		void func(DETAIL_FUNC_PARAMS(n, t))								  \
@@ -142,7 +214,7 @@ namespace detail
 
 #define	DETAIL_FUNCTIONHOLDER_BUILD_R(n)				\
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
-	struct FunctionHolderBase<I, R (C::*)(DETAIL_ARGS(n)), true>		\
+	struct FunctionHolderBase<I, R (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)), true>		\
 	{																	\
 		typedef R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		R func(DETAIL_FUNC_PARAMS(n,t))									\
@@ -155,7 +227,7 @@ namespace detail
 		}																\
 	};			\
 	template <int I, class R, class C, DETAIL_TPARAMS(n)>				\
-	struct FunctionHolderBase<I, R (C::*)(DETAIL_ARGS(n)) const, true>		\
+	struct FunctionHolderBase<I, R (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)) const, true>		\
 	{																	\
 		typedef R (C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
 		R func(DETAIL_FUNC_PARAMS(n,t))									\
@@ -171,6 +243,8 @@ namespace detail
 #define DETAIL_FUNCTIONHOLDER_BUILD(n) DETAIL_FUNCTIONHOLDER_BUILD_O(n) \
 	DETAIL_FUNCTIONHOLDER_BUILD_R(n)
 
+#define DETAIL_CALLING_CONVENTION __cdecl
+
 DETAIL_FUNCTIONHOLDER_BUILD(1);
 DETAIL_FUNCTIONHOLDER_BUILD(2);
 DETAIL_FUNCTIONHOLDER_BUILD(3);
@@ -179,6 +253,24 @@ DETAIL_FUNCTIONHOLDER_BUILD(5);
 DETAIL_FUNCTIONHOLDER_BUILD(6);
 DETAIL_FUNCTIONHOLDER_BUILD(7);
 DETAIL_FUNCTIONHOLDER_BUILD(8);
+
+#ifdef DETAIL_HAVE_THIS_CALL
+#undef DETAIL_CALLING_CONVENTION 
+#define DETAIL_CALLING_CONVENTION __thiscall 
+
+DETAIL_FUNCTIONHOLDER_BUILD(1);
+DETAIL_FUNCTIONHOLDER_BUILD(2);
+DETAIL_FUNCTIONHOLDER_BUILD(3);
+DETAIL_FUNCTIONHOLDER_BUILD(4);
+DETAIL_FUNCTIONHOLDER_BUILD(5);
+DETAIL_FUNCTIONHOLDER_BUILD(6);
+DETAIL_FUNCTIONHOLDER_BUILD(7);
+DETAIL_FUNCTIONHOLDER_BUILD(8);
+
+#endif DETAIL_HAVE_THIS_CALL
+
+#undef DETAIL_CALLING_CONVENTION
+
 /*
 DETAIL_FUNCTIONHOLDER_BUILD(9);
 DETAIL_FUNCTIONHOLDER_BUILD(10);

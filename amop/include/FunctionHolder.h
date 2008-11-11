@@ -191,7 +191,7 @@ namespace detail
 	struct FunctionHolderBase<I, void (DETAIL_CALLING_CONVENTION C::*)(DETAIL_ARGS(n)), false>   \
 	{																  \
 		typedef void (DETAIL_CALLING_CONVENTION C::*FunctorType)(DETAIL_FUNC_PARAMS(n, t));		\
-		void func(DETAIL_FUNC_PARAMS(n, t))								  \
+		void DETAIL_CALLING_CONVENTION func(DETAIL_FUNC_PARAMS(n, t))								  \
 		{															  \
 			DETAIL_REPEAT(n,DETAIL_ACTUALCALL_ITEM,DETAIL_ACTUALCALL_ITEM_END,t);  \
 			VT_THIS->addCallCounter(I);								  \

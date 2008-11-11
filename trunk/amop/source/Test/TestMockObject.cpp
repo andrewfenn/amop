@@ -32,6 +32,7 @@ public:
         , char* const buffer
         );
 
+    virtual void DETAIL_CDECL simpleCdeclFunctionWithParam(int v) = 0;
 
     virtual ~Interface(){}
 };
@@ -903,6 +904,14 @@ TEST(Overloads1)
 
     CHECK_EQUAL(1, pI->simpleFunction());
     CHECK_EQUAL(2, pI->simpleFunction(3)); 
-};
+}
 
+TEST(ExplicitCDeclTestWithParams)
+{
+       MockObject<Interface> mock;
 
+       CHECK( (Interface*)mock );
+       const int EXPECTED_VALUE = 1;
+       mock.everyCall(&Interface::simpleCdeclFunctionWithParam).expect(EXPECTED_VALUE);
+       mock->simpleCdeclFunctionWithParam(EXPECTED_VALUE);
+}

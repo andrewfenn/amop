@@ -109,6 +109,12 @@ namespace amop
         {
         }   	
 
+        //! Get the number of calls this method called
+        /*!
+            \return
+                The number of calls this method called
+        */
+            
         size_t count()
         {
             return Base::m_function->getCallCounter();
@@ -117,7 +123,7 @@ namespace amop
     
     //! The builder object for call mode 
     /*!
-        This template class defined the query mode return object from 
+        This template class defined the call mode return object from 
         \ref MockObject::call.
     */
     //------------------------------------------------------------------
@@ -144,6 +150,16 @@ namespace amop
         {            
         }   	
 
+        //! Redirect the method to the given free function
+        /*!
+            Redirect all call to the given free function,
+            When you did that, all expectations you set will not affected.
+
+            \param freeFunc
+                The given free function for redirecting
+
+            \return The match builder of current method
+        */
         template <typename T>
         ReturnMatchBuilder doing(T freeFunc)
         {
@@ -154,6 +170,19 @@ namespace amop
             return *this;
         }
 
+        //! Redirect the method to the given bounded function
+        /*!
+            Redirect all call to the given bounded function,
+            When you did that, all expectations you set will not affected.
+
+            \param pointer
+                The object pointer of the function you want to bound
+
+            \param func
+                The member function you want to redirect to
+
+            \return The match builder of current method
+        */
         template <typename C, typename T>
         ReturnMatchBuilder doing(C* pointer, T func)
         {
@@ -164,6 +193,16 @@ namespace amop
             return *this;
         }
 
+        //! Setting the return value of this method
+        /*!
+            Set the return value when this method was called.
+            The return value should be copyable.
+
+            \param result
+                The return value it should return
+
+            \return The match builder of current method
+        */
         template<class T>
         ReturnMatchBuilder returning(T result)
         {
@@ -181,6 +220,16 @@ namespace amop
                 return *this;
         }    
 
+        //! Set this method will thrown the given exception
+        /*!
+            Set the exception when this method is called.
+            The excpetion should be copyable.
+
+            \param exception
+                The exception to throw
+
+            \return The match builder of current method
+        */
         template<class T>
         ReturnMatchBuilder throwing(T exception)
         {
@@ -189,6 +238,28 @@ namespace amop
             return *this;
         }
 
+        //! Set the single expect value by given its index
+        /*!
+            Set the single expect value by given its index, for example:
+
+            \code
+                class Interface
+                {
+                public:
+                    virtual void Foo(int a, int b) = 0;
+                };
+                
+                mock.EveryCall(&Interface::Foo).expectOne<0>(100).expectOne<1>(200);
+
+            \endcode
+
+            Then the expect value of Foo will be 100 for a, 200 for b.
+
+            \param expect
+                The expect value
+
+            \return The match builder of current method
+        */
         template<int I, class T>
         ReturnMatchBuilder expectOne(T expect)
         {
@@ -202,12 +273,44 @@ namespace amop
             return *this;
         }    
 
+        /*! 
+            \fn expect
+            \brief Set multiple expect values
+        */
+
         template<int I>
         void expectOne(detail::Empty)
         {
             Base::m_function->setExpect(I, detail::Comparable(), false);
         };                
         
+        //! Set the incoming parameter by given its index
+        /*!
+            Set the single incoming value by given its index, for example:
+
+            \code
+                class Interface
+                {
+                public:
+                    virtual void Foo(int& a, int& b) = 0;
+                };
+                
+                mock.EveryCall(&Interface::Foo).setOne<0>(100).setOne<1>(200);
+
+                int test_a = 0;
+                int test_b = 0;
+
+                ((Interface*)mock)->Foo(test_a, test_b);
+
+                CHECK(100, test_a);
+                CHECK(200, test_b);               
+            \endcode
+
+            \param result
+                The value to set 
+
+            \return The match builder of current method
+        */
         template<int I, class T>
         ReturnMatchBuilder setOne(T result)
         {
@@ -257,6 +360,17 @@ namespace amop
         {
         }   	
 
+
+        //! Redirect the method to the given free function
+        /*!
+            Redirect all call to the given free function,
+            When you did that, all expectations you set will not affected.
+
+            \param freeFunc
+                The given free function for redirecting
+
+            \return The match builder of current method
+        */
         template <typename T>
         ReturnMatchBuilder doing(T freeFunc)
         {
@@ -267,6 +381,19 @@ namespace amop
             return *this;
         }
 
+        //! Redirect the method to the given bounded function
+        /*!
+            Redirect all call to the given bounded function,
+            When you did that, all expectations you set will not affected.
+
+            \param pointer
+                The object pointer of the function you want to bound
+
+            \param func
+                The member function you want to redirect to
+
+            \return The match builder of current method
+        */
         template <typename C, typename T>
         ReturnMatchBuilder doing(C* pointer, T func)
         {
@@ -277,6 +404,16 @@ namespace amop
             return *this;
         }
 
+        //! Setting the return value of this method
+        /*!
+            Set the return value when this method was called.
+            The return value should be copyable.
+
+            \param result
+                The return value it should return
+
+            \return The match builder of current method
+        */
         template<class T>
         ReturnMatchBuilder returning(T result)
         {
@@ -295,6 +432,16 @@ namespace amop
                 return *this;
         }
 
+        //! Set this method will thrown the given exception
+        /*!
+            Set the exception when this method is called.
+            The excpetion should be copyable.
+
+            \param exception
+                The exception to throw
+
+            \return The match builder of current method
+        */
         template<class T>
         ReturnMatchBuilder throwing(T exception)
         {
@@ -303,6 +450,28 @@ namespace amop
             return *this;
         }
 
+        //! Set the single expect value by given its index
+        /*!
+            Set the single expect value by given its index, for example:
+
+            \code
+                class Interface
+                {
+                public:
+                    virtual void Foo(int a, int b) = 0;
+                };
+                
+                mock.EveryCall(&Interface::Foo).expectOne<0>(100).expectOne<1>(200);
+
+            \endcode
+
+            Then the expect value of Foo will be 100 for a, 200 for b.
+
+            \param expect
+                The expect value
+
+            \return The match builder of current method
+        */
         template<int I, class T>
         ReturnMatchBuilder expectOne(T expect)
         {
@@ -331,7 +500,33 @@ namespace amop
             return *this;
         }
 
-        
+        //! Set the incoming parameter by given its index
+        /*!
+            Set the single incoming value by given its index, for example:
+
+            \code
+                class Interface
+                {
+                public:
+                    virtual void Foo(int& a, int& b) = 0;
+                };
+                
+                mock.EveryCall(&Interface::Foo).setOne<0>(100).setOne<1>(200);
+
+                int test_a = 0;
+                int test_b = 0;
+
+                ((Interface*)mock)->Foo(test_a, test_b);
+
+                CHECK(100, test_a);
+                CHECK(200, test_b);               
+            \endcode
+
+            \param result
+                The value to set 
+
+            \return The match builder of current method
+        */        
         template<int I, class T>
         ReturnMatchBuilder setOne(T result)
         {
@@ -345,6 +540,14 @@ namespace amop
             return *this;
         }
 
+        //! Set the expect call counter
+        /*!
+            \param counter
+                the number of call this method should be called
+                
+
+            \return The match builder of current method
+        */
         void count(size_t counter)
         {
             Base::m_function->setExpectCallCounter(counter);

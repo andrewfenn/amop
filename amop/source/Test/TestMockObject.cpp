@@ -34,6 +34,8 @@ public:
 
     virtual void DETAIL_CDECL simpleCdeclFunctionWithParam(int v) = 0;
 
+    virtual int simpleFunctionWithThrowSpecification() throw( std::bad_alloc) = 0;
+
     virtual ~Interface(){}
 };
 
@@ -914,4 +916,20 @@ TEST(ExplicitCDeclTestWithParams)
        const int EXPECTED_VALUE = 1;
        mock.everyCall(&Interface::simpleCdeclFunctionWithParam).expect(EXPECTED_VALUE);
        mock->simpleCdeclFunctionWithParam(EXPECTED_VALUE);
+}
+
+template <typename R, typename C, typename THROW>
+void deduceExceptionSpec(R (C::*ptr)() throw(THROW)  )
+{
+}
+
+//------------------------------------------------------------------
+TEST(MockObjectMethodUsingThrowDeclaration)
+{
+    deduceExceptionSpec(&Interface::simpleFunctionWithThrowSpecification);
+    
+    /*MockObject<Interface> mock;
+       mock.everyCall(&Interface::simpleFunctionWithThrowSpecification);
+       ((Interface*)mock)->simpleFunctionWithThrowSpecification();
+       CHECK(true);*/
 }

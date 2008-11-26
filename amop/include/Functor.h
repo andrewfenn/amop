@@ -26,6 +26,7 @@ struct Functor< R (__thiscall C::*)()>
 	typedef fastdelegate::FastDelegate0<R> FunctorType;
 };
 
+
 template< typename R, typename C >
 struct Functor< R (__thiscall C::*)() const>
 {
@@ -34,6 +35,8 @@ struct Functor< R (__thiscall C::*)() const>
 	typedef Tuple<> ParameterTypes;
 	typedef fastdelegate::FastDelegate0<R> FunctorType;
 };
+
+
 #endif 
 
 template< typename R, typename C >

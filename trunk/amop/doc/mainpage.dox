@@ -15,6 +15,11 @@
     the implementation of your interface. The time is saved and when adding a new function 
     in your interface, there are no needed to added it in your 'poor-man' implementation. 
 
+    \section where_to_start Where to start?
+
+    First of all, you should create your mock object. So \ref amop::MockObject is a good 
+    staring point.
+
     \section limitation
     
     Because of AMOP is based on ABI of C++, there are some limitations:

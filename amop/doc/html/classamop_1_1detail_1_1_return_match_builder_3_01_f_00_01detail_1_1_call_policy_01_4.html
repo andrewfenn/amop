@@ -54,6 +54,8 @@ Inherits amop::detail::ReturnMatchBuilderBase.
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">ReturnMatchBuilder&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classamop_1_1detail_1_1_return_match_builder_3_01_f_00_01detail_1_1_call_policy_01_4.html#ab80faf047dd7ae58ca1cfb89cbbb44e">expectOne</a> (T expect)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the single expect value by given its index.  <a href="#ab80faf047dd7ae58ca1cfb89cbbb44e"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">ReturnMatchBuilder&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamop_1_1detail_1_1_return_match_builder_3_01_f_00_01detail_1_1_call_policy_01_4.html#79ce79a58c8b392e0d49db9c2e0b4ac9">expect</a> (...)</td></tr>
+
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;int I, class T&gt; </td></tr>
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">ReturnMatchBuilder&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classamop_1_1detail_1_1_return_match_builder_3_01_f_00_01detail_1_1_call_policy_01_4.html#35b44d4db1833aa7474b45b6706de818">setOne</a> (T result)</td></tr>
 
@@ -250,6 +252,43 @@ Then the expect value of Foo will be 100 for a, 200 for b.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="79ce79a58c8b392e0d49db9c2e0b4ac9"></a><!-- doxytag: member="amop::detail::ReturnMatchBuilder&lt; F, detail::CallPolicy &gt;::expect" ref="79ce79a58c8b392e0d49db9c2e0b4ac9" args="(...)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename F&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ReturnMatchBuilder amop::detail::ReturnMatchBuilder&lt; F, detail::CallPolicy &gt;::expect           </td>
+          <td>(</td>
+          <td class="paramtype">&nbsp;</td>
+          <td class="paramname"> <em>...</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set the expect values , It used template techiques for support multiple arguments. for example:<p>
+<div class="fragment"><pre class="fragment">                <span class="keyword">class </span>Interface
+                {
+                <span class="keyword">public</span>:
+                    <span class="keyword">virtual</span> <span class="keywordtype">void</span> Foo(<span class="keywordtype">int</span> a, <span class="keywordtype">int</span> b) = 0;
+                };
+                
+                mock.EveryCall(&amp;Interface::Foo).expect(100, 200);
+</pre></div><p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>...</em>&nbsp;</td><td>The expects values</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>The match builder of current method </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="35b44d4db1833aa7474b45b6706de818"></a><!-- doxytag: member="amop::detail::ReturnMatchBuilder&lt; F, detail::CallPolicy &gt;::setOne" ref="35b44d4db1833aa7474b45b6706de818" args="(T result)" -->
 <div class="memitem">
 <div class="memproto">
@@ -303,6 +342,6 @@ Set the single incoming value by given its index, for example:<p>
 <li>C:/Sandbox/amop/amop_project/trunk/amop/Include/ReturnMatchBuilder.h</ul>
 </div>
 <hr size="1"><address style="text-align: right;"><small>
-Generated on Thu Nov 27 02:35:21 2008 for AMOP by&nbsp;<a href="http://www.doxygen.org/index.html"><img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6</small></address>
+Generated on Tue Dec 2 00:42:47 2008 for AMOP by&nbsp;<a href="http://www.doxygen.org/index.html"><img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6</small></address>
 </body>
 </html>

@@ -273,15 +273,38 @@ namespace amop
             return *this;
         }    
 
+// A hack for Doxygen, to document a very complex multi-paramters template function
+#ifdef GENERATING_DOXYGEN_OUTPUT
         /*! 
-            \fn expect
-            \brief Set multiple expect values
-        */
+            Set the expect values , It used template techiques for support multiple arguments.
+            for example:
+
+            \code
+                class Interface
+                {
+                public:
+                    virtual void Foo(int a, int b) = 0;
+                };
+                
+                mock.EveryCall(&Interface::Foo).expect(100, 200);
+
+            \endcode
+            
+            \param ...
+                The expects values 
+
+            \return The match builder of current method
+        */  
+        
+        ReturnMatchBuilder expect(...);        
+#endif
 
         template<int I>
-        void expectOne(detail::Empty)
+        ReturnMatchBuilder expectOne(detail::Empty)
         {
             Base::m_function->setExpect(I, detail::Comparable(), false);
+
+            return *this;
         };                
         
         //! Set the incoming parameter by given its index
@@ -486,6 +509,33 @@ namespace amop
             Base::m_function->setExpect(I, c, true);
             return *this;
         }
+
+        // A hack for Doxygen, to document a very complex multi-paramters template function
+#ifdef GENERATING_DOXYGEN_OUTPUT
+        /*! 
+            Set the expect values , It used template techiques for support multiple arguments.
+            for example:
+
+            \code
+                class Interface
+                {
+                public:
+                    virtual void Foo(int a, int b) = 0;
+                };
+                
+                mock.EveryCall(&Interface::Foo).expect(100, 200);
+
+            \endcode
+            
+            \param ...
+                The expects values 
+
+            \return The match builder of current method
+        */  
+        
+        ReturnMatchBuilder expect(...);        
+#endif
+
 
         template<int I>
         void expectOne(detail::Empty)

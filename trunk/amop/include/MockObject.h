@@ -118,8 +118,8 @@ namespace amop
                 .expect(20).Return(2);          
             
             // We use UnitTest++ here, but you can use any unit-test library with amop.
-            CHECK(1, mock->foo4(10));
-            CHECK(2, mock->foo4(20));
+            CHECK_EQUAL(1, mock->foo4(10));
+            CHECK_EQUAL(2, mock->foo4(20));
 
             CHECK_THROW(mock->foo4(30), CallCountException);            
         \endcode
@@ -142,10 +142,10 @@ namespace amop
             mock.everyCall(&Interface::foo4)
                 .expect(10).Return(1)
 
-            CHECK(1, mock->foo4(10);
-            CHECK(1, mock->foo4(10);
-            CHECK(1, mock->foo4(10);
-            CHECK(1, mock->foo4(10);
+            CHECK_EQUAL(1, mock->foo4(10);
+            CHECK_EQUAL(1, mock->foo4(10);
+            CHECK_EQUAL(1, mock->foo4(10);
+            CHECK_EQUAL(1, mock->foo4(10);
         \endcode
 
         The MockObject::everyCall method will return an object in everyCall mode,

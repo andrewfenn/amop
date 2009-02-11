@@ -933,3 +933,46 @@ TEST(ExplicitCDeclTestWithParams)
 //       ((Interface*)mock)->simpleFunctionWithThrowSpecification();
 //       CHECK(true);*/
 //}
+
+struct IHaveLots
+{
+    virtual int foo0() = 0;
+    virtual int foo1(int var1) = 0;
+    virtual int foo2(int var1, int var2) = 0;
+    virtual int foo3(int var1, int var2, int var3) = 0;
+    virtual int foo4(int var1, int var2, int var3, int var4) = 0;
+    virtual int foo5(int var1, int var2, int var3, int var4, int var5) = 0;
+    virtual int foo6(int var1, int var2, int var3, int var4, int var5, int var6) = 0;
+    virtual int foo7(int var1, int var2, int var3, int var4, int var5, int var6, int var7) = 0;
+    virtual int foo8(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8) = 0;
+    virtual int foo9(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9) = 0;
+    virtual int foo10(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9, int var10) = 0;
+    virtual int foo11(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9, int var10, int var11) = 0;
+    virtual int foo12(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9, int var10, int var11, int var12) = 0;
+    virtual int foo13(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9, int var10, int var11, int var12, int var13) = 0;
+    virtual int foo14(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9, int var10, int var11, int var12, int var13, int var14) = 0;
+    virtual int foo15(int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, int var9, int var10, int var11, int var12, int var13, int var14, int var15) = 0;
+};
+
+
+TEST(LotsOfParams)
+{
+    // The test here is that it compiles
+    MockObject <IHaveLots> mock;
+    mock.everyCall(&IHaveLots::foo0);
+    mock.everyCall(&IHaveLots::foo1);
+    mock.everyCall(&IHaveLots::foo2);
+    mock.everyCall(&IHaveLots::foo3);
+    mock.everyCall(&IHaveLots::foo4);
+    mock.everyCall(&IHaveLots::foo5);
+    mock.everyCall(&IHaveLots::foo6);
+    mock.everyCall(&IHaveLots::foo7);
+    mock.everyCall(&IHaveLots::foo8);
+    mock.everyCall(&IHaveLots::foo9);
+    mock.everyCall(&IHaveLots::foo10);
+    mock.everyCall(&IHaveLots::foo11);
+    mock.everyCall(&IHaveLots::foo12);
+    mock.everyCall(&IHaveLots::foo13);
+    mock.everyCall(&IHaveLots::foo14);
+    mock.everyCall(&IHaveLots::foo15).expectOne<14>(5);
+}

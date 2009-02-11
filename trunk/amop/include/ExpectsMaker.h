@@ -5,10 +5,10 @@ namespace amop
 {
     namespace detail
     {
-        template <DETAIL_TPARAMS_DEF(8, Empty)> 
+        template <DETAIL_TPARAMS_DEF(15, Empty)> 
         struct ExpectAll
         {
-            ExpectAll(DETAIL_ARGS_DEFAULT(8))
+            ExpectAll(DETAIL_ARGS_DEFAULT(15))
                 : p0(t1)
                 , p1(t2)
                 , p2(t3)
@@ -17,6 +17,13 @@ namespace amop
                 , p5(t6)
                 , p6(t7)
                 , p7(t8)
+                , p8(t9)
+                , p9(t10)
+                , p10(t11)
+                , p11(t12)
+                , p12(t13)
+                , p13(t14)
+                , p14(t15)
             {
             }
             
@@ -24,11 +31,17 @@ namespace amop
             T2 p1;
             T3 p2;
             T4 p3;
-            
             T5 p4;
             T6 p5;
             T7 p6;
             T8 p7;
+            T9 p8;
+            T10 p9;
+            T11 p10;
+            T12 p11;
+            T13 p12;
+            T14 p13;
+            T15 p14;
         };
 
 
@@ -55,6 +68,13 @@ DETAIL_ALL_MAKER_BUILD(5);
 DETAIL_ALL_MAKER_BUILD(6);
 DETAIL_ALL_MAKER_BUILD(7);
 DETAIL_ALL_MAKER_BUILD(8);
+DETAIL_ALL_MAKER_BUILD(9);
+DETAIL_ALL_MAKER_BUILD(10);
+DETAIL_ALL_MAKER_BUILD(11);
+DETAIL_ALL_MAKER_BUILD(12);
+DETAIL_ALL_MAKER_BUILD(13);
+DETAIL_ALL_MAKER_BUILD(14);
+DETAIL_ALL_MAKER_BUILD(15);
 
         }
 
@@ -123,6 +143,13 @@ DETAIL_ALL_MAKER_BUILD(8);
     DETAIL_MAKE_EXPECT_MAKER(6);
     DETAIL_MAKE_EXPECT_MAKER(7);
     DETAIL_MAKE_EXPECT_MAKER(8);
+    DETAIL_MAKE_EXPECT_MAKER(9);
+    DETAIL_MAKE_EXPECT_MAKER(10);
+    DETAIL_MAKE_EXPECT_MAKER(11);
+    DETAIL_MAKE_EXPECT_MAKER(12);
+    DETAIL_MAKE_EXPECT_MAKER(13);
+    DETAIL_MAKE_EXPECT_MAKER(14);
+    DETAIL_MAKE_EXPECT_MAKER(15);
     }
 }
 

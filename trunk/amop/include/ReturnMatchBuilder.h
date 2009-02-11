@@ -32,6 +32,13 @@ namespace amop
     action<5>(param.p5); \
     action<6>(param.p6); \
     action<7>(param.p7); \
+    action<8>(param.p8); \
+    action<9>(param.p9); \
+    action<10>(param.p10); \
+    action<11>(param.p11); \
+    action<12>(param.p12); \
+    action<13>(param.p13); \
+    action<14>(param.p14); \
 
     template <typename F, typename Policy>
     class ReturnMatchBuilder;
@@ -347,8 +354,8 @@ namespace amop
             return *this;
         }                        
 
-        template<DETAIL_TPARAMS(8)>
-        ReturnMatchBuilder expectInternal(const detail::ExpectAll<DETAIL_ARGS(8)>& expect)
+        template<DETAIL_TPARAMS(15)>
+        ReturnMatchBuilder expectInternal(const detail::ExpectAll<DETAIL_ARGS(15)>& expect)
         {
             DETAIL_APPLY_ALL(expectOne, expect);
             return *this;
@@ -543,8 +550,8 @@ namespace amop
             Base::m_function->setExpect(I, detail::Comparable() , true);
         }
 
-        template<DETAIL_TPARAMS(8)>
-        ReturnMatchBuilder expectInternal(const detail::ExpectAll<DETAIL_ARGS(8)>& expect)
+        template<DETAIL_TPARAMS(15)>
+        ReturnMatchBuilder expectInternal(const detail::ExpectAll<DETAIL_ARGS(15)>& expect)
         {
             DETAIL_APPLY_ALL(expectOne, expect);
             return *this;

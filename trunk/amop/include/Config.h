@@ -73,7 +73,11 @@ namespace amop
         };
 
 #ifdef _MSC_VER
+
+#ifndef _WIN64
 #define DETAIL_HAVE_THIS_CALL 1
+#endif
+
 #define DETAIL_CDECL __cdecl
 
         template <class OutputClass, class InputClass>

@@ -215,7 +215,7 @@ namespace detail
 	}
 
 	// Version 2009+ comes with boost
-	#define AmopSharedPtr std::tr1::shared_ptr
+	#define AmopSharedPtr boost::shared_ptr
 
 #endif
 

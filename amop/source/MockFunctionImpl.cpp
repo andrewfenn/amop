@@ -3,8 +3,12 @@
 #include "MockObjectException.h"
 #include "ExceptionThrower.h"
 
+#ifdef __BORLANDC__
+#	include <boost/shared_ptr.hpp>
+#endif
+
 #ifdef __GNUC__
-#include <tr1/memory>
+#	include <tr1/memory>
 #endif
 
 #include <assert.h>

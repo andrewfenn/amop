@@ -26,8 +26,8 @@ namespace amop
     Empty
 
 
-    namespace detail
-    {
+namespace detail
+{
 
         struct Empty {};
 
@@ -74,11 +74,11 @@ namespace amop
 
 #ifdef _MSC_VER
 
-#ifndef _WIN64
-#define DETAIL_HAVE_THIS_CALL 1
-#endif
+	#ifndef _WIN64
+		#define DETAIL_HAVE_THIS_CALL 1
+	#endif
 
-#define DETAIL_CDECL __cdecl
+	#define DETAIL_CDECL __cdecl
 
         template <class OutputClass, class InputClass>
         inline OutputClass HorribleCast(const InputClass input){
@@ -186,42 +186,75 @@ namespace amop
             }
         };
 
-#define AmopSharedPtr detail::SmartPtr
+	#define AmopSharedPtr detail::SmartPtr
 #endif
 
+
+#ifdef __BORLANDC__
+
+	// BCB already uses default C calling convention
+	#define DETAIL_CDECL
+
+	struct BorlandMFP
+	{
+		void* funcadr;
+		int delta;
+		int vtable; // or 0 if no virtual inheritance
+	};
+
+        template <class OutputClass, class InputClass>
+	inline OutputClass HorribleCast(const InputClass input){
+	    HorribleUnion<BorlandMFP, InputClass> u;
+	    // Cause a compile-time error if in, out and u are not the same size.
+	    // If the compile fails here, it means the compiler has peculiar
+	    // unions which would prevent the cast from working.
+	    typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u)
+		&& sizeof(InputClass)==sizeof(BorlandMFP) ? 1 : -1];
+	    u.in = input;
+	    return u.out.funcadr;
+	}
+
+	// Version 2009+ comes with boost
+	#define AmopSharedPtr std::tr1::shared_ptr
+
+#endif
 
 
 #ifdef __GNUC__
-#define DETAIL_CDECL 
 
-        struct GnuMFP
-        {
-            union
-            {
-                void* funcadr;
-                int vtable_index_2; // = vindex*2+1, always odd
-            };
-            int delta;
-        };
+	#define DETAIL_CDECL
 
-        template <class OutputClass, class InputClass>
-        inline OutputClass HorribleCast(const InputClass input){
-            HorribleUnion<GnuMFP, InputClass> u;
-            // Cause a compile-time error if in, out and u are not the same size.
-            // If the compile fails here, it means the compiler has peculiar
-            // unions which would prevent the cast from working.
-            typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u) 
-                && sizeof(InputClass)==sizeof(GnuMFP) ? 1 : -1];
-            u.in = input;
-            return u.out.funcadr;
-        }
+	struct GnuMFP
+	{
+	    union
+	    {
+		void* funcadr;
+		int vtable_index_2; // = vindex*2+1, always odd
+	    };
+	    int delta;
+	};
 
-#define AmopSharedPtr std::tr1::shared_ptr
+	template <class OutputClass, class InputClass>
+	inline OutputClass HorribleCast(const InputClass input){
+	    HorribleUnion<GnuMFP, InputClass> u;
+	    // Cause a compile-time error if in, out and u are not the same size.
+	    // If the compile fails here, it means the compiler has peculiar
+	    // unions which would prevent the cast from working.
+	    typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u)
+		&& sizeof(InputClass)==sizeof(GnuMFP) ? 1 : -1];
+	    u.in = input;
+	    return u.out.funcadr;
+	}
+
+	#define AmopSharedPtr std::tr1::shared_ptr
 #endif
-        typedef void* FunctionAddress;
 
-        }        
-}
+
+typedef void* FunctionAddress;
+
+} // namespace detail
+
+} // namespace amop
 
 
 #endif //__AMOP_CONFIG__HH
